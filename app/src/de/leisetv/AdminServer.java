@@ -24,7 +24,6 @@ final class AdminServer implements Closeable {
     private final ServerSocket server;
     private final ServerSocket redirect;
     private final ExecutorService workers=Executors.newFixedThreadPool(4);
-    private final ScheduledExecutorService polling=Executors.newSingleThreadScheduledExecutor();
     private final Map<String,Long> sessions=new ConcurrentHashMap<>();
     private final Map<String,long[]> attempts=new HashMap<>();
     private volatile boolean running=true;
@@ -94,7 +93,6 @@ final class AdminServer implements Closeable {
                 try{workers.execute(()->handle(s));}catch(RejectedExecutionException e){s.close();}
             }catch(IOException e){if(running)android.util.Log.w("VELA","settings-accept");}
         },"nickos-settings").start();
-        polling.scheduleWithFixedDelay(()->{try{ClimateRepository.refresh(context,false);}catch(Exception ignored){}},5,60,TimeUnit.SECONDS);
         android.util.Log.i("VELA","settings-ready");
     }
     private static byte[] read(InputStream in,int n)throws IOException{
@@ -165,21 +163,14 @@ final class AdminServer implements Closeable {
                 sessions.remove(token);reply(out,200,"application/json","{\"ok\":true}","nickos=; Secure; HttpOnly; SameSite=Strict; Path=/; Max-Age=0");return;
             }else if(method.equals("POST")&&path.equals("/api/display")){
                 JSONObject data=new JSONObject(body);
-                preferences(context).edit().putBoolean("show_camera",data.optBoolean("camera",true)).putBoolean("show_climate",data.optBoolean("climate",true))
+                preferences(context).edit().putBoolean("show_camera",data.optBoolean("camera",true))
                     .putBoolean("show_clock",data.optBoolean("clock",true)).putBoolean("show_date",data.optBoolean("date",true)).commit();
                 changed();result.put("ok",true);
             }else if(method.equals("POST")&&path.equals("/api/camera")){
                 synchronized(CameraLibrary.class){saveCamera(new JSONObject(body));}changed();result.put("ok",true);
             }else if(method.equals("POST")&&path.equals("/api/camera/delete")){
                 CameraLibrary.remove(context,new JSONObject(body).getString("id"));changed();result.put("ok",true);
-            }else if(method.equals("POST")&&path.equals("/api/climate/connect")){
-                JSONObject data=new JSONObject(body);ClimateRepository.connect(context,data.optString("email"),data.optString("password"));result=ClimateRepository.view(context);changed();
-            }else if(method.equals("POST")&&path.equals("/api/climate/select")){
-                ClimateRepository.select(context,new JSONObject(body).getString("id"));result=ClimateRepository.view(context);changed();
-            }else if(method.equals("POST")&&path.equals("/api/climate/refresh")){
-                ClimateRepository.refresh(context,false);result=ClimateRepository.view(context);
-            }else if(method.equals("GET")&&path.equals("/api/climate"))result=ClimateRepository.view(context);
-            else{reply(out,404,"application/json","{\"message\":\"Nicht gefunden\"}",null);return;}
+            }else{reply(out,404,"application/json","{\"message\":\"Nicht gefunden\"}",null);return;}
             reply(out,200,"application/json",result.toString(),null);
         }catch(Exception e){
             // Never log request bodies, stream URLs, session cookies or provider messages.
@@ -191,14 +182,14 @@ final class AdminServer implements Closeable {
     private void changed(){preferences(context).edit().putLong("revision",System.currentTimeMillis()).commit();}
     private JSONObject state()throws Exception{
         SharedPreferences p=preferences(context);
-        JSONObject display=new JSONObject().put("camera",p.getBoolean("show_camera",true)).put("climate",p.getBoolean("show_climate",true))
+        JSONObject display=new JSONObject().put("camera",p.getBoolean("show_camera",true))
             .put("clock",p.getBoolean("show_clock",true)).put("date",p.getBoolean("show_date",true));
         JSONObject library=CameraLibrary.publicView(context);
         JSONObject camera=new JSONObject().put("configured",false);
         JSONArray cameras=library.getJSONArray("cameras");
         for(int i=0;i<cameras.length();i++)if(cameras.getJSONObject(i).optString("id").equals(library.optString("defaultCameraId")))camera=cameras.getJSONObject(i);
         return new JSONObject().put("display",display).put("camera",camera).put("cameras",cameras).put("defaultCameraId",library.optString("defaultCameraId"))
-            .put("climate",ClimateRepository.view(context)).put("version","0.4");
+            .put("version","0.4.1");
     }
     private void saveCamera(JSONObject data)throws Exception{
         String name=data.optString("name").trim();if(name.isEmpty()||name.length()>80)throw new IOException("Kameraname fehlt");
@@ -248,5 +239,5 @@ final class AdminServer implements Closeable {
         if(cookie!=null)header+="Set-Cookie: "+cookie+"\r\n";
         out.write((header+"\r\n").getBytes(StandardCharsets.ISO_8859_1));out.write(bytes);out.flush();
     }
-    @Override public void close(){running=false;try{server.close();redirect.close();}catch(IOException ignored){}workers.shutdownNow();polling.shutdownNow();}
+    @Override public void close(){running=false;try{server.close();redirect.close();}catch(IOException ignored){}workers.shutdownNow();}
 }

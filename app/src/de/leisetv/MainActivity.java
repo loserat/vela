@@ -128,13 +128,10 @@ public final class MainActivity extends Activity {
     private void showHome() {
         stage(false);
         SharedPreferences prefs=AdminServer.preferences(this);
-        Tile cameras=new DashboardTile("Kameras","UniFi Protect",true,
+        Tile cameras=new DashboardTile("Kameras","UniFi Protect",
             ()->open(new Intent(this,CameraListActivity.class)));
-        Tile climate=new DashboardTile("Klima","AC Infinity",false,
-            ()->open(new Intent(this,ClimateActivity.class)));
         List<Tile> active=new ArrayList<>();
         if(prefs.getBoolean("show_camera",true))active.add(cameras);
-        if(prefs.getBoolean("show_climate",true))active.add(climate);
         for(int i=0;i<active.size();i++)place(active.get(i),active.size()==1?522:84+i*876,290,876,454);
         Tile system=new Tile("System","",null,0xff182225,false,()->showSystem());
         place(system,84,870,240,84);
@@ -291,9 +288,8 @@ public final class MainActivity extends Activity {
         }
     }
     private final class DashboardTile extends Tile {
-        final boolean camera;
-        DashboardTile(String title,String subtitle,boolean camera,Runnable action){
-            super(title,subtitle,null,0xff1C282B,false,action);this.camera=camera;
+        DashboardTile(String title,String subtitle,Runnable action){
+            super(title,subtitle,null,0xff1C282B,false,action);
         }
         @Override protected void onDraw(Canvas c){
             c.save();c.scale(getWidth()/(float)virtualW,getHeight()/(float)virtualH);
@@ -302,15 +298,9 @@ public final class MainActivity extends Activity {
             c.drawRoundRect(8,8,virtualW-8,virtualH-8,28,28,p);
             int fg=focus?0xff10251D:INK, sub=focus?0xff41604E:MUTED;
             p.setColor(fg);p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(5);
-            if(camera){
-                c.drawRoundRect(48,67,144,130,12,12,p);
-                c.drawCircle(95,99,17,p);
-                Path v=new Path();v.moveTo(144,85);v.lineTo(169,72);v.lineTo(169,126);v.lineTo(144,113);c.drawPath(v,p);
-            }else{
-                c.drawRoundRect(63,58,88,124,12,12,p);c.drawCircle(76,137,23,p);
-                c.drawLine(76,88,76,135,p);c.drawLine(110,82,151,82,p);
-                c.drawLine(110,106,138,106,p);
-            }
+            c.drawRoundRect(48,67,144,130,12,12,p);
+            c.drawCircle(95,99,17,p);
+            Path v=new Path();v.moveTo(144,85);v.lineTo(169,72);v.lineTo(169,126);v.lineTo(144,113);c.drawPath(v,p);
             text(c,p,title,48,virtualH-92,60,fg,false);
             text(c,p,subtitle,50,virtualH-48,27,sub,false);
             c.restore();
