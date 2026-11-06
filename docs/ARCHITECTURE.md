@@ -1,33 +1,35 @@
-# Aufbau
+# Architecture
 
-## Android-Oberfläche
+[README](../README.md) · [Deutsche Projektbeschreibung](../README.de.md)
 
-`MainActivity` stellt die Home-Oberfläche bereit. `CameraListActivity` zeigt die Kamera-Sammlung, `CameraActivity` spielt eine ausgewählte Quelle ab. `ClimateActivity` und `ClimateChartsView` zeigen empfangene Klimadaten und den eigenen Verlauf.
+## Android interface
 
-Die bestehende Android-Paketkennung `de.leisetv` bleibt aus Gründen der Update-Kompatibilität erhalten. Der sichtbare App-Name ist NickOS Beta.
+`MainActivity` provides the Home interface. `CameraListActivity` displays the camera collection, and `CameraActivity` plays a selected source. `ClimateActivity` and `ClimateChartsView` display received climate data and locally collected history.
+
+The existing Android package identifier `de.leisetv` is retained for update compatibility. The visible app name is NickOS Beta. The TV interface and local web settings are in German; repository documentation is maintained in English with a German README.
 
 ## Video
 
-LibVLC wird erst für die Wiedergabe initialisiert. `SecureRtspProxy` bindet den Recorder an sein gespeichertes Zertifikat und transportiert interleaved RTSP über TLS. Unverschlüsseltes RTSP existiert dabei nur auf der Loopback-Schnittstelle innerhalb des Fernsehers.
+LibVLC is initialized only when playback is needed. `SecureRtspProxy` pins the recorder's stored certificate and transports interleaved RTSP over TLS. Unencrypted RTSP exists only on the loopback interface inside the TV.
 
-Der aktuelle Zielaufbau verwendet Software-Dekodierung, jeweils einen Stream und deaktivierten Kameraton. Die überarbeitete Freigabe der Player-Ressourcen wartet noch auf einen vollständigen erneuten Geräteprüflauf.
+The current target setup uses software decoding, one stream at a time, and disabled camera audio. The revised player-resource cleanup still needs a complete device test run.
 
-## Einstellungen und Speicherung
+## Settings and storage
 
-`SettingsService` hält den lokalen Verwaltungsdienst mit einer Android-Vordergrundbenachrichtigung bereit. `AdminServer` liefert die Einstellungsseite aus und verarbeitet authentifizierte Änderungen.
+`SettingsService` keeps the local administration service running with an Android foreground notification. `AdminServer` serves the settings page and processes authenticated changes.
 
-Die PIN-Anmeldung erzeugt zeitlich begrenzte Sitzungen. Cookies verwenden `Secure`, `HttpOnly` und `SameSite=Strict`. Schreibende Aufrufe prüfen die Browser-Herkunft und akzeptieren JSON. Kamera-Metadaten werden ohne gespeicherte Streamlinks oder Zertifikate ausgegeben.
+PIN authentication creates time-limited sessions. Cookies use `Secure`, `HttpOnly`, and `SameSite=Strict`. Write requests validate the browser origin and accept JSON. Camera metadata responses omit saved stream links and certificates.
 
-`CameraConfig` verwendet Android Keystore und AES-GCM. `CameraLibrary` hält Kamera-Sammlung und Startkamera zusammen und erhält die alte Einzelkamera-Konfiguration beim Übergang. `ProvisionReceiver` ist ein Wartungszugang mit Androids signaturgeschützter `DUMP`-Berechtigung; normale Apps dürfen ihn nicht aufrufen.
+`CameraConfig` uses Android Keystore and AES-GCM. `CameraLibrary` stores the camera collection and default camera together, preserving the previous single-camera configuration during migration. `ProvisionReceiver` is a maintenance entry point protected by Android's signature-level `DUMP` permission; ordinary apps cannot invoke it.
 
-## Klimadaten
+## Climate data
 
-`ClimateRepository` implementiert ausschließlich Login und lesende Konto-/Geräteabfragen der gemeinschaftlich dokumentierten AC-Infinity-Cloud-Schnittstelle. Es gibt keine Steuer-Endpunkte. Kontotoken werden verschlüsselt gespeichert; das Kennwort wird nicht dauerhaft abgelegt.
+`ClimateRepository` implements only login and read-only account/device queries against the community-documented AC Infinity cloud interface. There are no control endpoints. Account tokens are encrypted at rest; the password is not stored persistently.
 
-Neue Messpunkte werden lokal in einer SQLite-Datenbank gesammelt. Die Anzeige nutzt nur empfangene Werte und erzeugt keine Demodaten. Die reale Konto- und Sensorprüfung ist noch offen.
+New readings are collected locally in a SQLite database. The display uses only received values and does not generate demo data. Live account and sensor verification is still pending.
 
-## Veröffentlichung
+## Publication
 
-Der veröffentlichte Quellstand enthält allgemeine Software und Dokumentation. Persönliche Netzwerkadressen, Kameradaten, Zugangsdaten, Signierschlüssel, Sitzungscookies und private Bilder sind nicht Bestandteil des Repositorys.
+The published source contains general-purpose software and documentation. Personal network addresses, camera data, credentials, signing keys, session cookies, and private images are excluded from the repository.
 
-Generierte SDK-Abhängigkeiten, APKs und lokale Schlüssel werden nicht versioniert. `fetch_deps.py` lädt das festgelegte öffentliche VLC-SDK und prüft dessen Hash. Der Build legt Ergebnisse unter `dist/` ab.
+Generated SDK dependencies, APKs, and local keys are not versioned. `fetch_deps.py` downloads the pinned public VLC SDK and verifies its hash. Build output is written to `dist/`.

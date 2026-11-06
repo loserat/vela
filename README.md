@@ -1,78 +1,82 @@
 # NickOS Beta
 
-Eine schlanke, fernbedienbare Startoberfläche für Android TV mit lokalen Web-Einstellungen, Kameraübersicht und einer vorbereiteten AC-Infinity-Datenansicht.
+English · [Deutsch](README.de.md)
 
-**Stand: 0.4 · experimentelle Beta. Die letzte Geräteprüfung des direkten Kamerawechsels ist noch offen.** NickOS ist eine Android-App und kann als Home-Oberfläche eingestellt werden.
+A lightweight, remote-controlled home screen for Android TV with local web settings, a camera overview, and an AC Infinity data view prepared for account integration.
 
-## Funktionen
+**Version: 0.4 · experimental beta. The final device check for switching directly between cameras is still pending.** NickOS is an Android app that can be assigned as the Home app.
 
-- Reduzierte Startseite mit den Bereichen Kameras und Klima.
-- Kameraübersicht mit bis zu 24 konfigurierten Einträgen; jeweils eine Kamera im Vollbild.
-- Navigation mit Pfeiltasten und OK; Links/Rechts wechselt im Vollbild die Quelle.
-- Status für fehlende Streams und bei der Einrichtung als offline erkannte Kameras.
-- Lokale HTTPS-Einstellungsseite mit PIN-Anmeldung, geschützten Sitzungen und Zugriff auf Kamera- und Anzeigeeinstellungen.
-- Hinzufügen und Umbenennen von Kameras, Auswahl einer Startkamera und Entfernen von Einträgen aus NickOS.
-- Vorbereitete, ausschließlich lesende AC-Infinity-Anbindung mit Temperatur- und Feuchteverläufen ab dem Zeitpunkt der Verbindung.
+Repository documentation is maintained in English, with a [German README](README.de.md). The TV interface and local web settings remain in German.
 
-Der öffentliche Quellstand enthält keine eingerichteten Kameras, Kontozugänge, PINs, privaten Netzwerkadressen oder Kamerabilder. Quellen werden auf dem jeweiligen Fernseher eingerichtet.
+## Features
 
-## Voraussetzungen
+- Minimal home screen with camera and climate sections.
+- Overview of up to 24 configured cameras, with one camera displayed full screen at a time.
+- Navigation using the arrow and OK buttons; Left/Right switches sources in full-screen view.
+- Status indicators for missing streams and cameras detected as offline during setup.
+- Local HTTPS settings page with PIN authentication, protected sessions, and camera and display settings.
+- Add and rename cameras, choose a default camera, and remove entries from NickOS.
+- Prepared read-only AC Infinity integration with temperature and humidity history collected after connection.
 
-Der bisherige Zielaufbau ist ein Android-TV-Gerät mit Android 8.0 und 32-Bit-ARM-Prozessor. Im aktuellen Build werden ausschließlich `armeabi-v7a`-Bibliotheken verpackt. Andere Geräte und Android-Versionen sind nicht geprüft.
+The public source contains no configured cameras, account credentials, PINs, private network addresses, or camera images. Sources are configured on each TV.
 
-Für einen lokalen Build werden benötigt:
+## Requirements
 
-- Python 3 und `curl`.
-- JDK 21; bei Bedarf über `JAVA_HOME` auswählen.
-- Android SDK mit Plattform `android-34`, Build Tools `36.1.0` und Platform Tools.
-- `ANDROID_HOME` oder `ANDROID_SDK_ROOT`, falls das SDK nicht im üblichen Benutzerverzeichnis liegt.
+The target setup used so far is an Android TV device running Android 8.0 with a 32-bit ARM processor. The current build packages only `armeabi-v7a` libraries. Other devices and Android versions have not been tested.
 
-## Bauen
+To build locally, you need:
+
+- Python 3 and `curl`.
+- JDK 21; select it using `JAVA_HOME` if necessary.
+- Android SDK with platform `android-34`, Build Tools `36.1.0`, and Platform Tools.
+- `ANDROID_HOME` or `ANDROID_SDK_ROOT` if the SDK is outside the usual user directory.
+
+## Build
 
 ```sh
 python3 app/fetch_deps.py
 python3 app/build.py
 ```
 
-Der erste Schritt lädt das versionsgebundene VLC-SDK 3.7.7 vom Maven-Central-Repository und prüft dessen SHA256-Prüfsumme. Der zweite baut und signiert die APK lokal. Das Ergebnis liegt unter `dist/NickOS-Beta-0.4.apk`.
+The first step downloads the pinned VLC SDK 3.7.7 from Maven Central and verifies its SHA256 checksum. The second builds and signs the APK locally. The output is `dist/NickOS-Beta-0.4.apk`.
 
-Beim ersten Build wird ein eigener lokaler Test-Signierschlüssel erzeugt. Er bleibt lokal und wird durch `.gitignore` ausgeschlossen. Eine mit einem anderen Schlüssel signierte Installation lässt sich damit nicht überschreiben. Einen vorhandenen eigenen Schlüssel kann man über `NICKOS_KEYSTORE` und dessen Kennwort über `NICKOS_SIGN_PASSWORD` verwenden. Der erwartete Schlüsselalias ist aktuell `leisetv`.
+The first build generates a local test signing key. It stays on your machine and is excluded by `.gitignore`. An APK signed with this key cannot update an installation signed with a different key. To use your own existing key, set `NICKOS_KEYSTORE` and provide its password through `NICKOS_SIGN_PASSWORD`. The currently expected key alias is `leisetv`.
 
-## Installation und Home-Oberfläche
+## Installation and Home assignment
 
-Für ein bereits autorisiertes Android-Gerät:
+For an Android device that has already authorized your development machine:
 
 ```sh
 adb install -r dist/NickOS-Beta-0.4.apk
 adb shell am start -n de.leisetv/.MainActivity
 ```
 
-Die App muss vor einer dauerhaften Home-Zuordnung am eigenen Gerät geprüft werden. Der bestehende Launcher sollte installiert bleiben. Androids Entwicklerwerkzeug bietet für unterstützte Geräte:
+Test the app on your device before assigning it as the default Home app. Keep the existing launcher installed. On supported devices, Android's development tools provide:
 
 ```sh
 adb shell cmd package set-home-activity --user 0 de.leisetv/.MainActivity
 ```
 
-Den bisherigen Home-Komponentennamen vorher festhalten, damit die Zuordnung zurückgestellt werden kann. Es ist kein herstellerübergreifend identischer Rückstellbefehl enthalten.
+Record the previous Home component name first so you can restore the assignment. No universal restore command is provided, as this depends on the device manufacturer.
 
-## Lokale Einstellungen
+## Local settings
 
-Am Fernseher **System → Web-Einstellungen** öffnen. Dort stehen die Adresse der lokalen HTTPS-Seite und die Zugangs-PIN.
+On the TV, open **System → Web-Einstellungen** (web settings). This shows the local HTTPS address and access PIN.
 
-Die Seite läuft direkt auf dem Fernseher auf Port `8766`. Port `8765` leitet auf HTTPS weiter. Das lokal erzeugte Zertifikat muss beim ersten Browserzugriff für das eigene Gerät bestätigt werden. Erreichbarkeit im Standby ist nicht zugesichert.
+The page runs directly on the TV on port `8766`. Port `8765` redirects to HTTPS. On your first browser visit, you need to accept the locally generated certificate for your device. Availability during standby is not guaranteed.
 
-Im Bereich **Kameras** einen lokalen UniFi-Protect-RTSPS-Link eintragen. Ein leeres Link-Feld erhält eine bereits gespeicherte Quelle. Das Entfernen eines Eintrags löscht nur die NickOS-Konfiguration; es sendet keinen Löschbefehl an Protect und löscht keine Aufnahmen.
+Under **Kameras** (cameras), enter a local UniFi Protect RTSPS link. Leaving the link field empty preserves an existing saved source. Removing an entry only deletes its NickOS configuration; it sends no deletion command to Protect and does not delete recordings.
 
-Im Bereich **Klima** kann ein vorhandenes AC-Infinity-Konto verbunden werden. Es sind keine Steuerbefehle für Lüfter, Licht oder Klima implementiert. Die verwendete Cloud-Schnittstelle ist gemeinschaftlich dokumentiert; die echte Kontoanbindung und Einheitenprüfung stehen im bisherigen Geräteaufbau noch aus. Vorhandene Herstellerverläufe werden nicht importiert.
+Under **Klima** (climate), you can connect an existing AC Infinity account. No commands for controlling fans, lighting, or climate are implemented. The cloud interface is documented by the community; live account integration and unit verification are still pending in the target setup. Existing manufacturer history is not imported.
 
-## Prüfstand und Grenzen
+## Validation and limitations
 
-Der Quellstand wurde lokal gebaut und die APK-Signatur geprüft. Die bisherigen Prüfungen umfassen 15 ursprüngliche Web-/Zugriffsprüfungen und 14 Prüfungen der erweiterten Kameraverwaltung. Einzelne echte Kamerabilder wurden am Zielgerät angesehen.
+The source has been built locally and the APK signature verified. Earlier checks include 15 original web/access checks and 14 checks of the expanded camera management. Individual live camera images have been viewed on the target device.
 
-Die letzte automatische Geräteprüfung nach der Kamerawechselkorrektur wurde nicht erfolgreich abgeschlossen. Daher sind Kamerawechsel, Rückkehr, längerer Betrieb, Bildlatenz, Verhalten nach Neustart und Standby weiterhin zu prüfen. Siehe [docs/STATUS.md](docs/STATUS.md).
+The last automated device check after the camera-switching fix did not complete successfully. Camera switching, return navigation, extended operation, image latency, restart behavior, and standby still need verification. See [Validation status](docs/STATUS.md).
 
-## Aufbau und Lizenzen
+## Architecture and licensing
 
-Die App verwendet native Android-Ansichten und LibVLC für die Videowiedergabe. Die Einstellungsseite besteht aus lokal ausgeliefertem HTML, CSS und JavaScript. Details stehen in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+The app uses native Android views and LibVLC for video playback. The settings page uses locally served HTML, CSS, and JavaScript. See [Architecture](docs/ARCHITECTURE.md) for details.
 
-LibVLC wird unter LGPL 2.1 verwendet. Herkunft und Bibliothekslizenzen stehen unter [app/assets/THIRD-PARTY-NOTICES.txt](app/assets/THIRD-PARTY-NOTICES.txt) und [app/assets/LGPL-2.1.txt](app/assets/LGPL-2.1.txt). Für den eigenen Projektcode wurde noch keine gesonderte Lizenz festgelegt.
+LibVLC is used under LGPL 2.1. Sources and library licenses are listed in [Third-party notices](app/assets/THIRD-PARTY-NOTICES.txt) and [LGPL 2.1](app/assets/LGPL-2.1.txt). No separate license has yet been selected for the project's own code.
