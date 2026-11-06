@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-feature android:name="android.software.leanback" android:required="true" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
-    <application android:name=".NickApplication" android:label="NickOS Beta" android:icon="@drawable/icon" android:banner="@drawable/banner" android:theme="@style/AppTheme" android:allowBackup="false" android:hardwareAccelerated="true" android:supportsRtl="true" android:usesCleartextTraffic="true">
+    <application android:name=".NickApplication" android:label="VELA" android:icon="@drawable/icon" android:banner="@drawable/banner" android:theme="@style/AppTheme" android:allowBackup="false" android:hardwareAccelerated="true" android:supportsRtl="true" android:usesCleartextTraffic="true">
         <service android:name=".SettingsService" android:exported="false" />
         <activity android:name=".SettingsActivity" android:exported="false" android:screenOrientation="landscape" />
         <activity android:name=".CameraActivity" android:exported="false" android:screenOrientation="landscape" />

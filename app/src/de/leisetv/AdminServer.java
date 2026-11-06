@@ -61,7 +61,7 @@ final class AdminServer implements Closeable {
                     .setKeySize(2048).setDigests(KeyProperties.DIGEST_NONE,KeyProperties.DIGEST_SHA256,KeyProperties.DIGEST_SHA384,KeyProperties.DIGEST_SHA512)
                     .setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1,KeyProperties.SIGNATURE_PADDING_RSA_PSS)
                     .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
-                    .setCertificateSubject(new X500Principal("CN=NickOS Beta"))
+                    .setCertificateSubject(new X500Principal("CN=VELA"))
                     .setCertificateSerialNumber(BigInteger.ONE)
                     .setCertificateNotBefore(new Date(System.currentTimeMillis()-86400000))
                     .setCertificateNotAfter(new Date(System.currentTimeMillis()+5L*365*86400000)).build());
@@ -92,10 +92,10 @@ final class AdminServer implements Closeable {
             while(running)try{
                 Socket s=server.accept();s.setSoTimeout(6000);
                 try{workers.execute(()->handle(s));}catch(RejectedExecutionException e){s.close();}
-            }catch(IOException e){if(running)android.util.Log.w("NickOS","settings-accept");}
+            }catch(IOException e){if(running)android.util.Log.w("VELA","settings-accept");}
         },"nickos-settings").start();
         polling.scheduleWithFixedDelay(()->{try{ClimateRepository.refresh(context,false);}catch(Exception ignored){}},5,60,TimeUnit.SECONDS);
-        android.util.Log.i("NickOS","settings-ready");
+        android.util.Log.i("VELA","settings-ready");
     }
     private static byte[] read(InputStream in,int n)throws IOException{
         byte[] b=new byte[n];int p=0;
@@ -183,8 +183,8 @@ final class AdminServer implements Closeable {
             reply(out,200,"application/json",result.toString(),null);
         }catch(Exception e){
             // Never log request bodies, stream URLs, session cookies or provider messages.
-            android.util.Log.w("NickOS","settings-request:"+e.getClass().getSimpleName());
-            if(e instanceof javax.net.ssl.SSLException)android.util.Log.w("NickOS","tls-diagnostic",e);
+            android.util.Log.w("VELA","settings-request:"+e.getClass().getSimpleName());
+            if(e instanceof javax.net.ssl.SSLException)android.util.Log.w("VELA","tls-diagnostic",e);
             reply(s.getOutputStream(),400,"application/json","{\"message\":\"Bitte Angaben und Verbindung prüfen.\"}",null);
         }}catch(IOException ignored){}
     }

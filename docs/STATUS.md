@@ -22,6 +22,12 @@ As of November 6, 2026, version 0.4.
 - Actual images from two configured cameras on the target device.
 - After installing the latest fix: the installed APK hash matched the local package, and the camera overview opened.
 
+## VELA branding update
+
+The project is now named VELA (Visual Environment & Local Access). The TV and web interfaces remain in German.
+
+The VELA branding was checked in a local Android build and a browser preview. The branding update has not been installed or verified on the TV; device testing remains paused.
+
 ## Not yet fully verified
 
 The subsequent automated check of opening a camera did not complete successfully. No successful complete device test run was recorded for the latest camera-switching fix. TV testing was then paused at the user's request.

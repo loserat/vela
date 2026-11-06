@@ -6,7 +6,9 @@
 
 `MainActivity` provides the Home interface. `CameraListActivity` displays the camera collection, and `CameraActivity` plays a selected source. `ClimateActivity` and `ClimateChartsView` display received climate data and locally collected history.
 
-The existing Android package identifier `de.leisetv` is retained for update compatibility. The visible app name is NickOS Beta. The TV interface and local web settings are in German; repository documentation is maintained in English with a German README.
+The existing Android package identifier `de.leisetv` is retained for update compatibility. The visible app name is VELA. The TV interface and local web settings are in German; repository documentation is maintained in English with a German README.
+
+Internal preference names, encryption-key aliases, and the `NickApplication` class retain their previous identifiers so existing installations keep their settings, PIN, and certificates. The build variables `NICKOS_KEYSTORE` and `NICKOS_SIGN_PASSWORD` also retain their existing names for compatibility.
 
 ## Video
 

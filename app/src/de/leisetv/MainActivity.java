@@ -229,8 +229,8 @@ public final class MainActivity extends Activity {
             p.setColor(0xff10191C);c.drawRect(0,0,1920,1080,p);
             p.setColor(MINT);c.drawRoundRect(94,78,125,109,8,8,p);
             p.setColor(0xff10191C);p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(3);
-            Path n=new Path();n.moveTo(103,102);n.lineTo(103,85);n.lineTo(116,102);n.lineTo(116,85);c.drawPath(n,p);
-            text(c,p,"NickOS",140,108,39,INK,true);
+            Path n=new Path();n.moveTo(102,85);n.lineTo(109.5f,102);n.lineTo(117,85);c.drawPath(n,p);
+            text(c,p,"VELA",140,108,39,INK,true);
             text(c,p,"BETA",306,106,20,MUTED,false);
             Date now=new Date();
             String t=time.format(now);p.setTextSize(51);p.setTypeface(Typeface.create("sans-serif-light",0));

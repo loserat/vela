@@ -1,4 +1,4 @@
-NickOS Beta
+VELA
 
 Video playback uses LibVLC Android 3.7.7 by VideoLAN, LGPL 2.1.
 Library source: https://code.videolan.org/videolan/libvlcjni
