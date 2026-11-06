@@ -1,0 +1,15 @@
+NickOS Beta
+
+Video playback uses LibVLC Android 3.7.7 by VideoLAN, LGPL 2.1.
+Library source: https://code.videolan.org/videolan/libvlcjni
+VLC source: https://code.videolan.org/videolan/vlc
+Distributed Maven artifact: org.videolan.android:libvlc-all:3.7.7
+The version-pinned artifact and corresponding Android resources are fetched by fetch_deps.py.
+The library is dynamically linked in the Android application. Application sources and rebuild instructions are supplied separately.
+Full LGPL 2.1 text: LGPL-2.1.txt
+
+AC Infinity read-only adapter protocol references:
+https://github.com/dalinicus/homeassistant-acinfinity
+https://github.com/dalinicus/homeassistant-acinfinity/blob/main/custom_components/ac_infinity/client.py
+https://github.com/dalinicus/homeassistant-acinfinity/blob/main/custom_components/ac_infinity/sensor.py
+This is a community-documented cloud protocol, not an official API guarantee from AC Infinity.

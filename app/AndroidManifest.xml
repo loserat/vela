@@ -1,0 +1,27 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="de.leisetv" android:versionCode="4" android:versionName="0.4">
+    <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="28" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-feature android:name="android.software.leanback" android:required="true" />
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+    <application android:name=".NickApplication" android:label="NickOS Beta" android:icon="@drawable/icon" android:banner="@drawable/banner" android:theme="@style/AppTheme" android:allowBackup="false" android:hardwareAccelerated="true" android:supportsRtl="true" android:usesCleartextTraffic="true">
+        <service android:name=".SettingsService" android:exported="false" />
+        <activity android:name=".SettingsActivity" android:exported="false" android:screenOrientation="landscape" />
+        <activity android:name=".CameraActivity" android:exported="false" android:screenOrientation="landscape" />
+        <activity android:name=".CameraListActivity" android:exported="false" android:screenOrientation="landscape" />
+        <activity android:name=".ClimateActivity" android:exported="false" android:screenOrientation="landscape" />
+        <receiver android:name=".ProvisionReceiver" android:exported="true" android:permission="android.permission.DUMP" />
+        <activity android:name=".MainActivity" android:exported="true" android:screenOrientation="landscape" android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

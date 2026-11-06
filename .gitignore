@@ -1,0 +1,32 @@
+# Generated SDK files and local output
+/app/build/
+/app/deps/
+/dist/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Signing material and local credentials
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.pem
+.env
+.env.*
+!.env.example
+*.cookies
+*.enc
+*.db
+*.db-*
+*.log
+*private*
+
+# Device packages, screenshots and private working material
+*.apk
+*.idsig
+*.png
+*.jpg
+*.jpeg
+/work/
+/outputs/
