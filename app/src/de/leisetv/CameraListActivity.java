@@ -1,71 +1,37 @@
 package de.leisetv;
-import android.app.Activity;
+
 import android.content.Intent;
 import android.graphics.*;
 import android.os.Bundle;
 import android.view.*;
-import android.widget.*;
+import android.widget.Toast;
 import java.util.*;
 import org.json.*;
 
-public final class CameraListActivity extends Activity {
-    private LinearLayout root;
-    private int dp(int n){return Math.round(n*getResources().getDisplayMetrics().density);}
-    @Override public void onCreate(Bundle saved){super.onCreate(saved);getWindow().getDecorView().setSystemUiVisibility(5894);}
-    @Override protected void onResume(){super.onResume();show();}
+/** Six cameras per page; keeps the last selected source when returning from playback. */
+public final class CameraListActivity extends TvScreen {
+    private static final int PER_PAGE=6;private int page;private String selected="",preferred="",model="";private JSONArray cameras;
+    @Override public void onCreate(Bundle state){super.onCreate(state);}
+    @Override protected void onResume(){super.onResume();JSONObject library;try{library=CameraLibrary.read(this);cameras=library.getJSONArray("cameras");preferred=library.optString("defaultCameraId");}catch(Exception ignored){library=new JSONObject();cameras=new JSONArray();}String current=library.toString();if(root!=null&&model.equals(current))return;model=current;if(selected.isEmpty())selected=preferred;for(int i=0;i<cameras.length();i++)if(selected.equals(cameras.optJSONObject(i).optString("id")))page=i/PER_PAGE;show();}
     private void show(){
-        root=new LinearLayout(this);root.setOrientation(1);root.setPadding(dp(44),dp(32),dp(44),dp(24));root.setBackgroundColor(TvStyle.BG);
-        TextView heading=new TextView(this);heading.setText("Kameras");heading.setTextSize(36);heading.setTypeface(Typeface.create("sans-serif-medium",0));heading.setTextColor(TvStyle.INK);root.addView(heading);
-        JSONArray cameras=CameraLibrary.all(this);String preferred="";
-        try{preferred=CameraLibrary.read(this).optString("defaultCameraId");}catch(Exception ignored){}
-        List<Choice> choices=new ArrayList<>();LinearLayout row=null;Choice focus=null;
-        for(int i=0;i<cameras.length();i++){
-            JSONObject camera=cameras.optJSONObject(i);if(camera==null)continue;
-            if(i%3==0){row=new LinearLayout(this);row.setOrientation(0);LinearLayout.LayoutParams rp=new LinearLayout.LayoutParams(-1,dp(154));rp.topMargin=dp(i==0?26:12);root.addView(row,rp);}
-            Choice tile=new Choice(camera,preferred.equals(camera.optString("id")));tile.setId(View.generateViewId());
-            LinearLayout.LayoutParams tp=new LinearLayout.LayoutParams(0,-1,1);if(i%3<2)tp.rightMargin=dp(12);row.addView(tile,tp);choices.add(tile);
-            if(preferred.equals(camera.optString("id")))focus=tile;
-            if(i==cameras.length()-1)for(int empty=i%3;empty<2;empty++){View spacer=new View(this);row.addView(spacer,new LinearLayout.LayoutParams(0,1,1));}
-        }
-        if(cameras.length()==0){TextView empty=new TextView(this);empty.setText("Kameras in den Web-Einstellungen hinzufügen.");empty.setTextColor(TvStyle.MUTED);empty.setTextSize(20);empty.setPadding(0,dp(50),0,0);root.addView(empty);}
-        TextView hint=new TextView(this);hint.setText("OK  Öffnen     ·     Zurück");hint.setTextColor(TvStyle.MUTED);hint.setTextSize(14);hint.setPadding(0,dp(18),0,0);root.addView(hint);
-        ScrollView scroll=new ScrollView(this);scroll.setFillViewport(true);scroll.setBackgroundColor(TvStyle.BG);
-        scroll.addView(root,new ScrollView.LayoutParams(-1,-2));setContentView(scroll);
-        for(int i=0;i<choices.size();i++){
-            Choice t=choices.get(i);
-            t.setNextFocusLeftId(choices.get(i%3==0?i:i-1).getId());
-            t.setNextFocusRightId(choices.get(i%3==2||i==choices.size()-1?i:i+1).getId());
-            t.setNextFocusUpId(choices.get(i<3?i:i-3).getId());
-            t.setNextFocusDownId(choices.get(i+3<choices.size()?i+3:i).getId());
-        }
-        if(focus!=null)focus.requestFocus();else if(!choices.isEmpty())choices.get(0).requestFocus();
-        android.util.Log.i("CameraTV","overview:"+cameras.length());
+        page=Math.max(0,Math.min(page,Math.max(0,(cameras.length()-1)/PER_PAGE)));stage("Kameras",cameras.length()+" Quellen · "+(cameras.length()>PER_PAGE?"Seite "+(page+1)+" von "+((cameras.length()+5)/6):"Deine Kameraübersicht"));
+        TvButton settings=button("Einrichten",1600,206,224,72,()->startActivity(new Intent(this,SettingsActivity.class)));
+        if(cameras.length()==0){TvButton empty=button("Noch keine Kameras",96,310,1728,360,()->startActivity(new Intent(this,SettingsActivity.class)));empty.icon="camera";empty.detail="In den Web-Einstellungen hinzufügen";empty.setNextFocusDownId(back.getId());back.setNextFocusUpId(empty.getId());TvStyle.focus(empty);return;}
+        List<Choice> items=new ArrayList<>();Choice target=null;
+        for(int i=page*PER_PAGE;i<Math.min(cameras.length(),(page+1)*PER_PAGE);i++){JSONObject c=cameras.optJSONObject(i);Choice tile=new Choice(c,preferred.equals(c.optString("id")));int pos=i%PER_PAGE;place(tile,96+(pos%3)*584,310+(pos/3)*268,560,244);items.add(tile);if(selected.equals(c.optString("id")))target=tile;}
+        TvButton prev=null,next=null;
+        if(cameras.length()>PER_PAGE){prev=button("← Vorherige",1224,914,282,64,()->{if(page>0){page--;show();}});next=button("Weitere →",1524,914,300,64,()->{if((page+1)*PER_PAGE<cameras.length()){page++;show();}});prev.setEnabled(page>0);next.setEnabled((page+1)*PER_PAGE<cameras.length());}
+        for(int i=0;i<items.size();i++){Choice t=items.get(i);t.setNextFocusLeftId(items.get(i%3==0?i:i-1).getId());t.setNextFocusRightId(items.get(i%3==2||i==items.size()-1?i:i+1).getId());t.setNextFocusUpId(i<3?settings.getId():items.get(i-3).getId());t.setNextFocusDownId(i+3<items.size()?items.get(i+3).getId():next!=null&&next.isEnabled()?next.getId():prev!=null&&prev.isEnabled()?prev.getId():back.getId());}
+        back.setNextFocusUpId(items.get(Math.max(0,items.size()-3)).getId());settings.setNextFocusDownId(items.get(Math.min(2,items.size()-1)).getId());settings.setNextFocusLeftId(items.get(0).getId());
+        if(prev!=null){prev.setNextFocusLeftId(back.getId());prev.setNextFocusRightId(next.getId());next.setNextFocusLeftId(prev.isEnabled()?prev.getId():back.getId());prev.setNextFocusUpId(items.get(items.size()-1).getId());next.setNextFocusUpId(items.get(items.size()-1).getId());back.setNextFocusRightId(prev.isEnabled()?prev.getId():next.getId());}
+        TvStyle.focus(target!=null?target:items.get(0));
     }
     private final class Choice extends View {
         final JSONObject camera;final boolean preferred;final Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);
-        Choice(JSONObject camera,boolean preferred){
-            super(CameraListActivity.this);this.camera=camera;this.preferred=preferred;setFocusable(true);setClickable(true);setDefaultFocusHighlightEnabled(false);
-            String status=CameraLibrary.ready(camera)?"Eingerichtet":"offline".equals(camera.optString("status"))?"Offline":"Stream fehlt";
-            setContentDescription(camera.optString("name")+", "+status);
-            setOnFocusChangeListener((v,focused)->{invalidate();if(focused)android.util.Log.i("CameraTV","focus:"+camera.optString("name"));});
-            setOnClickListener(v->{
-                if(!CameraLibrary.ready(camera)){Toast.makeText(CameraListActivity.this,status.equals("Offline")?"Kamera derzeit offline":"Stream in den Web-Einstellungen ergänzen",Toast.LENGTH_SHORT).show();return;}
-                startActivity(new Intent(CameraListActivity.this,CameraActivity.class).putExtra("cameraId",camera.optString("id")));
-            });
-        }
-        private void text(Canvas c,String s,int x,int y,int size,int color){p.setStyle(Paint.Style.FILL);p.setColor(color);p.setTextSize(size);p.setTypeface(Typeface.create("sans-serif",0));c.drawText(s,x,y,p);}
-        @Override protected void onDraw(Canvas c){
-            c.save();c.scale(getWidth()/540f,getHeight()/308f);boolean focused=isFocused(),ready=CameraLibrary.ready(camera);
-            TvStyle.card(c,p,4,4,536,304,focused,23);
-            int fg=ready?TvStyle.INK:0xffA5B5B4;
-            TvStyle.icon(c,p,"camera",30,34,54,TvStyle.MINT);
-            if(preferred){p.setStyle(Paint.Style.FILL);p.setColor(0xff2F4844);c.drawRoundRect(389,37,483,70,8,8,p);TvStyle.text(c,p,"START",408,60,16,TvStyle.MINT,true);}
-            String name=camera.optString("name");p.setTextSize(32);p.setTypeface(Typeface.create("sans-serif",0));
-            android.text.TextPaint measure=new android.text.TextPaint(p);
-            name=android.text.TextUtils.ellipsize(name,measure,452,android.text.TextUtils.TruncateAt.END).toString();
-            text(c,name,30,211,34,fg);
-            String status=ready?"Eingerichtet":"offline".equals(camera.optString("status"))?"Offline":"Stream fehlt";
-            text(c,status,30,259,22,TvStyle.MUTED);c.restore();
-        }
+        Choice(JSONObject camera,boolean preferred){super(CameraListActivity.this);this.camera=camera;this.preferred=preferred;setFocusable(true);setClickable(true);setDefaultFocusHighlightEnabled(false);String status=status();setContentDescription(camera.optString("name")+", "+status+(preferred?", Startkamera":""));setOnFocusChangeListener((v,f)->{invalidate();if(f)selected=camera.optString("id");});setOnClickListener(v->{if(!CameraLibrary.ready(camera)){Toast.makeText(CameraListActivity.this,"Stream in den Web-Einstellungen ergänzen",Toast.LENGTH_SHORT).show();return;}startActivity(new Intent(CameraListActivity.this,CameraActivity.class).putExtra("cameraId",camera.optString("id")));});}
+        String status(){return CameraLibrary.ready(camera)?"Stream eingerichtet":"offline".equals(camera.optString("status"))?"Als offline hinterlegt":"Stream fehlt";}
+        @Override protected void onDraw(Canvas c){c.save();c.scale(getWidth()/560f,getHeight()/244f);TvStyle.card(c,p,4,4,556,240,isFocused(),24,TvStyle.accent("camera"));TvStyle.icon(c,p,"camera",32,29,48,TvStyle.accent("camera"));TvStyle.arrow(c,p,514,52,isFocused());
+            if(preferred){p.setColor(0xff314B43);c.drawRoundRect(350,31,472,63,8,8,p);TvStyle.text(c,p,"Startkamera",362,53,17,TvStyle.MINT,true);}
+            p.setTextSize(34);p.setTypeface(TvStyle.NORMAL);TvStyle.text(c,p,TvStyle.fit(p,camera.optString("name"),488),32,166,34,TvStyle.INK,false);p.setColor(CameraLibrary.ready(camera)?TvStyle.MINT:0xffDDBA81);c.drawCircle(38,205,4,p);TvStyle.text(c,p,status(),52,212,21,TvStyle.MUTED,false);c.restore();}
     }
 }

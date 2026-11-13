@@ -170,7 +170,9 @@ final class AdminServer implements Closeable {
                 synchronized(CameraLibrary.class){saveCamera(new JSONObject(body));}changed();result.put("ok",true);
             }else if(method.equals("POST")&&path.equals("/api/camera/delete")){
                 CameraLibrary.remove(context,new JSONObject(body).getString("id"));changed();result.put("ok",true);
-            }else if(method.equals("GET")&&path.equals("/api/hue/state"))result=HueController.view(context);
+            }else if(method.equals("GET")&&path.equals("/api/network/state"))result=NetworkStatus.view(context);
+            else if(method.equals("GET")&&path.equals("/api/inputs/state"))result.put("inputs",InputCatalog.view(context));
+            else if(method.equals("GET")&&path.equals("/api/hue/state"))result=HueController.view(context);
             else if(method.equals("POST")&&path.equals("/api/hue/configure"))result=HueController.configure(context,new JSONObject(body).getString("host"));
             else if(method.equals("POST")&&path.equals("/api/hue/pair"))result=HueController.pair(context);
             else if(method.equals("POST")&&path.equals("/api/hue/room"))result=HueController.select(context,new JSONObject(body).getString("id"));
@@ -193,7 +195,7 @@ final class AdminServer implements Closeable {
         JSONArray cameras=library.getJSONArray("cameras");
         for(int i=0;i<cameras.length();i++)if(cameras.getJSONObject(i).optString("id").equals(library.optString("defaultCameraId")))camera=cameras.getJSONObject(i);
         return new JSONObject().put("display",display).put("camera",camera).put("cameras",cameras).put("defaultCameraId",library.optString("defaultCameraId"))
-            .put("version","0.6.1");
+            .put("version","0.7.0");
     }
     private void saveCamera(JSONObject data)throws Exception{
         String name=data.optString("name").trim();if(name.isEmpty()||name.length()>80)throw new IOException("Kameraname fehlt");

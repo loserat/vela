@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
 import android.graphics.*;
 import android.graphics.drawable.Drawable;
+import android.net.*;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
@@ -23,18 +24,22 @@ import java.util.*;
 
 /** Lightweight TV home; camera playback is loaded only on demand. */
 public final class MainActivity extends Activity {
-    private static final int INK = Color.rgb(242,243,233);
-    private static final int MUTED = Color.rgb(151,170,169);
-    private static final int MINT = Color.rgb(199,233,203);
+    private static final int INK = TvStyle.INK;
+    private static final int MUTED = TvStyle.MUTED;
+    private static final int MINT = TvStyle.MINT;
     private final Handler handler = new Handler();
     private final SharedPreferences.OnSharedPreferenceChangeListener preferencesChanged=(p,k)->{
-        if("revision".equals(k))handler.post(()->{if(this.root!=null&&!this.drawer&&!this.systemMenu)showHome();});
+        if("revision".equals(k))handler.post(()->{homeDirty=true;if(this.resumed&&this.root!=null&&!this.drawer&&!this.systemMenu)showHome();});
     };
     private final List<App> apps = new ArrayList<>();
     private final List<Tile> tiles = new ArrayList<>();
     private FrameLayout root;
     private Backdrop backdrop;
+    private TvButton networkButton;private ConnectivityManager connectivity;private boolean networkRegistered;
+    private final Runnable networkChanged=()->{if(this.resumed&&networkButton!=null)networkButton.label(NetworkStatus.summary(this)+"  →");};
+    private final ConnectivityManager.NetworkCallback networkCallback=new ConnectivityManager.NetworkCallback(){public void onAvailable(Network n){handler.post(networkChanged);}public void onLost(Network n){handler.post(networkChanged);}public void onCapabilitiesChanged(Network n,NetworkCapabilities c){handler.post(networkChanged);}};
     private float scale, offsetX, offsetY;
+    private boolean resumed,homeDirty,appsFromSystem;
     private boolean drawer;
     private boolean systemMenu;
     private int page;
@@ -63,9 +68,10 @@ public final class MainActivity extends Activity {
         AdminServer.preferences(this).registerOnSharedPreferenceChangeListener(preferencesChanged);
     }
     @Override protected void onResume() {
-        super.onResume(); handler.removeCallbacks(clock); clock.run();
+        super.onResume();resumed=true;
+        connectivity=(ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);if(connectivity!=null)try{connectivity.registerDefaultNetworkCallback(networkCallback,handler);networkRegistered=true;}catch(RuntimeException ignored){}handler.post(networkChanged);if(homeDirty&&!drawer&&!systemMenu)showHome();handler.removeCallbacks(clock);clock.run();
     }
-    @Override protected void onPause() { handler.removeCallbacks(clock); super.onPause(); }
+    @Override protected void onPause() { resumed=false;handler.removeCallbacks(clock);handler.removeCallbacks(networkChanged);if(networkRegistered){connectivity.unregisterNetworkCallback(networkCallback);networkRegistered=false;}super.onPause(); }
     @Override protected void onDestroy() { handler.removeCallbacks(clock);AdminServer.preferences(this).unregisterOnSharedPreferenceChangeListener(preferencesChanged); super.onDestroy(); }
     @Override protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
@@ -79,7 +85,8 @@ public final class MainActivity extends Activity {
             && getPackageName().equals(home.activityInfo.packageName);
     }
     @Override public void onBackPressed() {
-        if (drawer || systemMenu) showHome();
+        if(drawer){if(appsFromSystem)showSystem();else showHome();}
+        else if(systemMenu)showHome();
         else if (!isDefaultHome()) super.onBackPressed();
     }
     private void discover() {
@@ -98,13 +105,13 @@ public final class MainActivity extends Activity {
         return null;
     }
     private void stage(boolean isDrawer) {
-        drawer=isDrawer; systemMenu=false; tiles.clear();
+        drawer=isDrawer; systemMenu=false; networkButton=null;tiles.clear();
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
         scale=Math.min(dm.widthPixels/1920f, dm.heightPixels/1080f);
         offsetX=(dm.widthPixels-1920*scale)/2; offsetY=(dm.heightPixels-1080*scale)/2;
         root=new FrameLayout(this);
-        root.setBackgroundColor(Color.rgb(16,25,28));
+        root.setBackgroundColor(TvStyle.BG);
         backdrop=new Backdrop();
         root.addView(backdrop,new FrameLayout.LayoutParams(-1,-1));
         setContentView(root);
@@ -123,42 +130,26 @@ public final class MainActivity extends Activity {
             t.setNextFocusUpId(items.get(i<cols?i:i-cols).getId());
             t.setNextFocusDownId(items.get(i+cols<items.size()?i+cols:i).getId());
         }
-        if(!items.isEmpty()) items.get(0).requestFocus();
+        if(!items.isEmpty())TvStyle.focus(items.get(0));
     }
     private void showHome() {
-        stage(false);
-        SharedPreferences prefs=AdminServer.preferences(this);
-        Tile cameras=new DashboardTile("Kameras","UniFi Protect",
-            ()->open(new Intent(this,CameraListActivity.class)));
-        List<Tile> active=new ArrayList<>();
-        if(prefs.getBoolean("show_camera",true))active.add(cameras);
-        Tile light=new HomeActionTile("Ambilight","Farben & Licht","ambilight",()->open(new Intent(this,AmbilightActivity.class)));
-        Tile hue=new HomeActionTile("Hue","Raumlicht","hue",()->open(new Intent(this,HueActivity.class)));
-        Tile tv=new HomeActionTile("Fernsehen","TV-Programm","tv",()->openTV());
-        Tile system=new HomeActionTile("System","Einstellungen & Apps","settings",()->showSystem());
-        if(active.isEmpty()){
-            place(light,88,340,1000,492);place(hue,1112,340,720,304);place(tv,1112,668,348,164);place(system,1484,668,348,164);
-            light.setNextFocusRightId(hue.getId());light.setNextFocusDownId(tv.getId());hue.setNextFocusLeftId(light.getId());hue.setNextFocusDownId(tv.getId());
-            tv.setNextFocusLeftId(light.getId());tv.setNextFocusRightId(system.getId());tv.setNextFocusUpId(hue.getId());
-            system.setNextFocusLeftId(tv.getId());system.setNextFocusUpId(hue.getId());
-            light.requestFocus();
-        }else{
-            int width=(1000-24*(active.size()-1))/active.size();
-            for(int i=0;i<active.size();i++)place(active.get(i),88+i*(width+24),340,width,492);
-            place(light,1112,340,348,304);place(hue,1484,340,348,304);place(tv,1112,668,348,164);place(system,1484,668,348,164);
-            for(int i=0;i<active.size();i++){
-                Tile t=active.get(i);t.setNextFocusLeftId(active.get(Math.max(0,i-1)).getId());
-                t.setNextFocusRightId(i+1<active.size()?active.get(i+1).getId():light.getId());
-                t.setNextFocusUpId(t.getId());t.setNextFocusDownId(i==0?tv.getId():system.getId());
-            }
-            light.setNextFocusLeftId(active.get(active.size()-1).getId());light.setNextFocusDownId(tv.getId());
-            tv.setNextFocusLeftId(active.get(active.size()-1).getId());tv.setNextFocusRightId(system.getId());tv.setNextFocusUpId(light.getId());
-            system.setNextFocusLeftId(tv.getId());system.setNextFocusUpId(hue.getId());hue.setNextFocusLeftId(light.getId());hue.setNextFocusDownId(system.getId());
-            active.get(0).requestFocus();
-        }
-        light.setNextFocusUpId(light.getId());if(!active.isEmpty())light.setNextFocusRightId(hue.getId());hue.setNextFocusUpId(hue.getId());hue.setNextFocusRightId(hue.getId());
-        tv.setNextFocusDownId(tv.getId());system.setNextFocusRightId(system.getId());system.setNextFocusDownId(system.getId());
-        Log.i("LeiseTV","screen:home");
+        stage(false);homeDirty=false;appsFromSystem=false;
+        List<Tile> primary=new ArrayList<>(),shortcuts=new ArrayList<>();
+        if(AdminServer.preferences(this).getBoolean("show_camera",true))primary.add(new DashboardTile("Kameras",CameraLibrary.all(this).length()+" Quellen",()->open(new Intent(this,CameraListActivity.class))));
+        primary.add(new HomeActionTile("Ambilight","Farben & Licht","ambilight",()->open(new Intent(this,AmbilightActivity.class))));
+        primary.add(new HomeActionTile("Hue","Dein Raumlicht","hue",()->open(new Intent(this,HueActivity.class))));
+        shortcuts.add(new HomeActionTile("Fernsehen","TV-Programm","tv",()->openTV()));
+        shortcuts.add(new HomeActionTile("Geräte","HDMI & Zuspieler","devices",()->open(new Intent(this,InputsActivity.class))));
+        shortcuts.add(new HomeActionTile("System","Einstellungen","settings",()->showSystem()));
+        int width=(1728-(primary.size()-1)*24)/primary.size();
+        for(int i=0;i<primary.size();i++)place(primary.get(i),96+i*(width+24),300,width,392);
+        for(int i=0;i<3;i++)place(shortcuts.get(i),96+i*584,724,560,132);
+        for(int i=0;i<primary.size();i++){Tile t=primary.get(i);t.setNextFocusLeftId(primary.get(Math.max(0,i-1)).getId());t.setNextFocusRightId(primary.get(Math.min(primary.size()-1,i+1)).getId());t.setNextFocusUpId(t.getId());t.setNextFocusDownId(shortcuts.get(Math.min(i,2)).getId());}
+        for(int i=0;i<3;i++){Tile t=shortcuts.get(i);t.setNextFocusLeftId(shortcuts.get(Math.max(0,i-1)).getId());t.setNextFocusRightId(shortcuts.get(Math.min(2,i+1)).getId());t.setNextFocusUpId(primary.get(Math.min(primary.size()-1,i)).getId());t.setNextFocusDownId(t.getId());}
+        networkButton=new TvButton(this,NetworkStatus.summary(this)+"  →",()->open(new Intent(this,NetworkActivity.class)));networkButton.w=740;networkButton.h=64;
+        FrameLayout.LayoutParams netLayout=new FrameLayout.LayoutParams(Math.round(740*scale),Math.round(64*scale));netLayout.leftMargin=Math.round(offsetX+1084*scale);netLayout.topMargin=Math.round(offsetY+914*scale);networkButton.setId(View.generateViewId());root.addView(networkButton,netLayout);
+        for(Tile shortcut:shortcuts)shortcut.setNextFocusDownId(networkButton.getId());networkButton.setNextFocusUpId(shortcuts.get(1).getId());
+        TvStyle.focus(primary.get(0));Log.i("LeiseTV","screen:home");
     }
     private void openTV(){
         if(apps.isEmpty())discover();App tv=find("org.droidtv.zapster");
@@ -169,34 +160,34 @@ public final class MainActivity extends Activity {
         List<Tile> actions=Arrays.asList(
             new Tile("Web-Einstellungen","Am Handy oder Mac",null,0xff1C282B,false,()->open(new Intent(this,SettingsActivity.class))),
             new Tile("Bildschirmschoner","Uhr & Farbfläche",null,0xff1C282B,false,()->open(new Intent(this,ScreensaverSettingsActivity.class))),
-            new Tile("Apps","",null,0xff1C282B,false,()->{page=0;showApps();}),
+            new Tile("Apps","",null,0xff1C282B,false,()->{page=0;appsFromSystem=true;showApps();}),
             new Tile("Fernsehen","Zum TV-Programm",null,0xff1C282B,false,()->openTV()),
             new Tile("TV-Einstellungen","",null,0xff1C282B,false,()->open(new Intent(Settings.ACTION_SETTINGS))),
             new Tile("Android-Startseite","",null,0xff1C282B,false,()->open(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setComponent(new ComponentName("com.google.android.tvlauncher","com.google.android.tvlauncher.MainActivity")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)))
         );
-        for(int i=0;i<actions.size();i++)place(actions.get(i),88+(i%3)*589,350+(i/3)*208,565,184);
-        link(tiles,3);Log.i("LeiseTV","screen:system");
+        for(int i=0;i<actions.size();i++)place(actions.get(i),96+(i%3)*584,300+(i/3)*276,560,252);
+        link(actions,3);Tile back=new Tile("← Zurück","",null,0xff1C282B,false,()->showHome());place(back,96,914,176,64);for(int i=3;i<6;i++)actions.get(i).setNextFocusDownId(back.getId());back.setNextFocusUpId(actions.get(3).getId());Log.i("LeiseTV","screen:system");
     }
     private void showApps() {
-        if(apps.isEmpty())discover();
+        if(!drawer){apps.clear();discover();}else if(apps.isEmpty())discover();
         stage(true);
         int start=page*PAGE_SIZE, end=Math.min(start+PAGE_SIZE,apps.size());
         for(int i=start;i<end;i++) {
             App app=apps.get(i); int pos=i-start;
             place(new Tile(app.label,"Öffnen",app,0xff1C282B,false,()->launch(app)),
-                84+(pos%4)*438,300+(pos/4)*172,438,160);
+                96+(pos%4)*438,300+(pos/4)*172,414,160);
         }
         List<Tile> grid=new ArrayList<>(tiles);
-        Tile back=new Tile("Zur Startseite","Zurück",null,0xff1C282B,false,()->showHome());
-        place(back,84,850,438,110);
+        Tile back=new Tile("← Zurück","",null,0xff1C282B,false,()->{if(appsFromSystem)showSystem();else showHome();});
+        place(back,96,914,300,64);
         Tile prev=new Tile("Vorherige Seite",page>0?"Weitere Apps":"Erste Seite",null,0xff1C282B,false,()->{
             if(page>0){page--;showApps();}
         });
-        place(prev,522,850,438,110);
+        place(prev,1224,914,282,64);prev.setEnabled(page>0);
         Tile next=new Tile("Nächste Seite",end<apps.size()?"Weitere Apps":"Letzte Seite",null,0xff1C282B,false,()->{
             if(end<apps.size()){page++;showApps();}
         });
-        place(next,960,850,438,110);
+        place(next,1524,914,300,64);next.setEnabled(end<apps.size());
         link(grid,4);
         for(int i=Math.max(0,grid.size()-4);i<grid.size();i++)grid.get(i).setNextFocusDownId((i%4==0?back:i%4==1?prev:next).getId());
         Tile[] controls={back,prev,next};
@@ -206,7 +197,7 @@ public final class MainActivity extends Activity {
             controls[i].setNextFocusDownId(controls[i].getId());
             controls[i].setNextFocusUpId(grid.isEmpty()?controls[i].getId():grid.get(Math.min(grid.size()-1,Math.max(0,grid.size()-4)+i)).getId());
         }
-        if(grid.isEmpty())back.requestFocus();
+        if(grid.isEmpty())TvStyle.focus(back);
         Log.i("LeiseTV","screen:apps page="+page);
     }
     private void launch(App app) {
@@ -223,7 +214,7 @@ public final class MainActivity extends Activity {
     }
     private void text(Canvas c,Paint p,String value,float x,float y,float size,int color,boolean bold) {
         p.setColor(color);p.setStyle(Paint.Style.FILL);p.setTextSize(size);
-        p.setTypeface(Typeface.create(bold?"sans-serif-medium":"sans-serif",Typeface.NORMAL));
+        p.setTypeface(bold?TvStyle.MEDIUM:TvStyle.NORMAL);
         c.drawText(value,x,y,p);
     }
     private final class Backdrop extends View {
@@ -236,23 +227,24 @@ public final class MainActivity extends Activity {
             TvStyle.background(c,p,1920,1080);
             SharedPreferences prefs=AdminServer.preferences(MainActivity.this);Date now=new Date();
             boolean home=!drawer&&!systemMenu;
-            String t=time.format(now);p.setTextSize(home?110:50);p.setTypeface(Typeface.create("sans-serif-light",0));p.setColor(INK);p.setStyle(Paint.Style.FILL);
-            if(prefs.getBoolean("show_clock",true))c.drawText(t,1824-p.measureText(t),home?232:112,p);
+            String t=time.format(now);p.setTextSize(home?96:48);p.setTypeface(TvStyle.LIGHT);p.setColor(INK);p.setStyle(Paint.Style.FILL);
+            if(prefs.getBoolean("show_clock",true))c.drawText(t,1824-p.measureText(t),home?165:112,p);
             if(home){
-                text(c,p,"Zuhause.",96,218,68,INK,false);
-                if(prefs.getBoolean("show_date",true))text(c,p,date.format(now),99,262,25,MUTED,false);
-                p.setColor(0xff2A3C40);c.drawRect(96,938,1824,939,p);
-                p.setColor(0xff243A3E);c.drawRoundRect(96,966,141,997,7,7,p);
-                text(c,p,"OK",107,988,18,INK,true);text(c,p,"Öffnen",155,989,21,MUTED,false);
-                text(c,p,"←  →  Auswählen",324,989,21,MUTED,false);
+                text(c,p,"Zuhause",96,121,58,INK,false);
+                if(prefs.getBoolean("show_date",true))text(c,p,date.format(now),99,165,25,MUTED,false);
+                p.setColor(0xff2A3C40);c.drawRect(96,892,1824,893,p);
+                p.setColor(0xff243A3E);c.drawRoundRect(96,930,141,961,7,7,p);
+                text(c,p,"OK",107,952,18,INK,true);text(c,p,"Öffnen",155,953,21,MUTED,false);
+                text(c,p,"Pfeiltasten bewegen",324,953,21,MUTED,false);
             }else if(prefs.getBoolean("show_date",true)){
-                String d=date.format(now);p.setTextSize(21);p.setTypeface(Typeface.create("sans-serif",0));p.setColor(MUTED);c.drawText(d,1824-p.measureText(d),153,p);
+                String d=date.format(now);p.setTextSize(21);p.setTypeface(TvStyle.NORMAL);p.setColor(MUTED);c.drawText(d,1824-p.measureText(d),153,p);
             }
+            if(!home){p.setColor(0xff34464B);c.drawRect(96,892,1824,893,p);text(c,p,"OK auswählen   ·   Pfeiltasten bewegen",436,955,21,MUTED,false);}
             if(drawer){
-                text(c,p,"Alle Apps",92,245,67,INK,false);
+                text(c,p,"Apps",96,121,58,INK,false);text(c,p,"Installierte Anwendungen",99,165,25,MUTED,false);
                 text(c,p,"Seite "+(page+1)+" / "+Math.max(1,(apps.size()+PAGE_SIZE-1)/PAGE_SIZE),1510,240,28,MUTED,false);
             }else if(systemMenu){
-                text(c,p,"System",92,260,67,INK,false);
+                text(c,p,"System",96,121,58,INK,false);text(c,p,"Einstellungen & Funktionen",99,165,25,MUTED,false);
             }
             c.restore();
         }
@@ -273,7 +265,8 @@ public final class MainActivity extends Activity {
         @Override protected void onDraw(Canvas c){
             super.onDraw(c);c.save();c.scale(getWidth()/(float)virtualW,getHeight()/(float)virtualH);
             boolean focus=isFocused();
-            TvStyle.card(c,p,8,8,virtualW-8,virtualH-8,focus,23);
+            String section=app!=null?"apps":title.startsWith("Web")?"web":title.startsWith("Bildschirm")?"color":title.equals("Apps")?"apps":title.equals("Fernsehen")?"tv":"settings";
+            int tint=TvStyle.accent(section);TvStyle.card(c,p,8,8,virtualW-8,virtualH-8,focus,23,tint);
             int fg=INK, sub=MUTED;
             if(featured){
                 String pkg=app==null?"":app.pkg;
@@ -285,14 +278,20 @@ public final class MainActivity extends Activity {
                 else if(pkg.equals("com.zdf.android.mediathek"))text(c,p,"ZDF",36,87,48,focus?fg:0xffF6AE71,true);
                 else if(app!=null){app.icon.setBounds(36,39,105,108);app.icon.draw(c);}
                 text(c,p,focus?"ÖFFNEN  ↗":"↗",virtualW-(focus?151:58),62,19,sub,true);
-                p.setTextSize(36);p.setTypeface(Typeface.create("sans-serif-medium",0));
+                p.setTextSize(36);p.setTypeface(TvStyle.MEDIUM);
                 String label=TextUtils.ellipsize(title,p,virtualW-72,TextUtils.TruncateAt.END).toString();
                 text(c,p,label,36,virtualH-65,36,fg,true);
                 text(c,p,subtitle,36,virtualH-31,23,sub,false);
             }else{
+                if(app==null&&virtualH<=80){p.setTextSize(25);p.setTypeface(TvStyle.MEDIUM);String shortTitle=TvStyle.fit(p,title,virtualW-32);text(c,p,shortTitle,(virtualW-p.measureText(shortTitle))/2,virtualH/2f+9,25,isEnabled()?INK:MUTED,true);c.restore();return;}
+                if(app==null&&virtualH>180){
+                    String icon=title.startsWith("Web")?"web":title.startsWith("Bildschirm")?"clock":title.equals("Apps")?"apps":title.equals("Fernsehen")?"tv":"settings";
+                    TvStyle.icon(c,p,icon,34,30,44,tint);TvStyle.arrow(c,p,virtualW-48,52,focus);
+                    text(c,p,title,34,virtualH-72,31,INK,false);text(c,p,subtitle,36,virtualH-32,22,MUTED,false);c.restore();return;
+                }
                 int tx=36;
                 if(app!=null){app.icon.setBounds(34,31,90,87);app.icon.draw(c);tx=110;}
-                p.setTextSize(28);p.setTypeface(Typeface.create("sans-serif-medium",0));
+                p.setTextSize(28);p.setTypeface(TvStyle.MEDIUM);
                 String label=TextUtils.ellipsize(title,p,virtualW-tx-30,TextUtils.TruncateAt.END).toString();
                 text(c,p,label,tx,app!=null?64:53,28,fg,true);
                 text(c,p,subtitle,tx,app!=null?102:86,21,sub,false);
@@ -306,11 +305,11 @@ public final class MainActivity extends Activity {
         }
         @Override protected void onDraw(Canvas c){
             c.save();c.scale(getWidth()/(float)virtualW,getHeight()/(float)virtualH);boolean focus=isFocused();
-            TvStyle.card(c,p,5,5,virtualW-5,virtualH-5,focus,28);
-            TvStyle.cameraArt(c,p,virtualW-192,196,focus);
-            TvStyle.icon(c,p,"camera",48,45,52,MINT);TvStyle.arrow(c,p,virtualW-58,69,focus);
-            text(c,p,title,48,virtualH-103,virtualW>600?70:56,INK,false);
-            text(c,p,subtitle,50,virtualH-55,25,MUTED,false);c.restore();
+            TvStyle.card(c,p,5,5,virtualW-5,virtualH-5,focus,28,TvStyle.accent("camera"));
+            c.save();c.translate(virtualW-163,157);c.scale(.68f,.68f);TvStyle.cameraArt(c,p,0,0,focus);c.restore();
+            TvStyle.icon(c,p,"camera",36,34,52,TvStyle.accent("camera"));TvStyle.arrow(c,p,virtualW-58,69,focus);
+            text(c,p,title,36,virtualH-87,44,INK,false);
+            text(c,p,subtitle,38,virtualH-44,24,MUTED,false);c.restore();
         }
     }
     private final class HomeActionTile extends Tile {
@@ -318,15 +317,15 @@ public final class MainActivity extends Activity {
         HomeActionTile(String title,String subtitle,String kind,Runnable action){super(title,subtitle,null,0xff18292E,false,action);this.kind=kind;}
         @Override protected void onDraw(Canvas c){
             c.save();c.scale(getWidth()/(float)virtualW,getHeight()/(float)virtualH);boolean focus=isFocused(),compact=virtualH<180;
-            TvStyle.card(c,p,5,5,virtualW-5,virtualH-5,focus,26);
-            TvStyle.icon(c,p,kind,compact?28:36,compact?26:30,compact?34:46,MINT);
+            int accent=TvStyle.accent(kind);TvStyle.card(c,p,5,5,virtualW-5,virtualH-5,focus,26,accent);
+            TvStyle.icon(c,p,kind,compact?28:36,compact?40:30,compact?38:46,accent);
             if("ambilight".equals(kind)){
                 int[] colors={0xffD8B98B,0xffB8E2BE,0xff86B9D6,0xffB9A7D2};
                 for(int i=0;i<4;i++){p.setColor(colors[i]);c.drawCircle(virtualW-172+i*30,55,6,p);}
             }
-            TvStyle.arrow(c,p,virtualW-43,compact?43:53,focus);
-            text(c,p,title,compact?28:38,virtualH-(compact?53:77),compact?31:44,INK,false);
-            text(c,p,subtitle,compact?29:40,virtualH-(compact?23:36),compact?18:23,MUTED,false);c.restore();
+            TvStyle.arrow(c,p,virtualW-43,compact?66:53,focus);
+            text(c,p,title,compact?88:38,compact?64:virtualH-87,compact?31:44,INK,false);
+            text(c,p,subtitle,compact?90:40,compact?99:virtualH-44,compact?18:23,MUTED,false);c.restore();
         }
     }
 }

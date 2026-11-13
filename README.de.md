@@ -2,145 +2,91 @@
 
 [English](README.md) · Deutsch
 
-**ATPD** steht für *Ambilight TV Private Dashboard*. Eine schlanke, fernbedienbare Startoberfläche für Android TV mit lokalen Web-Einstellungen und Kameraübersicht.
+Eine schlanke Startoberfläche für Philips Android TV: Kameras, Ambilight, Philips Hue HDMI-Geräte und TV-Netzwerkstatus, bedienbar mit der TV-Fernbedienung.
 
-**Stand: 0.6.1 · experimentelle Beta. Die letzte Geräteprüfung des direkten Kamerawechsels ist noch offen.** Das Dashboard ist eine Android-App und kann als Home-Oberfläche eingestellt werden.
+Als Android-App installieren und bei Bedarf als Home-Oberfläche zuordnen.
 
-Diese Version enthält Startoberfläche, Kameras, lokale Ambilight-Bedienung, Hue-Raumsteuerung und Bildschirmschoner-Einstellungen. Die unfertige Klima-Anbindung ist nicht enthalten.
+**0.7.0 · experimentelle Beta.** Die Repository-Dokumentation ist auf Englisch; TV-Oberfläche und lokale Web-Einstellungen bleiben auf Deutsch. Am TV erscheinen kein Projektname und kein Logo. In Android heißt die App **TV-Dashboard**.
 
-Die TV-Oberfläche zeigt keinen Projektnamen und kein Logo. In Android heißt die App neutral `TV-Dashboard`.
+## So sieht es aus
 
-Die Repository-Dokumentation wird auf Englisch gepflegt; diese Datei ist die deutsche Projektbeschreibung. Die Benutzeroberfläche am Fernseher und die lokalen Web-Einstellungen bleiben auf Deutsch.
+Native Ansichten aus einem separaten Simulator mit künstlichen Kameras, Lichtzuständen und HDMI-Einträgen. Das sind Screenshots der Anwendung, keine Entwurfsbilder. Die Web-Screenshots stammen aus einer separaten lokalen Vorschau mit erfundenen Daten. Private Kamerabilder, Zugangscodes und echte Netzwerkdaten sind nicht enthalten.
 
-## Screenshots
+![Startseite mit Kameras, Ambilight, Hue, Fernsehen, Geräten und System](docs/images/home.png)
 
-Echte native Android-Ansichten aus dem separaten Simulator. Der angezeigte Lichtzustand sind Testdaten; private Kamerabilder und Zugangsdaten sind nicht enthalten.
+| HDMI-Geräte | Kameraübersicht |
+| --- | --- |
+| ![HDMI-Geräte auswählen](docs/images/devices.png) | ![Sechs Kamerakarten pro Seite](docs/images/cameras.png) |
+| **Ambilight** | **Philips Hue** |
+| ![Ambilight-Farben und Helligkeit](docs/images/ambilight.png) | ![Hue-Raumlicht und Helligkeit](docs/images/hue.png) |
+| **System** | **Bildschirmschoner** |
+| ![System-Einstellungen](docs/images/system.png) | ![Uhr und Farbfläche einstellen](docs/images/screensaver.png) |
+| **TV-Netzwerkstatus** | **Lokale Web-Einstellungen** |
+| ![Passiver Android-Netzwerkstatus](docs/images/network.png) | ![Überarbeitete lokale Web-Einstellungen](docs/images/web-settings.jpg) |
 
-![Startseite mit Kameras, Ambilight, Hue, Fernsehen und System](docs/images/home.png)
-
-![Ambilight mit 16 Farben, aktiver Auswahl und Helligkeitsregler](docs/images/ambilight.png)
-
-![Hue-Raumsteuerung mit Farbauswahl, Lichtvorschau und Helligkeit](docs/images/hue.png)
-
-![Bildschirmschoner-Einstellungen mit Uhr, Farbfläche und Vorschau](docs/images/screensaver.png)
-
-## Verifizierte Hardware
-
-Direkt am Gerät geprüft am **13. November 2026**:
-
-| Ziel | Verifizierte Angaben | Aussagekraft |
-| --- | --- | --- |
-| Echter Philips-TV | Android-Modell `QM163E`, Plattform `mt5890`, Android 8.0.0 / API 26, `armeabi-v7a`, Android-Anzeige 1920 × 1080, 320 dpi | Auf dem echten Fernseher installiert und ausgeführt |
-| Philips Hue Bridge | BSB002 | HTTPS-Identität, Knopf-Kopplung, gespeicherte Raumauswahl und Zustands-/Funktionsabruf geprüft; Lampenbefehle noch offen |
-| Separater Android-Simulator | Android 14 / API 34, ARM64, 1920 × 1080 | Oberflächen- und Ersatzdienstprüfungen; kein weiterer unterstützter physischer TV |
-
-Der Besitzer nennt als TV-Modell **55PUS6581/12**. Das [Philips-Datenblatt](https://www.documents.philips.com/assets/20230307/fe892bffbb3a4e078c21afbe012b73a3.pdf) beschreibt ein 4K-Panel; die App zeichnet aktuell in der von Android gemeldeten Auflösung von 1920 × 1080. Die Verkaufsmodellnummer wurde nicht unabhängig aus dem laufenden Gerät ausgelesen. Methoden und Grenzen stehen unter [Hardware-Prüfung (Englisch)](docs/HARDWARE.md).
+[Oberfläche und Fernbedienung (Englisch)](docs/UI.md) · [Apps-Screenshot](docs/images/apps.png)
 
 ## Funktionen
 
-- Reduzierte Startseite mit Kameras, Ambilight, Hue, Fernsehen und System.
-- Ruhige Farbverläufe, klare Fokusrahmen und große Ziele für die Fernbedienung.
-- Eigene Ambilight-Bedienung mit 16 beschrifteten Farbfeldern, aktiver Auswahl, Lichtvorschau, Modi und Helligkeitsregler für die Fernbedienung.
-- Korrekte 8-Bit-Umrechnung für Farbton und Sättigung; eine Farbauswahl schaltet das Licht bei Bedarf ein.
-- Kameraübersicht mit bis zu 24 konfigurierten Einträgen; jeweils eine Kamera im Vollbild.
-- Navigation mit Pfeiltasten und OK; Links/Rechts wechselt im Vollbild die Quelle.
-- Status für fehlende Streams und bei der Einrichtung als offline erkannte Kameras.
-- Lokale HTTPS-Einstellungsseite mit PIN-Anmeldung, geschützten Sitzungen und Zugriff auf Kamera- und Anzeigeeinstellungen.
-- Hinzufügen und Umbenennen von Kameras, Auswahl einer Startkamera und Entfernen von Einträgen aus dem Dashboard.
+- Aufgeräumte Startseite mit großen Fokusflächen, TV-Zugriff, Geräten und System.
+- Bis zu 24 eingerichtete Kameras, sechs pro Übersichtsseite und jeweils ein Stream im Vollbild. Die Übersichtsseite bleibt bei der Rückkehr aus Einstellungen erhalten.
+- Ambilight-Modi, 16 benannte Farben, Lichtvorschau und Helligkeit per Fernbedienung oder Berührung.
+- Lokale Hue-Bridge-Kopplung mit bewusster Raumauswahl, Schalten, unterstützten Farben, Helligkeit und Szenen dieses Raums. Home Assistant ist nicht nötig.
+- HDMI-Erkennung über Androids TV-Eingangsdienst. Vorhandene CEC-Namen kennzeichnen Geräte; die Auswahl übergibt den Eingang an die TV-App des Fernsehers.
+- Bildschirmschoner als Uhr oder Farbfläche, Datum, dunkle Darstellung, Vorschau und Zugang zu den Aktivierungseinstellungen des TVs.
+- Responsive lokale HTTPS-Einstellungen für Startseite, Kameras, Hue-Kopplung/Raum, HDMI-Übersicht und Netzwerkstatus, mit PIN-Anmeldung und geschützten Sitzungen. Kamera-/Hue-Konfiguration bleibt verschlüsselt auf dem TV.
+- Kompakte Netzwerkanzeige auf der Startseite mit LAN/WLAN und Androids Internetbestätigung. Passiv und ohne Konto: **Verbindung dieses Fernsehers, keine UniFi-Gesamtprüfung**. [Netzwerkstatus und Grenzen (Englisch)](docs/NETWORK.md).
 
-Der öffentliche Quellstand enthält keine eingerichteten Kameras, Kontozugänge, PINs, privaten Netzwerkadressen oder Kamerabilder. Quellen werden auf dem jeweiligen Fernseher eingerichtet.
+Der Hue-Regler bündelt schnelle Eingaben und sendet für eine zusammengefasste Bedienung einen Schreibbefehl. Danach werden nicht mehr jedes Mal sämtliche Räume, Lampen und Szenen abgefragt. Angezeigt wird der bestätigte Zielwert; bei Fehlern bleibt die zuletzt bestätigte Ansicht erhalten und eine Meldung erscheint direkt auf der Seite.
 
-## Voraussetzungen
+## Geprüfte Hardware
 
-Der bisherige Zielaufbau ist ein Android-TV-Gerät mit Android 8.0 und 32-Bit-ARM-Prozessor. Im aktuellen Build werden ausschließlich `armeabi-v7a`-Bibliotheken verpackt. Die neue Oberfläche wurde zusätzlich in einem separaten Android-14-Simulator geprüft. Andere physische Geräte sind nicht geprüft.
+| Ziel | Aussagekraft |
+| --- | --- |
+| Echter Philips `QM163E`, `mt5890`, Android 8.0.0 / API 26, ARMv7 | Installation, lokale Einstellungen, Konfigurationserhalt und native Oberfläche; aktueller Geräteprüfstand unten verlinkt |
+| Philips Hue Bridge `BSB002` | HTTPS-Identität, Kopplung, Raum, Zustandsabrufe und kontrollierter Helligkeitsschritt mit Wiederherstellung |
+| Apple TV, per HDMI-CEC erkannt | Auswahl und aktive Route auf HDMI 4 am Test-Philips geprüft; Generation und Firmware wurden nicht abgefragt |
+| Separater Android-14-/API-34-Simulator mit ARM64 | Oberflächen-, Navigations- und Ersatzdienstprüfungen; kein weiterer unterstützter physischer TV |
 
-Für einen lokalen Build werden benötigt:
+Der Besitzer nennt als Verkaufsmodell **55PUS6581/12**; diese Nummer wurde nicht unabhängig aus Android ausgelesen. Das 4K-Panel ist von der aktuellen **Android-Zeichenfläche mit 1920 × 1080** zu unterscheiden. [Hardware-Prüfung und Grenzen (Englisch)](docs/HARDWARE.md).
 
-- Python 3 und `curl`.
-- JDK 21; bei Bedarf über `JAVA_HOME` auswählen.
-- Android SDK mit Plattform `android-34`, Build Tools `36.1.0` und Platform Tools.
-- `ANDROID_HOME` oder `ANDROID_SDK_ROOT`, falls das SDK nicht im üblichen Benutzerverzeichnis liegt.
+## Bauen und installieren
 
-## Bauen
+Voraussetzungen: Python 3, `curl`, JDK 21, Android-SDK-Plattform `android-34`, Build Tools `36.1.0` und Platform Tools. Das reguläre APK enthält **armeabi-v7a** und benötigt mindestens Android 8 / API 26. Andere physische Modelle sind noch nicht verifiziert.
 
 ```sh
 python3 app/fetch_deps.py
+python3 tests/check_palette.py
 python3 app/build.py
+adb -s DEVICE install -r dist/TV-Dashboard-0.7.0.apk
+adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 ```
 
-Der erste Schritt lädt das versionsgebundene VLC-SDK 3.7.7 vom Maven-Central-Repository und prüft dessen SHA256-Prüfsumme. Der zweite baut und signiert die APK lokal. Das Ergebnis liegt unter `dist/TV-Dashboard-0.6.1.apk`.
+`DEVICE` durch das ausdrücklich gewählte, bereits autorisierte Gerät ersetzen. Den Signierschlüssel für spätere Updates aufbewahren. [Installation, Home-Zuordnung, Update und Rückkehr (Englisch)](docs/INSTALLATION.md).
 
-Beim ersten Build wird ein eigener lokaler Test-Signierschlüssel erzeugt. Er bleibt lokal und wird durch `.gitignore` ausgeschlossen. Eine mit einem anderen Schlüssel signierte Installation lässt sich damit nicht überschreiben. Einen vorhandenen eigenen Schlüssel kann man über `NICKOS_KEYSTORE` und dessen Kennwort über `NICKOS_SIGN_PASSWORD` verwenden. Der erwartete Schlüsselalias ist aktuell `leisetv`.
+## Erste Einrichtung
 
-## Installation und Home-Oberfläche
-
-Für ein bereits autorisiertes Android-Gerät:
-
-```sh
-adb install -r dist/TV-Dashboard-0.6.1.apk
-adb shell am start -n de.leisetv/.MainActivity
-```
-
-Die App muss vor einer dauerhaften Home-Zuordnung am eigenen Gerät geprüft werden. Der bestehende Launcher sollte installiert bleiben. Androids Entwicklerwerkzeug bietet für unterstützte Geräte:
-
-```sh
-adb shell cmd package set-home-activity --user 0 de.leisetv/.MainActivity
-```
-
-Den bisherigen Home-Komponentennamen vorher festhalten, damit die Zuordnung zurückgestellt werden kann. Es ist kein herstellerübergreifend identischer Rückstellbefehl enthalten.
-
-## Lokale Einstellungen
-
-Am Fernseher **System → Web-Einstellungen** öffnen. Dort stehen die Adresse der lokalen HTTPS-Seite und die Zugangs-PIN.
-
-Die Seite läuft direkt auf dem Fernseher auf Port `8766`. Port `8765` leitet auf HTTPS weiter. Das lokal erzeugte Zertifikat muss beim ersten Browserzugriff für das eigene Gerät bestätigt werden. Erreichbarkeit im Standby ist nicht zugesichert.
-
-Im Bereich **Kameras** einen lokalen UniFi-Protect-RTSPS-Link eintragen. Ein leeres Link-Feld erhält eine bereits gespeicherte Quelle. Das Entfernen eines Eintrags löscht nur die Dashboard-Konfiguration; es sendet keinen Löschbefehl an Protect und löscht keine Aufnahmen.
-
-## Ambilight
-
-Auf der Startseite **Ambilight** öffnen. Dabei wird nur der Zustand gelesen; erst ein Tastendruck ändert die Beleuchtung. Bedienelemente werden erst nach erfolgreichem Abruf freigegeben. Die Farbhelligkeit gilt für feste Farben, nicht für die Helligkeit der Bildanpassung. Änderungen werden gesammelt und nacheinander gesendet; Fokus und übrige Oberfläche bleiben beim Nachregeln stabil.
-
-Die Anbindung unterstützt derzeit einen Philips-JointSpace-v6-Dienst ohne Anmeldung direkt auf dem Fernseher an Loopback-Port `1925`. Modelle mit zwingender HTTPS-Kopplung werden noch nicht unterstützt. Home Assistant ist nicht erforderlich. Protokollreferenzen: [Pylips](https://github.com/eslavnov/pylips) und die [Philips-Implementierung von Home Assistant](https://github.com/home-assistant/core/blob/dev/homeassistant/components/philips_js/light.py). Deren Code wird nicht eingebunden. Farbton und Sättigung werden als Werte von 0 bis 255 übertragen, nicht als Grad und Prozent.
-
-## Philips Hue
-
-Auf der Startseite **Hue → Raum & Bridge** öffnen, die lokale IPv4-Adresse der Hue Bridge eingeben, den Knopf auf der Bridge drücken und **Bridge verbinden** wählen. Danach den TV-Raum auswählen und **Diesen Raum verwenden** bestätigen. Es wird kein Raum und keine Gruppe für das gesamte Zuhause automatisch gewählt.
-
-Die tägliche Bedienung passt auf einen Bildschirm: 16 Farbkacheln mit bestätigter Auswahl, schematische Lichtvorschau, Schalter und Helligkeitsregler für Fernbedienung und Berührung. Die Bridge-Einrichtung liegt in einem eigenen Dialog; Szenen erscheinen nur, wenn der gewählte Raum sie liefert. Beim Dimmen bleibt die übrige Seite ruhig.
-
-Schalten, Helligkeit, unterstützte Farben und Szenen werden lokal über HTTPS gesteuert. Das Bridge-Zertifikat wird nach der Einrichtung fest zugeordnet; der Zugangsschlüssel liegt verschlüsselt auf dem TV und erscheint nicht in API-Antworten. Die verfügbaren Farben hängen von den Lampen ab. Das ist eine manuelle Raumsteuerung; Hue-Entertainment-/Videosynchronisierung ist nicht enthalten. Home Assistant wird nicht benötigt.
-
-## Bildschirmschoner
-
-**System → Bildschirmschoner** öffnen. **Uhr** oder **Farbfläche** wählen, Datum und dunkle Darstellung einstellen und mit **Vorschau starten** die Vollbildansicht öffnen. Pfeiltasten, OK, Zurück oder eine Berührung beenden die Vorschau. Die Uhr verschiebt sich einmal pro Minute.
-
-**Aktivierung & Wartezeit** öffnet, soweit verfügbar, die tatsächlichen Android-Bildschirmschoner-Einstellungen. Dort **Uhr & Farbfläche** auswählen und die vom Fernseher angebotene Aktivierung einstellen. Das Öffnen der Dashboard-Einstellungen schaltet die Automatik nicht ein und verändert keine Wartezeit. Beim geprüften Philips wird der direkte Android-Aufruf vom Hersteller abgefangen; die App erklärt das und bietet stattdessen die allgemeinen TV-Einstellungen an. Der automatische Start bei Inaktivität ist auf diesem TV noch nicht verifiziert.
+| Am TV | Nächster Schritt |
+| --- | --- |
+| **System → Web-Einstellungen** | Angezeigte HTTPS-Adresse am Handy/Computer öffnen und die angezeigte PIN eingeben. Das lokale Zertifikat beim ersten Zugriff bestätigen. |
+| Web-Einstellungen → **Kameras** | Lokale UniFi-Protect-RTSPS-Quellen ergänzen. Ein leeres Link-Feld erhält einen bereits gespeicherten Stream. |
+| **Hue → Raum & Bridge** | Bridge-Adresse eingeben, Knopf auf der Bridge drücken, verbinden und den TV-Raum bestätigen. Es wird keine Gruppe für das gesamte Zuhause automatisch gewählt. |
+| Netzwerk-Schaltfläche auf der Startseite / Web → **Netzwerk** | TV-Verbindung und Androids Internetbestätigung lesen; kein UniFi-Konto nötig. |
+| **Geräte** | Geräte-/HDMI-Karte auswählen. Das Öffnen der Seite liest nur die Eingänge und schaltet noch nicht um. |
+| **System → Bildschirmschoner** | Stil, Datum und dunkle Darstellung wählen oder die Vollbildvorschau öffnen. Die automatische Aktivierung bleibt eine TV-/Systemeinstellung. |
 
 ## Prüfstand und Grenzen
 
-Die neue Ambilight-Seite hat 14 Bedienungsprüfungen im Android-Simulator bestanden; 53 Prüfungen laufen gegen die produktiven Klassen für Farbpalette und Hue-Wertumrechnung. Nach der Korrektur der Farbskala wurden die vom TV gemeldeten LED-RGB-Werte für Rot, Grün, Blau und Rosa am Gerät geprüft. Das ist keine kalibrierte Messung der tatsächlichen Raumbeleuchtung.
+Bestanden haben **53** Prüfungen der produktiven Farb-/Umrechnungsklassen, **26** Hue-Prüfungen, **27** Navigations-/Layout-Prüfungen, **11** Bildschirmschoner-Prüfungen, **10** Ambilight-Reglerprüfungen, **2** Prüfungen für Eingaben während laufender Lichtbefehle, **6** Netzwerkseiten-Prüfungen und **15** Web-Zustands-/Speicherprüfungen. Die Testreihen decken unterschiedliche Bereiche ab und sind keine vollständige Gerätefreigabe.
 
-Version 0.6.1 ist auf dem echten Philips installiert. Geprüft wurden APK-Prüfsumme, HTTPS-/PIN-Anmeldung, Kamera-IDs, unveränderte Bildschirmschoner-Aktivierung, Hue-Bridge-Identität und die Android-Dienstregistrierung. Anschließend wurden die echte Hue-Kopplung per Knopf, die vom Nutzer gewählte und gespeicherte Raumauswahl sowie Zustands- und Funktionsabrufe geprüft. Tatsächliche Lampenänderungen und automatische Bildschirmschoner-Aktivierung am TV stehen noch aus. Im separaten Simulator mit lokalen Ersatzdiensten bestanden 15 Hue-Controller-Prüfungen und elf Bildschirmschoner-Prüfungen.
+Die Hue-Prüfungen enthalten langsame, veraltete und fehlerhafte Antworten sowie den Vergleich der Bildpunkte außerhalb des Helligkeitsreglers. [Tests wiederholen (Englisch)](docs/TESTING.md). [Aktuelle Geräteergebnisse und offene Punkte (Englisch)](docs/STATUS.md).
 
-Die neue Hue-Ansicht hat 21 Oberflächen-/Bedienungsprüfungen im Simulator bestanden: normale Home-Navigation, Fokus bei Berührung und Fernbedienung, getrennte Einrichtung, raumbezogene Szenen, CT-/XY-Auswahl, unveränderte Bildpunkte außerhalb des Helligkeitsreglers, Fehler und Wiederherstellung.
+Andere TV-Modelle, Ambilight-Geräte mit zwingender HTTPS-Kopplung, längerer Live-Kamerawechsel und die automatische Bildschirmschoner-Aktivierung dieses Philips sind noch nicht vollständig geprüft. Der Philips fängt den direkten Bildschirmschoner-Aufruf ab; die App erklärt das und bietet die allgemeinen TV-Einstellungen an. Es gibt keine allgemeine Zusage für Bildrate oder Gerätekompatibilität.
 
-Der Quellstand wurde lokal gebaut und die APK-Signatur geprüft. Die bisherigen Prüfungen von Version 0.4 umfassen 15 ursprüngliche Web-/Zugriffsprüfungen und 14 Prüfungen der erweiterten Kameraverwaltung; diese Zahlen stehen nicht für einen neuen vollständigen Geräteprüflauf von Version 0.6.1. Einzelne echte Kamerabilder wurden am Zielgerät angesehen.
+## Dokumentation
 
-Die letzte automatische Geräteprüfung nach der Kamerawechselkorrektur wurde nicht erfolgreich abgeschlossen. Daher sind Kamerawechsel, Rückkehr, längerer Betrieb, Bildlatenz, Verhalten nach Neustart und Standby weiterhin zu prüfen. Siehe [Prüfstand (Englisch)](docs/STATUS.md).
+[Übersicht](docs/README.md) · [Oberfläche](docs/UI.md) · [Aufbau und Daten](docs/ARCHITECTURE.md) · [Installation](docs/INSTALLATION.md) · [Tests](docs/TESTING.md) · [Prüfstand](docs/STATUS.md) · [Hardware](docs/HARDWARE.md) · [Netzwerk](docs/NETWORK.md) · [Änderungen](CHANGELOG.md)
 
-## Farbprüfungen
+## Lizenzen
 
-Mit installiertem JDK:
-
-```sh
-python3 tests/check_palette.py
-```
-
-Dafür sind weder Fernseher noch Android SDK oder Konto erforderlich.
-
-## Aufbau und Lizenzen
-
-Die App verwendet native Android-Ansichten und LibVLC für die Videowiedergabe. Die Einstellungsseite besteht aus lokal ausgeliefertem HTML, CSS und JavaScript. Details stehen in [Aufbau (Englisch)](docs/ARCHITECTURE.md).
-
-LibVLC wird unter LGPL 2.1 verwendet. Herkunft und Bibliothekslizenzen stehen unter [app/assets/THIRD-PARTY-NOTICES.txt](app/assets/THIRD-PARTY-NOTICES.txt) und [app/assets/LGPL-2.1.txt](app/assets/LGPL-2.1.txt). Für den eigenen Projektcode wurde noch keine gesonderte Lizenz festgelegt.
+LibVLC 3.7.7 wird unter LGPL 2.1 verwendet; das festgelegte Archiv wird beim Herunterladen geprüft. Siehe [Drittanbieterhinweise](app/assets/THIRD-PARTY-NOTICES.txt) und [LGPL 2.1](app/assets/LGPL-2.1.txt). Für den eigenen Projektcode ist noch keine gesonderte Lizenz gewählt.

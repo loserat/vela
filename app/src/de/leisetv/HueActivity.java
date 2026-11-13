@@ -63,32 +63,34 @@ public final class HueActivity extends Activity {
     private void flushBrightness(){
         if(!active||busy||brightnessWriting||brightnessEditing||brightnessWanted<0)return;
         final int value=brightnessWanted,token=generation;final String room=state.optString("roomId");brightnessWanted=-1;brightnessWriting=true;
-        worker.execute(()->{JSONObject result=null;try{HueController.action(this,room,"brightness",value,"");result=HueController.view(this);}catch(Exception ignored){}final JSONObject next=result;
+        if(!error.isEmpty()){error="";describeStatus();background.invalidate();}
+        worker.execute(()->{JSONObject result=null;try{HueController.action(this,room,"brightness",value,"");result=new JSONObject().put("brightness",value);}catch(Exception ignored){}final JSONObject next=result;
             runOnUiThread(()->{if(!active||token!=generation)return;brightnessWriting=false;
-                if(next==null){brightnessWanted=-1;brightness.pending=-1;loaded=false;error="Helligkeit nicht bestätigt. Bitte aktualisieren.";update();restoreFocus(refresh);return;}
-                state=next;if(brightnessWanted<0&&!brightnessEditing)brightness.pending=-1;brightness.setContentDescription("Helligkeit "+state.optInt("brightness",1)+" Prozent, links oder rechts anpassen");brightness.invalidate();
+                if(next==null){brightnessWanted=-1;brightness.pending=-1;error="Helligkeit nicht bestätigt. Bitte erneut versuchen oder aktualisieren.";describeStatus();background.invalidate();brightness.invalidate();return;}
+                try{state.put("brightness",next.optInt("brightness",value));}catch(JSONException ignored){}if(brightnessWanted<0&&!brightnessEditing)brightness.pending=-1;brightness.setContentDescription("Helligkeit "+state.optInt("brightness",1)+" Prozent, links oder rechts anpassen");brightness.invalidate();
                 if(brightnessWanted>=0&&!brightnessEditing)handler.postDelayed(flush,90);
             });
         });
     }
     private void perform(Action action,View source){
-        if(!active||busy)return;cancelBrightness();busy=true;error="";final int token=++generation;update();
+        if(!active||busy)return;cancelBrightness();busy=true;error="";final int token=++generation;background.invalidate();
         worker.execute(()->{String failure="";JSONObject next=null;
             try{if(action!=null)action.run();}catch(Exception e){failure="LINK_BUTTON".equals(e.getMessage())?"Bridge-Knopf drücken und erneut verbinden.":"Änderung nicht bestätigt. Bitte erneut versuchen.";}
             try{next=HueController.view(this);}catch(Exception e){failure="Keine Verbindung. Bitte aktualisieren.";}
             final JSONObject result=next;final String message=failure;
-            runOnUiThread(()->{if(!active||token!=generation)return;busy=false;loaded=result!=null;if(result!=null)state=result;error=message;update();refreshSetup();
-                if(setupDialog==null||!setupDialog.isShowing()){View target=source;if(target==null){int chosen=selectedColor();target=selectedRoom()?(chosen>=0?colors[chosen]:brightness):setup;}if(target==null||!target.isEnabled())target=refresh;restoreFocus(target);}
+            runOnUiThread(()->{if(!active||token!=generation)return;busy=false;if(result!=null){loaded=true;state=result;}error=message;update();refreshSetup();
+                if((setupDialog==null||!setupDialog.isShowing())&&(source==null||getCurrentFocus()==null||!getCurrentFocus().isEnabled())){View target=source;if(target==null){int chosen=selectedColor();target=selectedRoom()?(chosen>=0?colors[chosen]:brightness):setup;}if(target==null||!target.isEnabled())target=refresh;restoreFocus(target);}
             });
         });
     }
     private void update(){
-        boolean ready=selectedRoom()&&!busy;power.setEnabled(ready);power.label=state.optBoolean("on")?"Licht an":"Licht aus";power.selected=selectedRoom()&&state.optBoolean("on");power.setContentDescription(state.optBoolean("on")?"Raumlicht ausschalten":"Raumlicht einschalten");
+        boolean ready=selectedRoom();power.setEnabled(ready);power.label=state.optBoolean("on")?"Licht an":"Licht aus";power.selected=selectedRoom()&&state.optBoolean("on");power.setContentDescription(state.optBoolean("on")?"Raumlicht ausschalten":"Raumlicht einschalten");
         int chosen=selectedColor();for(int i=0;i<16;i++){colors[i].setEnabled(ready&&(state.optBoolean("colorSupported")||(i<3&&state.optBoolean("temperatureSupported"))));colors[i].selected=i==chosen;colors[i].setContentDescription(AmbilightPalette.COLORS[i].name+(i==chosen?", ausgewählt":""));}
         brightness.setEnabled(ready&&state.optBoolean("dimmingSupported"));brightness.setContentDescription("Helligkeit "+(selectedRoom()?state.optInt("brightness",1)+" Prozent, links oder rechts anpassen":"nicht verfügbar"));
-        JSONArray scenes=state.optJSONArray("scenes");scene.setVisibility(scenes!=null&&scenes.length()>0?View.VISIBLE:View.GONE);scene.setEnabled(ready);refresh.setEnabled(!busy);setup.setEnabled(!busy);wireFocus();
-        background.setContentDescription("Hue, "+(selectedRoom()?state.optString("roomName")+", "+(state.optBoolean("on")?"Eingeschaltet":"Ausgeschaltet"):"Raum & Bridge einrichten")+(error.isEmpty()?"":", "+error));background.invalidate();preview.invalidate();brightness.invalidate();for(Control c:controls)c.invalidate();
+        JSONArray scenes=state.optJSONArray("scenes");scene.setVisibility(scenes!=null&&scenes.length()>0?View.VISIBLE:View.GONE);scene.setEnabled(ready);refresh.setEnabled(true);setup.setEnabled(true);wireFocus();
+        describeStatus();background.invalidate();preview.invalidate();brightness.invalidate();for(Control c:controls)c.invalidate();
     }
+    private void describeStatus(){TvStyle.description(background,"Hue, "+(selectedRoom()?state.optString("roomName")+", "+(state.optBoolean("on")?"Eingeschaltet":"Ausgeschaltet"):"Raum & Bridge einrichten")+(error.isEmpty()?"":", "+error));}
     private TextView dialogText(String value){TextView v=new TextView(this);v.setText(value);v.setTextColor(TvStyle.INK);v.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,px(25));v.setPadding(0,px(12),0,px(12));return v;}
     private ArrayAdapter<String> roomAdapter(List<String> values){return new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,values){
         private View style(View v){((TextView)v).setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,px(25));((TextView)v).setTextColor(TvStyle.INK);return v;}
@@ -97,6 +99,7 @@ public final class HueActivity extends Activity {
     };}
     private Button dialogButton(String value,LinearLayout column,Runnable action){Button b=new Button(this);b.setText(value);b.setAllCaps(false);b.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,px(25));column.addView(b,new LinearLayout.LayoutParams(-1,px(68)));b.setOnClickListener(v->action.run());return b;}
     private void showSetup(){
+        if(busy)return;
         LinearLayout column=new LinearLayout(this);column.setOrientation(1);column.setPadding(px(30),px(12),px(30),px(12));column.setBackgroundColor(TvStyle.BG);
         setupStatus=dialogText("");column.addView(setupStatus);host=new EditText(this);host.setSingleLine(true);host.setInputType(android.text.InputType.TYPE_CLASS_PHONE);host.setHint("IP-Adresse der Hue Bridge");host.setTextColor(TvStyle.INK);host.setHintTextColor(TvStyle.MUTED);host.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,px(25));column.addView(host,new LinearLayout.LayoutParams(-1,px(64)));
         pairButton=dialogButton("Bridge verbinden",column,()->{final String address=host.getText().toString().trim();perform(()->{HueController.configure(this,address);if(HueController.pair(this).optBoolean("needsLinkButton"))throw new Exception("LINK_BUTTON");},setup);});
@@ -109,7 +112,7 @@ public final class HueActivity extends Activity {
         setupStatus.setText(!error.isEmpty()?error:state.optBoolean("connected")?"Bridge verbunden":"Noch nicht gekoppelt");roomItems=state.optJSONArray("rooms");if(roomItems==null)roomItems=new JSONArray();List<String> labels=new ArrayList<>();labels.add("Raum auswählen");int selected=0;
         for(int i=0;i<roomItems.length();i++){JSONObject room=roomItems.optJSONObject(i);labels.add(room.optString("name"));if(room.optString("id").equals(state.optString("roomId")))selected=i+1;}rooms.setAdapter(roomAdapter(labels));rooms.setSelection(selected);pairButton.setEnabled(!busy);roomButton.setEnabled(!busy&&roomItems.length()>0);
     }
-    private void showScenes(){JSONArray list=state.optJSONArray("scenes");if(list==null||list.length()==0)return;String[] names=new String[list.length()];for(int i=0;i<names.length;i++)names[i]=list.optJSONObject(i).optString("name");new AlertDialog.Builder(this).setTitle("Szene wählen").setItems(names,(dialog,index)->command("scene",0,list.optJSONObject(index).optString("id"),scene)).setNegativeButton("Zurück",null).show();}
+    private void showScenes(){if(busy)return;JSONArray list=state.optJSONArray("scenes");if(list==null||list.length()==0)return;String[] names=new String[list.length()];for(int i=0;i<names.length;i++)names[i]=list.optJSONObject(i).optString("name");new AlertDialog.Builder(this).setTitle("Szene wählen").setItems(names,(dialog,index)->command("scene",0,list.optJSONObject(index).optString("id"),scene)).setNegativeButton("Zurück",null).show();}
     private class Panel extends View {
         final Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);int w,h;
         Panel(boolean focus){super(HueActivity.this);setFocusable(focus);setDefaultFocusHighlightEnabled(false);if(!focus)setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);setOnFocusChangeListener((v,f)->invalidate());}
@@ -119,7 +122,7 @@ public final class HueActivity extends Activity {
     private class Control extends Panel {
         String label;boolean selected;
         Control(String label,Runnable action){super(true);this.label=label;setClickable(true);setContentDescription(label);setOnClickListener(v->action.run());controls.add(this);}
-        @Override protected void onDraw(Canvas c){begin(c);TvStyle.card(c,p,4,4,w-4,h-4,isFocused(),18);if(selected){p.setStyle(Paint.Style.FILL);p.setColor(0xff36564B);c.drawRoundRect(10,10,w-10,h-10,13,13,p);}p.setTextSize(25);p.setTypeface(Typeface.create("sans-serif-medium",0));float width=p.measureText(label);text(c,label,(w-width)/2,h/2f+9,25,isEnabled()?TvStyle.INK:TvStyle.MUTED,true);c.restore();}
+        @Override protected void onDraw(Canvas c){begin(c);TvStyle.card(c,p,4,4,w-4,h-4,isFocused(),18);if(selected){p.setStyle(Paint.Style.FILL);p.setColor(0xff36564B);c.drawRoundRect(10,10,w-10,h-10,13,13,p);}p.setTextSize(25);p.setTypeface(TvStyle.MEDIUM);float width=p.measureText(label);text(c,label,(w-width)/2,h/2f+9,25,isEnabled()?TvStyle.INK:TvStyle.MUTED,true);c.restore();}
     }
     private final class ColorTile extends Control {
         final int index;ColorTile(int index,Runnable action){super(AmbilightPalette.COLORS[index].name,action);this.index=index;}
@@ -129,10 +132,10 @@ public final class HueActivity extends Activity {
     }
     private final class Brightness extends Panel {
         int pending=-1;Brightness(){super(true);setClickable(true);}
-        @Override protected void onDraw(Canvas c){begin(c);TvStyle.card(c,p,4,4,w-4,h-4,isFocused(),24);text(c,"Helligkeit",34,44,25,TvStyle.INK,true);int value=pending>=0?pending:selectedRoom()?state.optInt("brightness",1):-1;String label=value>=0?value+" %":"—";p.setTextSize(27);p.setTypeface(Typeface.create("sans-serif-medium",0));float tw=p.measureText(label);text(c,label,w-34-tw,44,27,TvStyle.INK,true);float fraction=value<0?0:(value-1)/99f;p.setColor(0xff31474B);c.drawRoundRect(36,82,w-36,94,6,6,p);p.setColor(isEnabled()?TvStyle.MINT:0xff57706C);c.drawRoundRect(36,82,36+(w-72)*fraction,94,6,6,p);c.drawCircle(36+(w-72)*fraction,88,isFocused()?11:8,p);text(c,isEnabled()?"←  →  anpassen":"Raum auswählen",35,131,19,TvStyle.MUTED,false);c.restore();}
-        @Override public boolean onKeyDown(int code,KeyEvent event){if(isEnabled()&&(code==KeyEvent.KEYCODE_DPAD_LEFT||code==KeyEvent.KEYCODE_DPAD_RIGHT)){brightnessEditing=true;handler.removeCallbacks(flush);int from=pending>=0?pending:state.optInt("brightness",1);pending=Math.max(1,Math.min(100,from+(code==KeyEvent.KEYCODE_DPAD_RIGHT?5:-5)));invalidate();return true;}return super.onKeyDown(code,event);}
+        @Override protected void onDraw(Canvas c){begin(c);TvStyle.card(c,p,4,4,w-4,h-4,isFocused(),24,TvStyle.accent("hue"));text(c,"Helligkeit",34,44,25,TvStyle.INK,true);int value=pending>=0?pending:selectedRoom()?state.optInt("brightness",1):-1;String label=value>=0?value+" %":"—";p.setTextSize(27);p.setTypeface(TvStyle.MEDIUM);float tw=p.measureText(label);text(c,label,w-34-tw,44,27,TvStyle.INK,true);float fraction=value<0?0:(value-1)/99f;p.setColor(0xff31474B);c.drawRoundRect(36,82,w-36,94,6,6,p);p.setColor(isEnabled()?TvStyle.accent("hue"):0xff57706C);c.drawRoundRect(36,82,36+(w-72)*fraction,94,6,6,p);c.drawCircle(36+(w-72)*fraction,88,isFocused()?11:8,p);text(c,isEnabled()?"←  →  anpassen":"Raum auswählen",35,131,19,TvStyle.MUTED,false);c.restore();}
+        @Override public boolean onKeyDown(int code,KeyEvent event){if(busy&&(code==KeyEvent.KEYCODE_DPAD_LEFT||code==KeyEvent.KEYCODE_DPAD_RIGHT))return true;if(isEnabled()&&(code==KeyEvent.KEYCODE_DPAD_LEFT||code==KeyEvent.KEYCODE_DPAD_RIGHT)){brightnessEditing=true;handler.removeCallbacks(flush);int from=pending>=0?pending:state.optInt("brightness",1);pending=Math.max(1,Math.min(100,from+(code==KeyEvent.KEYCODE_DPAD_RIGHT?5:-5)));invalidate();return true;}return super.onKeyDown(code,event);}
         @Override public boolean onKeyUp(int code,KeyEvent event){if(pending>=0&&(code==KeyEvent.KEYCODE_DPAD_LEFT||code==KeyEvent.KEYCODE_DPAD_RIGHT)){brightnessEditing=false;setBrightness(pending);return true;}return super.onKeyUp(code,event);}
-        @Override public boolean onTouchEvent(MotionEvent event){if(!isEnabled())return false;int action=event.getActionMasked();if(action==MotionEvent.ACTION_DOWN||action==MotionEvent.ACTION_MOVE||action==MotionEvent.ACTION_UP){brightnessEditing=true;handler.removeCallbacks(flush);float x=event.getX()*w/getWidth();pending=Math.max(1,Math.min(100,Math.round((x-36)/(w-72)*99)+1));invalidate();if(action==MotionEvent.ACTION_UP){brightnessEditing=false;performClick();setBrightness(pending);}return true;}if(action==MotionEvent.ACTION_CANCEL){brightnessEditing=false;brightnessWanted=-1;pending=-1;handler.removeCallbacks(flush);invalidate();return true;}return true;}
+        @Override public boolean onTouchEvent(MotionEvent event){if(busy)return true;if(!isEnabled())return false;int action=event.getActionMasked();if(action==MotionEvent.ACTION_DOWN||action==MotionEvent.ACTION_MOVE||action==MotionEvent.ACTION_UP){brightnessEditing=true;handler.removeCallbacks(flush);float x=event.getX()*w/getWidth();pending=Math.max(1,Math.min(100,Math.round((x-36)/(w-72)*99)+1));invalidate();if(action==MotionEvent.ACTION_UP){brightnessEditing=false;performClick();TvStyle.focus(this);setBrightness(pending);}return true;}if(action==MotionEvent.ACTION_CANCEL){brightnessEditing=false;brightnessWanted=-1;pending=-1;handler.removeCallbacks(flush);invalidate();return true;}return true;}
         @Override public boolean performClick(){super.performClick();return true;}
     }
     private final class Preview extends Panel {
@@ -140,13 +143,13 @@ public final class HueActivity extends Activity {
         @Override protected void onDraw(Canvas c){begin(c);TvStyle.card(c,p,4,4,w-4,h-4,false,24);boolean lit=selectedRoom()&&state.optBoolean("on");int rgb=previewColor();p.setStyle(Paint.Style.FILL);
             p.setShader(new RadialGradient(300,130,245,new int[]{lit?(0x70000000|(rgb&0xffffff)):0x00223A3D,0x00223A3D},null,Shader.TileMode.CLAMP));c.drawRoundRect(12,12,w-12,h-12,18,18,p);p.setShader(null);
             for(int i=0;i<3;i++){float x=196+i*104,y=i==1?76:58;p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(2);p.setColor(0xff536966);c.drawLine(x,30,x,y,p);p.setStyle(Paint.Style.FILL);p.setColor(0xff14272A);c.drawRoundRect(x-25,y,x+25,y+48,12,12,p);p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(2.5f);p.setColor(lit?rgb:0xff526C69);c.drawRoundRect(x-25,y,x+25,y+48,12,12,p);p.setStyle(Paint.Style.FILL);p.setColor(lit?rgb:0xff40585B);c.drawRoundRect(x-17,y+50,x+17,y+55,3,3,p);}
-            String label=!selectedRoom()?"Dein Raumlicht":!state.optBoolean("on")?"Licht aus":colorName();p.setTextSize(35);p.setTypeface(Typeface.create("sans-serif-medium",0));text(c,label,(w-p.measureText(label))/2,221,35,TvStyle.INK,true);String detail=selectedRoom()?"Philips Hue":"Raum & Bridge einrichten";p.setTextSize(20);p.setTypeface(Typeface.create("sans-serif",0));text(c,detail,(w-p.measureText(detail))/2,254,20,TvStyle.MUTED,false);c.restore();}
+            String label=!selectedRoom()?"Dein Raumlicht":!state.optBoolean("on")?"Licht aus":colorName();p.setTextSize(35);p.setTypeface(TvStyle.MEDIUM);text(c,label,(w-p.measureText(label))/2,221,35,TvStyle.INK,true);String detail=selectedRoom()?"Philips Hue":"Raum & Bridge einrichten";p.setTextSize(20);p.setTypeface(TvStyle.NORMAL);text(c,detail,(w-p.measureText(detail))/2,254,20,TvStyle.MUTED,false);c.restore();}
     }
     private final class Backdrop extends View {
         Backdrop(){super(HueActivity.this);setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);}
         @Override protected void onDraw(Canvas c){c.save();c.translate(ox,oy);c.scale(scale,scale);TvStyle.background(c,paint,1920,1080);TvStyle.text(c,paint,"Hue",96,121,62,TvStyle.INK,false);
-            String label=busy?"Wird übernommen …":selectedRoom()?state.optString("roomName")+" · "+(state.optBoolean("on")?"Eingeschaltet":"Ausgeschaltet"):loaded?"Raum & Bridge einrichten":"Verbindung wird geprüft";TvStyle.text(c,paint,label,99,165,25,TvStyle.MUTED,false);TvStyle.text(c,paint,"Farbe wählen",98,319,26,TvStyle.INK,true);
-            if(!error.isEmpty())TvStyle.text(c,paint,error,98,868,23,0xffF1B9A8,false);paint.setColor(0xff293D40);c.drawRect(96,892,1824,893,paint);TvStyle.text(c,paint,"OK  auswählen    ·    Pfeiltasten wechseln",308,955,21,TvStyle.MUTED,false);c.restore();}
+            String label=selectedRoom()?state.optString("roomName")+" · "+(state.optBoolean("on")?"Eingeschaltet":"Ausgeschaltet"):loaded?"Raum & Bridge einrichten":"Verbindung wird geprüft";TvStyle.text(c,paint,label,99,165,25,TvStyle.MUTED,false);TvStyle.text(c,paint,"Farbe wählen",98,319,26,TvStyle.INK,true);
+            if(!error.isEmpty())TvStyle.text(c,paint,error,98,868,23,0xffF1B9A8,false);paint.setColor(0xff293D40);c.drawRect(96,892,1824,893,paint);TvStyle.text(c,paint,busy?"Wird übernommen …":"OK auswählen   ·   Pfeiltasten bewegen",308,955,21,TvStyle.MUTED,false);c.restore();}
     }
     @Override protected void onResume(){super.onResume();active=true;busy=false;perform(null,null);}
     @Override protected void onPause(){active=false;generation++;cancelBrightness();if(setupDialog!=null)setupDialog.dismiss();super.onPause();}

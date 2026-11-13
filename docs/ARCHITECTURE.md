@@ -1,47 +1,64 @@
-# Architecture
+# Architecture and data
 
-[README](../README.md) · [Deutsche Projektbeschreibung](../README.de.md)
+[Documentation](README.md)
 
-## Android interface
+## Native interface
 
-`MainActivity` provides the Home interface. `CameraListActivity` displays the camera collection, and `CameraActivity` plays a selected source.
+The app uses native Android views and Canvas drawing rather than a browser-rendered launcher. `MainActivity` provides Home, System and installed-app navigation. `TvStyle` supplies the shared cached background, cached typefaces, solid cards and icons. `TvScreen` and `TvButton` provide the common shell and controls used by cameras, HDMI inputs, local web access and screensaver settings.
 
-The existing Android package identifier `de.leisetv` is retained for update compatibility. The launcher and settings pages show no project branding. Android lists the app under the generic label `TV-Dashboard`. The TV interface and local web settings are in German; repository documentation is maintained in English with a German README.
+The package `de.leisetv`, legacy internal preference/key names, `NickApplication` and signing environment variables remain unchanged for update compatibility. None of these identifiers is displayed as project branding in the TV interface.
 
-Internal preference names, encryption-key aliases, and the `NickApplication` class retain their previous identifiers so existing installations keep their settings, PIN, and certificates. The build variables `NICKOS_KEYSTORE` and `NICKOS_SIGN_PASSWORD` also retain their existing names for compatibility.
+## Light commands
 
-## Drawing and Ambilight
+`AmbilightController` addresses only the TV's own JointSpace v6 service on `127.0.0.1:1925/6`. It supports the unauthenticated HTTP adapter used by the test Philips; authenticated HTTPS-only models remain unsupported. `AmbilightPalette` converts hue degrees/saturation percentages to 0–255 wire bytes. Brightness retains exact hue/saturation bytes.
 
-`TvStyle` supplies static backgrounds, cards, and icons. The home screen redraws for focus changes and the minute clock; it has no continuous animation. `AmbilightActivity` uses a single worker for explicit commands and subsequent state reads. `AmbilightController` only addresses the local TV service on `127.0.0.1:1925/6`. It does not accept arbitrary remote hosts. No light state is changed on page entry. Failed reads disable controls; stale responses after leaving the page are ignored.
+`HueController` restricts setup to local IPv4 addresses, validates Bridge metadata/certificate identity, pins the certificate and stores the application key encrypted. Pairing requires the physical button. Room selection is explicit, scene IDs are checked against that room, and configuration/read/action operations are serialized to avoid a room-selection race. Hue uses 16-bit hue and a 0–254 brightness/saturation scale.
 
-`AmbilightPalette` stores the 16 named presets and converts hue degrees/saturation percentages to JointSpace byte values (0–255). Swatches and wire commands share this mapping. Brightness changes retain the exact acknowledged hue/saturation bytes, avoiding cumulative color shifts. Selecting a preset explicitly updates the color and powers the light on; entering the page remains read-only.
+`HueActivity` separates daily controls from setup. Its brightness queue coalesces input and issues one write; after a successful response it retains the acknowledged target without fetching groups, lights and scenes. This avoids a target snapping back to a stale immediate state read. Errors retain the previous confirmed state and focus. Full commands do not dim or disable all controls during normal execution, and callbacks do not steal a focus that the user has already moved. Leaving the activity cancels queued input and invalidates stale UI callbacks; an already dispatched request cannot be unsent.
 
-Brightness input uses a debounced, serialized queue separate from full commands. It keeps focus and enabled states stable, renders the local slider immediately, and refreshes only the color configuration after a write. Starting another command or leaving the activity cancels queued input; stale callbacks are ignored.
+On entry or explicit refresh, the full current room state/capabilities/scenes are read. CT state uses the returned color temperature for selection; XY state is not presented as a stale HS preset. Preview drawings are schematic, not calibrated wall-color measurements.
 
-## Hue and screensaver
+## HDMI inputs
 
-`HueController` restricts setup to local IPv4 addresses, validates Hue Bridge metadata/certificate identity, pins the certificate, and stores the application key using the existing encrypted `CameraConfig` storage. Public metadata omits keys and certificates. Pairing requires the physical bridge button. Room selection is explicit; actions and scenes are checked against the saved room. Configuration, reads, selection, pairing, and actions are serialized to prevent room changes racing a command. `HueActivity` uses the shared 1920 × 1080 virtual canvas style for a non-scrolling daily view, 16 color tiles, an acknowledged selection, a schematic light preview, and a remote/touch brightness slider. Setup and room selection live in a separate dialog; an empty scene list is hidden. Brightness commands are debounced and serialized, then acknowledged through a state read without disabling the surrounding controls. CT state uses the reported color temperature for selection; XY mode does not falsely reuse stale HS values. Touch-mode focus is explicitly restored for remote navigation. Authenticated `/api/hue/*` endpoints support the same adapter; the web page does not yet expose Hue forms.
+`InputCatalog` reads Android `TvInputManager`/`TvInputInfo`, filters HDMI passthrough sources and respects hidden physical inputs. Physical ports are canonical; available CEC metadata annotates their device names by actual port number instead of treating a stale/custom alias as a separate device. `InputsActivity` listens for input changes, retains focus, and skips unchanged models. It stores only the last chosen input ID as UI history.
 
-`ScreensaverSettingsActivity` stores local style/date/dim preferences and opens the system dream settings without silently changing activation. `ScreensaverPreviewActivity` renders a dismissible full-screen preview. `DashboardDreamService`, protected by `BIND_DREAM_SERVICE`, supplies the actual Android screensaver. `ScreensaverView` moves the clock once per minute and performs no network or continuous animation work. Idle activation and timing remain Android/manufacturer settings.
+Only an explicit click revalidates the input and dispatches `ACTION_VIEW` with `TvContract.buildChannelUriForPassthroughInput` and `TvContract.Channels.CONTENT_ITEM_TYPE`. The latter is required by the tested Philips TV app. On the tested Android 8 Philips, optional read-only `getHdmiDeviceInfo` SystemApi metadata is accessed reflectively to associate the CEC name with the physical port. Newer firmware may restrict this non-SDK accessor; ordinary labels/parent relationships are then used as a fallback, and those platforms remain unverified. No device address, Apple TV input ID or port is hard-coded. No root or extra privileged permission is requested on the physical TV. The local authenticated `/api/inputs/state` endpoint exposes only the discovered input metadata.
 
-## Video
+Android references: [TvInputManager](https://developer.android.com/reference/android/media/tv/TvInputManager), [TvInputInfo](https://developer.android.com/reference/android/media/tv/TvInputInfo), [TvContract](https://developer.android.com/reference/android/media/tv/TvContract), [Android 8 HDMI metadata definition](https://raw.githubusercontent.com/aosp-mirror/platform_frameworks_base/android-8.0.0_r1/core/java/android/hardware/hdmi/HdmiDeviceInfo.java).
 
-LibVLC is initialized only when playback is needed. `SecureRtspProxy` pins the recorder's stored certificate and transports interleaved RTSP over TLS. Unencrypted RTSP exists only on the loopback interface inside the TV.
+## Camera playback
 
-The current target setup uses software decoding, one stream at a time, and disabled camera audio. The revised player-resource cleanup still needs a complete device test run.
+`CameraListActivity` renders six metadata cards per page, keeps selection/page, and reuses an unchanged view on resume. `CameraActivity` still uses the existing LibVLC playback/cleanup path; this update changes only its title/help badge styling. One stream is played at a time with software decoding and camera audio disabled.
 
-## Settings and storage
+`SecureRtspProxy` pins the recorder's stored certificate and carries interleaved RTSP through TLS. Plain RTSP exists only on loopback inside the TV. The camera switching/resource cleanup still needs a complete extended real-stream acceptance run.
 
-`SettingsService` keeps the local administration service running with an Android foreground notification. `AdminServer` serves the settings page and processes authenticated changes.
+## Local administration and storage
 
-PIN authentication creates time-limited sessions. Cookies use `Secure`, `HttpOnly`, and `SameSite=Strict`. Write requests validate the browser origin and accept JSON. Camera metadata responses omit saved stream links and certificates.
+`SettingsService` runs the administration server as an Android foreground service. `AdminServer` serves local HTML/CSS/JavaScript and authenticated JSON changes over HTTPS. Sessions are time-limited, with Secure/HttpOnly/SameSite cookies and write-origin/host validation. Saved camera links and certificates, and Hue keys/certificates, are omitted from public metadata replies.
 
-`CameraConfig` uses Android Keystore and AES-GCM. `CameraLibrary` stores the camera collection and default camera together, preserving the previous single-camera configuration during migration. `ProvisionReceiver` is a maintenance entry point protected by Android's signature-level `DUMP` permission; ordinary apps cannot invoke it.
+| Data | Storage |
+| --- | --- |
+| Camera array and default ID | `camera.enc`, AES-GCM through Android Keystore |
+| Hue address, certificate, key and selected room | `hue-bridge.enc`, same encrypted storage mechanism |
+| Clock/date, screensaver style/dim/date, last input | Application-private preferences |
+| Local administration PIN | Application-private preferences in the public build |
+| HTTPS private key | Android Keystore; retained identity alias |
+| Administration sessions | Memory with expiry |
 
-## Publication
+The encrypted file format stores IV length, the 12-byte IV, and authenticated ciphertext. Atomic writes preserve the previous file if a write fails. The previous single-camera format is still read/migrated by `CameraLibrary`. The shell provisioning receiver remains protected by the signature-level `DUMP` permission.
 
-The current public version includes the launcher, camera playback, and local settings. The unfinished climate integration, its cloud adapter, history storage, and API routes have been removed. Earlier commits may still contain that development work.
+## Screensaver
 
-The published source contains general-purpose software and documentation. Personal network addresses, camera data, credentials, signing keys, session cookies, and private images are excluded from the repository.
+`ScreensaverSettingsActivity` changes only local style preferences. `ScreensaverPreviewActivity` is a dismissible full-screen preview. `DashboardDreamService`, protected by `BIND_DREAM_SERVICE`, implements the Android screensaver. The clock moves once per minute; handlers stop on the appropriate pause/detach/dream lifecycle. Activation and timeout remain actual Android/manufacturer settings.
 
-Generated SDK dependencies, APKs, and local keys are not versioned. `fetch_deps.py` downloads the pinned public VLC SDK and verifies its hash. Build output is written to `dist/`.
+## Publication boundary
+
+The unfinished AC Infinity/climate integration remains absent from current public source. Earlier history is retained. No provider accounts, stream links, personal network addresses, real application keys, camera images, signing material or generated APKs are published. Test fixtures are synthetic and limited to an explicitly selected disposable emulator and loopback mock services.
+
+## Passive network status and responsive administration
+
+`NetworkStatus` takes an Android `ConnectivityManager` snapshot of the active default network. It reads transport, Android validation/captive-portal capabilities, one local IPv4 address and a snapshot timestamp. `ACCESS_NETWORK_STATE` is a normal read-only permission. No router credentials, SSID/location access, pings, speed tests or custom external probes are used. `NetworkActivity` and the small Home button use visible-lifecycle callbacks and update only their own status view; they never rebuild the Home grid for a status event.
+
+Authenticated read-only `GET /api/network/state` returns `source`, `checkedAt`, `connected`, `transport`, `internet`, and `address`. No network configuration write endpoint exists. [Network semantics](NETWORK.md) explain the distinction from UniFi health.
+
+The single local HTML asset has five accessible tab panels, local CSS/system fonts, scoped pending-form locks and explicit save feedback. Switching sections fetches Hue/HDMI/network data on demand; there is no web polling timer. Camera saves refresh the library while preserving unsaved Home toggles. HDMI inventory is read-only in the browser; actual input selection stays on the TV. Hue setup uses the existing authenticated/pinned adapter; reading the page never pairs or changes room automatically.

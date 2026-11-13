@@ -1,6 +1,7 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="de.leisetv" android:versionCode="10" android:versionName="0.6.1">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="de.leisetv" android:versionCode="11" android:versionName="0.7.0">
     <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="28" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-feature android:name="android.software.leanback" android:required="true" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
@@ -12,6 +13,8 @@
         <activity android:name=".ScreensaverSettingsActivity" android:exported="true" android:screenOrientation="landscape" />
         <activity android:name=".ScreensaverPreviewActivity" android:exported="false" android:screenOrientation="landscape" />
         <service android:name=".SettingsService" android:exported="false" />
+        <activity android:name=".NetworkActivity" android:exported="false" android:screenOrientation="landscape" />
+        <activity android:name=".InputsActivity" android:exported="false" android:screenOrientation="landscape" />
         <activity android:name=".HueActivity" android:exported="false" android:screenOrientation="landscape" />
         <activity android:name=".AmbilightActivity" android:exported="false" android:screenOrientation="landscape" />
         <activity android:name=".SettingsActivity" android:exported="false" android:screenOrientation="landscape" />

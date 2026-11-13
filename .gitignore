@@ -36,3 +36,14 @@ __pycache__/
 !/docs/images/ambilight.png
 !/docs/images/screensaver.png
 !/docs/images/hue.png
+!/docs/images/devices.png
+!/docs/images/cameras.png
+!/docs/images/system.png
+!/docs/images/apps.png
+
+# Local integration-test output
+/test-results/
+
+!/docs/images/network.png
+!/docs/images/web-settings.jpg
+!/docs/images/web-network-mobile.jpg

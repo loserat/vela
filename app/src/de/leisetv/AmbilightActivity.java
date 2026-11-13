@@ -75,7 +75,7 @@ public final class AmbilightActivity extends Activity {
             final AmbilightController.State result=next;
             runOnUiThread(()->{
                 if(!active||request!=generation)return;brightnessWriting=false;
-                if(result==null){brightnessWanted=-1;brightness.pending=-1;state=null;error="Helligkeit nicht bestätigt. Bitte aktualisieren.";update();refresh.requestFocus();return;}
+                if(result==null){brightnessWanted=-1;brightness.pending=-1;error="Helligkeit nicht bestätigt. Bitte aktualisieren.";background.setContentDescription("Ambilight, "+error);background.invalidate();brightness.invalidate();return;}
                 boolean sameColor=result.adjustable()&&state!=null&&result.hue==state.hue&&result.saturation==state.saturation;
                 state=result;if(brightnessWanted<0&&!brightnessEditing)brightness.pending=-1;
                 if(sameColor){
@@ -86,7 +86,7 @@ public final class AmbilightActivity extends Activity {
         });
     }
     private void perform(Command command,View source){
-        if(!active||busy)return;cancelBrightness();busy=true;error="";final int request=++generation;update();
+        if(!active||busy)return;cancelBrightness();busy=true;error="";final int request=++generation;background.invalidate();
         worker.execute(()->{
             String failure="";AmbilightController.State next=null;
             try{if(command!=null)command.run();}catch(Exception e){failure="Änderung nicht bestätigt. Bitte erneut versuchen.";}
@@ -97,19 +97,19 @@ public final class AmbilightActivity extends Activity {
                 brightness.pending=-1;update();
                 View target=source;
                 if(target==null&&state!=null){int chosen=state.manual()?AmbilightPalette.match(state.hue,state.saturation):-1;target=chosen>=0?colors[chosen]:"FOLLOW_AUDIO".equals(state.style)?modes[1]:modes[0];}
-                if(target==null||!target.isEnabled())target=refresh;target.requestFocus();
+                if(target==null||!target.isEnabled())target=refresh;if(source==null||getCurrentFocus()==null||!getCurrentFocus().isEnabled())TvStyle.focus(target);
             });
         });
     }
     private String colorName(){if(state==null||!state.manual())return "Eigene Farbe";int chosen=AmbilightPalette.match(state.hue,state.saturation);return chosen<0?"Eigene Farbe":AmbilightPalette.COLORS[chosen].name;}
     private String modeName(){return state==null?"Nicht verbunden":"FOLLOW_VIDEO".equals(state.style)?"Bildanpassung":"FOLLOW_AUDIO".equals(state.style)?"Musik":"FOLLOW_COLOR".equals(state.style)?colorName():"Ambilight";}
     private void update(){
-        boolean ready=state!=null&&!busy;power.setEnabled(ready);power.label=state!=null&&state.on?"Licht an":"Licht aus";power.selected=state!=null&&state.on;power.setContentDescription(state!=null&&state.on?"Ambilight ausschalten":"Ambilight einschalten");
+        boolean ready=state!=null;power.setEnabled(ready);power.label=state!=null&&state.on?"Licht an":"Licht aus";power.selected=state!=null&&state.on;power.setContentDescription(state!=null&&state.on?"Ambilight ausschalten":"Ambilight einschalten");
         for(int i=0;i<3;i++){modes[i].setEnabled(ready&&(i==0?state.video:i==1?state.audio:state.color));modes[i].selected=state!=null&&(i==0?"FOLLOW_VIDEO":i==1?"FOLLOW_AUDIO":"FOLLOW_COLOR").equals(state.style);modes[i].setContentDescription(modes[i].label+(modes[i].selected?", aktiv":""));}
         int selected=state!=null&&state.manual()?AmbilightPalette.match(state.hue,state.saturation):-1;
         for(int i=0;i<16;i++){colors[i].setEnabled(ready&&state.color);colors[i].selected=i==selected;colors[i].setContentDescription(AmbilightPalette.COLORS[i].name+(i==selected?", ausgewählt":""));}
         brightness.setEnabled(ready&&state.adjustable());brightness.setContentDescription("Helligkeit "+(state!=null&&state.adjustable()?Math.round(state.brightness*100f/255)+" Prozent, links oder rechts anpassen":"nur für feste Farben"));
-        refresh.setEnabled(!busy);background.setContentDescription("Ambilight, "+(busy?"Wird übernommen":state==null?"Nicht verbunden":state.on?"Eingeschaltet, "+modeName():"Ausgeschaltet")+(error.isEmpty()?"":", "+error));background.invalidate();preview.invalidate();brightness.invalidate();for(Control c:controls)c.invalidate();
+        refresh.setEnabled(true);background.setContentDescription("Ambilight, "+(busy?"Wird übernommen":state==null?"Nicht verbunden":state.on?"Eingeschaltet, "+modeName():"Ausgeschaltet")+(error.isEmpty()?"":", "+error));background.invalidate();preview.invalidate();brightness.invalidate();for(Control c:controls)c.invalidate();
     }
     private class Panel extends View {
         final Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);int w,h;
@@ -122,7 +122,7 @@ public final class AmbilightActivity extends Activity {
         Control(String label,Runnable action){super(true);this.label=label;setClickable(true);setContentDescription(label);setOnClickListener(v->action.run());controls.add(this);}
         @Override protected void onDraw(Canvas c){begin(c);p.setAlpha(isEnabled()?255:95);TvStyle.card(c,p,4,4,w-4,h-4,isFocused(),18);
             if(selected){p.setColor(0xff36564B);p.setStyle(Paint.Style.FILL);c.drawRoundRect(10,10,w-10,h-10,13,13,p);}
-            p.setTextSize(25);p.setTypeface(Typeface.create("sans-serif-medium",0));float width=p.measureText(label);text(c,label,(w-width)/2,h/2f+9,25,isEnabled()?TvStyle.INK:TvStyle.MUTED,true);c.restore();}
+            p.setTextSize(25);p.setTypeface(TvStyle.MEDIUM);float width=p.measureText(label);text(c,label,(w-width)/2,h/2f+9,25,isEnabled()?TvStyle.INK:TvStyle.MUTED,true);c.restore();}
     }
     private final class ColorTile extends Control {
         final int index;
@@ -136,14 +136,14 @@ public final class AmbilightActivity extends Activity {
     private final class Brightness extends Panel {
         int pending=-1;
         Brightness(){super(true);setClickable(true);}
-        @Override protected void onDraw(Canvas c){begin(c);TvStyle.card(c,p,4,4,w-4,h-4,isFocused(),24);text(c,"Helligkeit",34,44,25,TvStyle.INK,true);
+        @Override protected void onDraw(Canvas c){begin(c);TvStyle.card(c,p,4,4,w-4,h-4,isFocused(),24,TvStyle.accent("ambilight"));text(c,"Helligkeit",34,44,25,TvStyle.INK,true);
             int value=pending>=0?pending:state!=null&&state.adjustable()?state.brightness:-1;String label=value>=0?Math.round(value*100f/255)+" %":"—";
-            p.setTextSize(27);p.setTypeface(Typeface.create("sans-serif-medium",0));float width=p.measureText(label);text(c,label,w-34-width,44,27,TvStyle.INK,true);
-            float fraction=value<0?0:value/255f;p.setColor(0xff31474B);c.drawRoundRect(36,82,w-36,94,6,6,p);p.setColor(isEnabled()?TvStyle.MINT:0xff57706C);c.drawRoundRect(36,82,36+(w-72)*fraction,94,6,6,p);c.drawCircle(36+(w-72)*fraction,88,isFocused()?11:8,p);
+            p.setTextSize(27);p.setTypeface(TvStyle.MEDIUM);float width=p.measureText(label);text(c,label,w-34-width,44,27,TvStyle.INK,true);
+            float fraction=value<0?0:value/255f;p.setColor(0xff31474B);c.drawRoundRect(36,82,w-36,94,6,6,p);p.setColor(isEnabled()?TvStyle.accent("ambilight"):0xff57706C);c.drawRoundRect(36,82,36+(w-72)*fraction,94,6,6,p);c.drawCircle(36+(w-72)*fraction,88,isFocused()?11:8,p);
             text(c,isEnabled()?"←  →  anpassen":"Für feste Farben",35,131,19,TvStyle.MUTED,false);c.restore();}
-        @Override public boolean onKeyDown(int code,KeyEvent event){if(isEnabled()&&(code==KeyEvent.KEYCODE_DPAD_LEFT||code==KeyEvent.KEYCODE_DPAD_RIGHT)){brightnessEditing=true;brightnessHandler.removeCallbacks(brightnessFlush);int start=pending>=0?pending:state.brightness;pending=Math.max(0,Math.min(255,start+(code==KeyEvent.KEYCODE_DPAD_RIGHT?13:-13)));invalidate();return true;}return super.onKeyDown(code,event);}
+        @Override public boolean onKeyDown(int code,KeyEvent event){if(busy&&(code==KeyEvent.KEYCODE_DPAD_LEFT||code==KeyEvent.KEYCODE_DPAD_RIGHT))return true;if(isEnabled()&&(code==KeyEvent.KEYCODE_DPAD_LEFT||code==KeyEvent.KEYCODE_DPAD_RIGHT)){brightnessEditing=true;brightnessHandler.removeCallbacks(brightnessFlush);int start=pending>=0?pending:state.brightness;pending=Math.max(0,Math.min(255,start+(code==KeyEvent.KEYCODE_DPAD_RIGHT?13:-13)));invalidate();return true;}return super.onKeyDown(code,event);}
         @Override public boolean onKeyUp(int code,KeyEvent event){if(pending>=0&&(code==KeyEvent.KEYCODE_DPAD_LEFT||code==KeyEvent.KEYCODE_DPAD_RIGHT)){brightnessEditing=false;int value=pending;setBrightness(value);return true;}return super.onKeyUp(code,event);}
-        @Override public boolean onTouchEvent(MotionEvent event){if(!isEnabled())return false;int action=event.getActionMasked();if(action==MotionEvent.ACTION_DOWN||action==MotionEvent.ACTION_MOVE||action==MotionEvent.ACTION_UP){brightnessEditing=true;brightnessHandler.removeCallbacks(brightnessFlush);float x=event.getX()*w/getWidth();pending=Math.max(0,Math.min(255,Math.round((x-36)/(w-72)*255)));invalidate();if(action==MotionEvent.ACTION_UP){brightnessEditing=false;performClick();setBrightness(pending);}return true;}if(action==MotionEvent.ACTION_CANCEL){brightnessEditing=false;brightnessWanted=-1;pending=-1;brightnessHandler.removeCallbacks(brightnessFlush);invalidate();return true;}return true;}
+        @Override public boolean onTouchEvent(MotionEvent event){if(busy)return true;if(!isEnabled())return false;int action=event.getActionMasked();if(action==MotionEvent.ACTION_DOWN||action==MotionEvent.ACTION_MOVE||action==MotionEvent.ACTION_UP){brightnessEditing=true;brightnessHandler.removeCallbacks(brightnessFlush);float x=event.getX()*w/getWidth();pending=Math.max(0,Math.min(255,Math.round((x-36)/(w-72)*255)));invalidate();if(action==MotionEvent.ACTION_UP){brightnessEditing=false;performClick();TvStyle.focus(this);setBrightness(pending);}return true;}if(action==MotionEvent.ACTION_CANCEL){brightnessEditing=false;brightnessWanted=-1;pending=-1;brightnessHandler.removeCallbacks(brightnessFlush);invalidate();return true;}return true;}
         @Override public boolean performClick(){super.performClick();return true;}
     }
     private final class Preview extends Panel {
@@ -151,14 +151,14 @@ public final class AmbilightActivity extends Activity {
         @Override protected void onDraw(Canvas c){begin(c);TvStyle.card(c,p,4,4,w-4,h-4,false,24);boolean lit=state!=null&&state.on;int rgb=state!=null&&state.manual()?AmbilightPalette.rgb(state.hue,state.saturation,255):TvStyle.MINT;
             p.setStyle(Paint.Style.FILL);p.setShader(new RadialGradient(300,115,220,new int[]{lit?(0x80000000|(rgb&0xffffff)):0x00223A3D,0x00223A3D},null,Shader.TileMode.CLAMP));c.drawRoundRect(12,12,w-12,h-12,18,18,p);p.setShader(null);
             p.setColor(TvStyle.BG);c.drawRoundRect(176,48,424,180,13,13,p);p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(3);p.setColor(lit?rgb:0xff40585B);c.drawRoundRect(176,48,424,180,13,13,p);c.drawLine(259,194,341,194,p);
-            String name=state==null?"Nicht verbunden":!state.on?"Licht aus":modeName();p.setTextSize(35);p.setTypeface(Typeface.create("sans-serif-medium",0));float width=p.measureText(name);text(c,name,(w-width)/2,248,35,TvStyle.INK,true);c.restore();}
+            String name=state==null?"Nicht verbunden":!state.on?"Licht aus":modeName();p.setTextSize(35);p.setTypeface(TvStyle.MEDIUM);float width=p.measureText(name);text(c,name,(w-width)/2,248,35,TvStyle.INK,true);c.restore();}
     }
     private final class Backdrop extends View {
         Backdrop(){super(AmbilightActivity.this);setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);}
         @Override protected void onDraw(Canvas c){c.save();c.translate(offsetX,offsetY);c.scale(scale,scale);TvStyle.background(c,paint,1920,1080);TvStyle.text(c,paint,"Ambilight",96,121,62,TvStyle.INK,false);
-            String status=busy?"Wird übernommen …":state==null?"Verbindung wird geprüft":state.on?"Eingeschaltet · "+modeName():"Ausgeschaltet";TvStyle.text(c,paint,status,99,165,25,TvStyle.MUTED,false);
+            String status=state==null?"Verbindung wird geprüft":state.on?"Eingeschaltet · "+modeName():"Ausgeschaltet";TvStyle.text(c,paint,status,99,165,25,TvStyle.MUTED,false);
             TvStyle.text(c,paint,"Farbe wählen",98,319,26,TvStyle.INK,true);if(!error.isEmpty())TvStyle.text(c,paint,error,98,868,23,0xffF1B9A8,false);
-            paint.setColor(0xff293D40);c.drawRect(96,892,1824,893,paint);TvStyle.text(c,paint,"OK  auswählen    ·    Pfeiltasten wechseln",308,955,21,TvStyle.MUTED,false);c.restore();}
+            paint.setColor(0xff293D40);c.drawRect(96,892,1824,893,paint);TvStyle.text(c,paint,busy?"Wird übernommen …":"OK auswählen   ·   Pfeiltasten bewegen",308,955,21,TvStyle.MUTED,false);c.restore();}
     }
     @Override protected void onResume(){super.onResume();active=true;busy=false;perform(null,null);}
     @Override protected void onPause(){active=false;cancelBrightness();generation++;super.onPause();}

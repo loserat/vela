@@ -24,9 +24,10 @@ The owner-reported marketed model is **55PUS6581/12**. This number was not indep
 ## What was verified on this TV
 
 - Installation of the signed dashboard update with package identity preserved.
-- Runtime version 0.6.1 and installed APK hash.
+- Runtime version 0.7.0 and installed APK hash.
 - Local HTTPS settings, certificate continuity, login, and retained camera IDs.
-- Real Hue Bridge HTTPS identity, physical-button pairing, explicit selected-room persistence, and live state/capability reads; lamp actions are still pending.
+- Exact final responsive web asset, authenticated passive network snapshot and native network page/Back. Android reported WLAN with validated internet; no connectivity settings were changed.
+- Real Hue Bridge HTTPS identity, physical-button pairing, explicit selected-room persistence, live state/capability reads, and a controlled brightness adjustment with restoration.
 - Android registration of the screensaver service, native settings page, Philips fallback explanation, and unchanged activation settings; automatic idle activation is not yet verified.
 - Ambilight power, current mode, supported styles, and LED topology reads.
 - Corrected red, green, blue, and pink commands compared with device-reported processed LED RGB values, followed by restoring the previous state.
@@ -35,7 +36,15 @@ User perception of the actual wall color, long-running behavior, complete camera
 
 ## Hue Bridge
 
-A physical Hue Bridge reports model **BSB002**. Its local HTTPS identity, application registration through the physical link button, explicit user-selected room persistence, and live state/capability reads were verified. The selected room reports dimming, color, and color-temperature support. No light-changing commands were sent; actual lamp actions remain unverified. No network address, bridge identifier, certificate, or application key is published.
+A physical Hue Bridge reports model **BSB002**. Its local HTTPS identity, application registration through the physical link button, explicit user-selected room persistence, and live state/capability reads were verified. The selected room reports dimming, color, and color-temperature support. A controlled brightness step was acknowledged and the previous reported percentage/power restored. Broader physical power/color/scene acceptance and long-running light behavior remain unverified. No network address, bridge identifier, certificate, or application key is published.
+
+## Controlled UI and input checks in 0.7.0
+
+The physical TV displayed the new Home, camera overview, System and screensaver controls. A small Hue brightness step was acknowledged without losing slider focus. Three captured frames retained identical pixels outside the slider; the Bridge reported the new level with power unchanged. The previous **reported percentage** and power were restored. This is not a calibrated photometric test or an exact raw-brightness-byte backup.
+
+Apple TV was identified through CEC on **HDMI 4**. The selector now uses physical ports as canonical entries and correlates names using available HDMI metadata. Opening the selector was read-only. Explicit selection handed off to the native Philips TV app; HDMI control confirmed logical/physical source `(0x04, 0x4000)` and routing path `0x4000`. Apple TV generation and firmware were not queried.
+
+Only this physical arrangement is verified. Other devices, input firmware and receiver/switch topologies remain separate validation work. Raw input dumps, identifiers and private screenshots are not published; the public gallery uses synthetic entries.
 
 ## Emulator evidence
 

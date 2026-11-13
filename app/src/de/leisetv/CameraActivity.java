@@ -21,6 +21,7 @@ import org.videolan.libvlc.interfaces.IVLCVout;
 public final class CameraActivity extends Activity {
     private static final AtomicInteger CLEANUPS=new AtomicInteger();
     private SurfaceView surface;
+    private float uiScale=1;private int px(int v){return Math.round(v*uiScale);}
     private TextView status,title;
     private LibVLC vlc;
     private MediaPlayer player;
@@ -31,19 +32,20 @@ public final class CameraActivity extends Activity {
     private boolean active,stopping,pendingStart;
     private final Runnable timeout=()->{if(status.getVisibility()==View.VISIBLE)status.setText("Bildaufbau dauert länger · OK erneut versuchen");};
     @Override public void onCreate(Bundle state){
-        super.onCreate(state);
+        super.onCreate(state);android.util.DisplayMetrics metrics=getResources().getDisplayMetrics();uiScale=Math.min(metrics.widthPixels/1920f,metrics.heightPixels/1080f);
         getWindow().getDecorView().setSystemUiVisibility(5894);
         FrameLayout root=new FrameLayout(this);root.setBackgroundColor(Color.BLACK);
         surface=new SurfaceView(this);root.addView(surface,new FrameLayout.LayoutParams(-1,-1));
-        title=new TextView(this);title.setText("Kameras");title.setTextColor(Color.WHITE);title.setTextSize(22);
-        title.setPadding(24,12,24,12);title.setBackgroundColor(0x990B1012);
-        FrameLayout.LayoutParams t=new FrameLayout.LayoutParams(-2,-2,Gravity.TOP|Gravity.LEFT);t.setMargins(64,48,0,0);root.addView(title,t);
-        status=new TextView(this);status.setText("Verbinden …");status.setTextSize(20);status.setTextColor(Color.rgb(199,233,203));status.setGravity(Gravity.CENTER);
+        title=new TextView(this);title.setText("Kameras");title.setTextColor(Color.WHITE);title.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,px(28));title.setTypeface(TvStyle.MEDIUM);
+        title.setPadding(px(24),px(14),px(24),px(14));title.setBackground(badge());
+        FrameLayout.LayoutParams t=new FrameLayout.LayoutParams(-2,-2,Gravity.TOP|Gravity.LEFT);t.setMargins(px(96),px(64),0,0);root.addView(title,t);
+        status=new TextView(this);status.setText("Verbinden …");status.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,px(28));status.setTextColor(TvStyle.MINT);status.setGravity(Gravity.CENTER);
         root.addView(status,new FrameLayout.LayoutParams(-1,-1));
-        TextView hint=new TextView(this);hint.setText("‹   Wechseln   ›     ·     Zurück");hint.setTextColor(0xffc7d2cd);hint.setTextSize(16);hint.setPadding(24,12,24,12);hint.setBackgroundColor(0x990B1012);
-        FrameLayout.LayoutParams h=new FrameLayout.LayoutParams(-2,-2,Gravity.BOTTOM|Gravity.LEFT);h.setMargins(64,0,0,40);root.addView(hint,h);
+        TextView hint=new TextView(this);hint.setText("‹   Wechseln   ›     ·     Zurück");hint.setTextColor(0xffc7d2cd);hint.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,px(22));hint.setPadding(px(24),px(14),px(24),px(14));hint.setBackground(badge());
+        FrameLayout.LayoutParams h=new FrameLayout.LayoutParams(-2,-2,Gravity.BOTTOM|Gravity.LEFT);h.setMargins(px(96),0,0,px(48));root.addView(hint,h);
         setContentView(root);
     }
+    private android.graphics.drawable.GradientDrawable badge(){android.graphics.drawable.GradientDrawable d=new android.graphics.drawable.GradientDrawable();d.setColor(0xdd10181D);d.setCornerRadius(px(16));return d;}
     @Override protected void onResume(){super.onResume();active=true;restart();}
     @Override protected void onPause(){active=false;end(false);super.onPause();}
     @Override public boolean onKeyDown(int key,KeyEvent event){
