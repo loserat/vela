@@ -2,7 +2,7 @@
 
 [Documentation](README.md) · [Testing](TESTING.md) · [Earlier evidence](VALIDATION-HISTORY.md)
 
-**November 13, 2026 · 0.9.0 · experimental beta.** Installed behavior, fixture checks and real provider acceptance are distinguished below.
+**November 13, 2026 · 0.9.1 · experimental beta.** Installed behavior, fixture checks and real provider acceptance are distinguished below.
 
 ## Implemented and installed
 
@@ -12,7 +12,16 @@
 - Optional local UniFi Network inventory with explicit site choice, encrypted key/pinned certificate, upstream GET-only calls, bounded pagination and stale/unknown states.
 - Existing cameras, Hue, Ambilight, HDMI selection and automatic screensaver activation settings retained.
 
-## 0.9.0 color-key shortcuts
+## 0.9.1 optional Hue standby off
+
+The local web Hue section has an explicit off-by-default automation switch, selected-room guidance and redacted last-attempt feedback. A service-owned Android screen-state receiver runs while other apps are in front. Saving has no lighting side effect; wake never switches lights on.
+
+- 43 web checks passed. Browser save/reload, target-room text and 320 px layout without overflow passed with synthetic data; no console warnings/errors were recorded. Reviewed desktop/mobile Hue screenshots were added.
+- 18 isolated checks passed with actual emulator sleep/wake broadcasts and a loopback HTTPS Hue fixture: disabled/default behavior, setup/input validation, background execution, one selected-room off command, duplicate suppression, no wake-on command, failure/no retry and invalidated/expired queued targets.
+- Public and retained-key builds/signature verification passed. Eleven physical installation/API checks passed: retained-key APK hash/runtime, existing configuration and shortcut retention, default-off readiness, disabled save without an attempt, malformed-input rejection, credential-free state, exact web asset and separate model retention. This does not establish actual Philips standby delivery or real lamp-off acceptance. The real option is left disabled for the owner to enable and test.
+- This is best effort while Android and the local network remain available. No response is possible after abrupt power loss. OEM screen-off/noninteractive behavior, aggressive standby networking and complete shutdown remain outside the tested physical scope. There is no continuous polling or automatic deferred retry.
+
+## Previous 0.9.0 color-key shortcuts
 
 Four configurable navigation shortcuts are installed. Default red/green/yellow/blue opens Cameras/Ambilight/Hue/Devices from Home/System/Apps, with a compact Home legend. Web Startseite offers the four independent selections, including Network/System/Apps/disabled. Hidden cameras stay blocked; unrelated apps and TV viewing retain their own handling.
 

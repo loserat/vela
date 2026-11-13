@@ -20,3 +20,5 @@ The repository and documentation are public. Device addresses, account data, cam
 - Version 0.8.0 adds editable Home/model names, local Network inventory and TV-info/maintenance with redacted diagnostics and app-only screensaver styling.
 
 - Version 0.9.0 adds configurable app-local remote color keys; see [UI](UI.md#color-key-shortcuts) and [testing](TESTING.md#color-key-shortcuts-090).
+
+- Version 0.9.1 adds optional Hue standby off, with isolated testing and an explicit real-device acceptance boundary.

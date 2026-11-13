@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.9.1 — 2026-11-13
+
+- Added optional Hue room off on Android standby, disabled by default and configurable in local web Hue settings. Saving never sends a light command; waking never sends on.
+- Added a service-owned screen-state receiver, bounded CPU-only wake lock, one scoped off attempt per transition and cancellation of stale queued work after wake, disable or bridge/room changes. No deferred retries.
+- Added redacted last-attempt feedback, 18 isolated system-sleep/Hue-fixture checks and 43 web checks. Physical TV standby/light acceptance remains pending.
+
 ## 0.9.0 — 2026-11-13
 
 - Added four app-local color-key shortcuts and a compact Home legend. Defaults: red Cameras, green Ambilight, yellow Hue, blue Devices.

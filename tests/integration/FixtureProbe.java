@@ -19,8 +19,58 @@ public final class FixtureProbe extends Instrumentation {
     private void check(String name,boolean passed)throws Exception{checks.put(new JSONObject().put("name",name).put("passed",passed));if(!passed)throw new Exception(name);}
     private void control(boolean fail)throws Exception{SSLContext tls=SSLContext.getInstance("TLS");tls.init(null,new TrustManager[]{new X509TrustManager(){public X509Certificate[] getAcceptedIssuers(){return new X509Certificate[0];}public void checkClientTrusted(X509Certificate[] c,String a){}public void checkServerTrusted(X509Certificate[] c,String a){}}},null);HttpsURLConnection connection=(HttpsURLConnection)new java.net.URL("https://10.0.2.15/test/control").openConnection();connection.setSSLSocketFactory(tls.getSocketFactory());connection.setHostnameVerifier((h,v)->true);connection.setRequestMethod("POST");connection.setDoOutput(true);try(OutputStream out=connection.getOutputStream()){out.write(("{\"failure\":"+fail+"}").getBytes("UTF-8"));}connection.getInputStream().close();connection.disconnect();}
     private void expireUniFiCache()throws Exception{Field f=context.getClassLoader().loadClass("de.leisetv.UniFiController").getDeclaredField("attemptedAt");f.setAccessible(true);f.setLong(null,0);}
+    private JSONObject fixtureState()throws Exception{
+        SSLContext tls=SSLContext.getInstance("TLS");tls.init(null,new TrustManager[]{new X509TrustManager(){public X509Certificate[] getAcceptedIssuers(){return new X509Certificate[0];}public void checkClientTrusted(X509Certificate[] c,String a){}public void checkServerTrusted(X509Certificate[] c,String a){}}},null);
+        HttpsURLConnection connection=(HttpsURLConnection)new java.net.URL("https://10.0.2.15/test/state").openConnection();connection.setSSLSocketFactory(tls.getSocketFactory());connection.setHostnameVerifier((h,v)->true);connection.setConnectTimeout(2000);connection.setReadTimeout(2000);
+        try(InputStream input=connection.getInputStream()){ByteArrayOutputStream out=new ByteArrayOutputStream();byte[] buffer=new byte[4096];int n;while((n=input.read(buffer))!=-1)out.write(buffer,0,n);return new JSONObject(out.toString("UTF-8"));}finally{connection.disconnect();}
+    }
+    private void screen(boolean on)throws Exception{
+        try(android.os.ParcelFileDescriptor descriptor=getUiAutomation().executeShellCommand("input keyevent "+(on?224:223));InputStream in=new FileInputStream(descriptor.getFileDescriptor())){while(in.read()!=-1){}}
+        android.os.PowerManager power=(android.os.PowerManager)context.getSystemService(Context.POWER_SERVICE);long until=android.os.SystemClock.elapsedRealtime()+4000;
+        while(power.isInteractive()!=on&&android.os.SystemClock.elapsedRealtime()<until)Thread.sleep(50);
+        if(power.isInteractive()!=on)throw new Exception("Screen state did not change");Thread.sleep(400);
+    }
+    private JSONObject automation()throws Exception{return (JSONObject)call("HueStandbyAutomation","view",new Class[]{Context.class},context);}
+    private void automatic(boolean enabled)throws Exception{call("HueStandbyAutomation","save",new Class[]{Context.class,JSONObject.class},context,new JSONObject().put("enabled",enabled));}
+    private JSONObject awaitAttempt(long previous)throws Exception{
+        long until=android.os.SystemClock.elapsedRealtime()+10000;JSONObject state;
+        do{state=automation();if(state.optLong("lastAttemptAt")>previous)return state;Thread.sleep(100);}while(android.os.SystemClock.elapsedRealtime()<until);
+        throw new Exception("No standby attempt recorded");
+    }
     @Override public void onStart(){Bundle result=new Bundle();try{
         if(!android.os.Build.FINGERPRINT.contains("/emu64a:")&&!android.os.Build.FINGERPRINT.contains("generic"))throw new Exception("Disposable emulator only");context=getTargetContext();String task=arguments.getString("task","prepare");
+        if(task.equals("standby")){
+            JSONObject original=automation();boolean originalEnabled=original.optBoolean("enabled");
+            JSONObject originalTarget=(JSONObject)call("HueController","standbyTarget",new Class[]{Context.class},context);
+            try{
+                check("New automation defaults disabled",!originalEnabled);check("Paired selected fixture room is ready",original.optBoolean("ready"));
+                boolean rejected=false;try{call("HueStandbyAutomation","save",new Class[]{Context.class,JSONObject.class},context,new JSONObject().put("enabled","true"));}catch(Exception e){rejected=true;}check("Non-boolean choice is rejected",rejected&&!automation().optBoolean("enabled"));
+                JSONObject missingRoom=new JSONObject(originalTarget.toString());missingRoom.remove("group");call("CameraConfig","saveNamed",new Class[]{Context.class,String.class,JSONObject.class},context,"hue-bridge",missingRoom);
+                rejected=false;try{automatic(true);}catch(Exception e){rejected=true;}check("Enabling without selected room is rejected",rejected&&!automation().optBoolean("enabled"));
+                call("CameraConfig","saveNamed",new Class[]{Context.class,String.class,JSONObject.class},context,"hue-bridge",originalTarget);
+                screen(true);automatic(false);int attempts=fixtureState().getJSONArray("attempts").length();screen(false);Thread.sleep(700);check("Disabled standby sends no command",fixtureState().getJSONArray("attempts").length()==attempts);screen(true);
+                automatic(true);check("Saving enabled sends no command",automation().optBoolean("enabled")&&fixtureState().getJSONArray("attempts").length()==attempts);
+                runOnMainSync(()->context.startActivity(new android.content.Intent(android.provider.Settings.ACTION_SETTINGS).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)));Thread.sleep(500);
+                check("Leaving Dashboard while interactive sends no off",fixtureState().getJSONArray("attempts").length()==attempts);
+                long before=automation().getLong("lastAttemptAt");screen(false);JSONObject last=awaitAttempt(before),snapshot=fixtureState();JSONArray writes=snapshot.getJSONArray("writes");
+                check("System standby is acknowledged in background",last.optString("lastResult").equals("sent")&&snapshot.getJSONArray("attempts").length()==attempts+1);
+                JSONObject command=writes.getJSONObject(writes.length()-1);check("Only selected room receives on=false",command.length()==1&&!command.getBoolean("on")&&snapshot.optInt("outsideWrites")==0);
+                check("Automation status exports no bridge credentials",last.length()==4&&!last.toString().contains("mock_hue_application_key")&&!last.has("host"));
+                screen(false);Thread.sleep(400);check("Already sleeping does not duplicate off",fixtureState().getJSONArray("attempts").length()==attempts+1);
+                screen(true);check("Wake does not turn lights back on",fixtureState().getJSONArray("attempts").length()==attempts+1);
+                control(true);before=automation().getLong("lastAttemptAt");screen(false);last=awaitAttempt(before);check("Bridge failure is reported without confirmation",last.optString("lastResult").equals("failed"));
+                screen(true);Thread.sleep(600);check("Failed command is not retried after wake",fixtureState().getJSONArray("attempts").length()==attempts+2);control(false);
+                JSONObject changedTarget=new JSONObject(originalTarget.toString()).put("group","2");
+                boolean sent=(Boolean)call("HueController","standbyOff",new Class[]{Context.class,JSONObject.class,long.class,java.util.function.BooleanSupplier.class},context,changedTarget,android.os.SystemClock.elapsedRealtime()+1000,(java.util.function.BooleanSupplier)()->true);
+                check("Changed room invalidates queued target",!sent&&fixtureState().getJSONArray("attempts").length()==attempts+2);
+                sent=(Boolean)call("HueController","standbyOff",new Class[]{Context.class,JSONObject.class,long.class,java.util.function.BooleanSupplier.class},context,originalTarget,android.os.SystemClock.elapsedRealtime()-1,(java.util.function.BooleanSupplier)()->true);
+                check("Expired queued request is skipped",!sent&&fixtureState().getJSONArray("attempts").length()==attempts+2);
+                sent=(Boolean)call("HueController","standbyOff",new Class[]{Context.class,JSONObject.class,long.class,java.util.function.BooleanSupplier.class},context,originalTarget,android.os.SystemClock.elapsedRealtime()+1000,(java.util.function.BooleanSupplier)()->false);
+                check("Wake or disable cancels a queued request",!sent&&fixtureState().getJSONArray("attempts").length()==attempts+2);
+                automatic(false);screen(false);Thread.sleep(500);check("Disabling stops the next sleep action",fixtureState().getJSONArray("attempts").length()==attempts+2);
+            }finally{screen(true);control(false);call("CameraConfig","saveNamed",new Class[]{Context.class,String.class,JSONObject.class},context,"hue-bridge",originalTarget);automatic(originalEnabled);}
+            result.putString("checks",checks.toString());result.putString("fixture","ready");finish(-1,result);return;
+        }
         if(task.equals("remote")){
             Class<?>[] withContext={Context.class};JSONObject original=(JSONObject)call("RemoteShortcuts","view",withContext,context);
             try{

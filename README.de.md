@@ -6,7 +6,7 @@ Eine schlanke Startoberfläche für Philips Android TV: Kameras, Ambilight, Phil
 
 Als Android-App installieren und bei Bedarf als Home-Oberfläche zuordnen.
 
-**0.9.0 · experimentelle Beta.** Die Repository-Dokumentation ist auf Englisch; TV-Oberfläche und lokale Web-Einstellungen bleiben auf Deutsch. Am TV erscheinen kein Projektname und kein Logo. In Android heißt die App **TV-Dashboard**.
+**0.9.1 · experimentelle Beta.** Die Repository-Dokumentation ist auf Englisch; TV-Oberfläche und lokale Web-Einstellungen bleiben auf Deutsch. Am TV erscheinen kein Projektname und kein Logo. In Android heißt die App **TV-Dashboard**.
 
 ## So sieht es aus
 
@@ -29,6 +29,8 @@ Native Ansichten aus einem separaten Simulator mit künstlichen Kameras, Lichtzu
 [Oberfläche und Fernbedienung (Englisch)](docs/UI.md) · [Apps-Screenshot](docs/images/apps.png)
 
 ## Funktionen
+
+- Optionale Hue-Automatik unter **Hue → Hue mit dem TV ausschalten**: standardmäßig aus, nur für den ausgewählten Raum, ohne automatisches Wiedereinschalten und mit Anzeige des letzten Versuchs. Der reale Standby-Test am Philips steht noch aus; bei Stromverlust oder fehlender Bridge-Verbindung ist kein zuverlässiger Befehl möglich.
 
 - Vier belegbare Farbtasten: Rot → Kameras, Grün → Ambilight, Gelb → Hue, Blau → Geräte. Im IP-Dashboard unter **Startseite → Farbtasten der Fernbedienung** änderbar. Sie öffnen Seiten aus Home/System/Apps.
 
@@ -65,7 +67,7 @@ Voraussetzungen: Python 3, `curl`, JDK 21, Android-SDK-Plattform `android-34`, B
 python3 app/fetch_deps.py
 python3 tests/check_palette.py
 python3 app/build.py
-adb -s DEVICE install -r dist/TV-Dashboard-0.9.0.apk
+adb -s DEVICE install -r dist/TV-Dashboard-0.9.1.apk
 adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -87,7 +89,7 @@ adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 
 ## Prüfstand und Grenzen
 
-Für 0.9.0 bestanden **38** Web-Prüfungen, **12** isolierte native Tastenprüfungen und **20** Installations-/API-/Tastensignalprüfungen am echten TV. Die echten Fernbedienungstasten sind noch vom Benutzer zu prüfen; die TV-Firmware kann Tasten abfangen. Frühere Licht-, Video-, Netzwerk- und Modellprüfungen bleiben mit ihrem jeweiligen Umfang im [Prüfstand](docs/STATUS.md) und [Verlauf](docs/VALIDATION-HISTORY.md) dokumentiert. Die Prüfung am echten UniFi-Controller steht noch aus.
+Für 0.9.1 bestanden **43** Web-Prüfungen und **18** isolierte Standby-/Hue-Prüfungen. Dabei wurden echte Android-Schlaf-/Aufwachereignisse mit simulierten Lampen einschließlich Fehler- und Abbruchfällen geprüft. Installation und deaktivierte Einstellung am echten TV sind separat geprüft; das Ausschalten echter Lampen beim Philips-Standby steht noch aus. Frühere Navigations-, Licht- und Integrationsprüfungen behalten ihren Umfang im [Prüfstand](docs/STATUS.md) und [Verlauf](docs/VALIDATION-HISTORY.md).
 
 Die Hue-Prüfungen enthalten langsame, veraltete und fehlerhafte Antworten sowie den Vergleich der Bildpunkte außerhalb des Helligkeitsreglers. [Tests wiederholen (Englisch)](docs/TESTING.md). [Aktuelle Geräteergebnisse und offene Punkte (Englisch)](docs/STATUS.md).
 

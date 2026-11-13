@@ -15,8 +15,9 @@
 | UniFi local adapter | 10 | Synthetic pinned HTTPS, explicit site, pagination, encrypted configuration, rejected host/site/key, stale/recovery and redaction |
 | Native UniFi inventory | 10 | Compact indicator, bounds, pagination, unknown/stale/recovery, Back and GET-only upstream calls |
 | Passive network UI | 6 | Home shortcut, Android source/caveat, bounds, initial focus, refresh and Back |
+| Hue standby automation | 18 | Actual emulator screen-state broadcasts with loopback Hue, default/disabled behavior, validation, scoped off, no wake-on/retry and stale target suppression |
 | Color-key native events | 12 | Android code mapping, repeat/key-up/cancel suppression, disabled action and custom System/Apps navigation on the isolated emulator |
-| Web state/payload logic | 38 | Draft/title/name retention, fixed technical model after rename, blank stream payload, explicit room/site, inventory/stale/unknown states, saver styling, TV facts, cancelled remote open, duplicate submits, session expiry and errors |
+| Web state/payload logic | 43 | Draft/title/name retention, fixed technical model after rename, blank stream payload, explicit room/site, inventory/stale/unknown states, saver styling, TV facts, cancelled remote open, duplicate submits, session expiry and errors |
 
 For 0.8.0 the palette, web, UniFi adapter/inventory, network and screensaver suites were repeated. The most recent complete Hue/Ambilight/general navigation suite runs remain the 0.7.0 component evidence.
 
@@ -140,3 +141,16 @@ python3 tests/integration/prepare.py --serial emulator-5580 --task remote --repo
 This task requires only the disposable emulator, no light or network fixture. It restores the prior shortcut map after checking Android color codes and event handling. The source of the event is controlled, so it cannot prove that a physical remote/firmware forwards these keys. The web run passed 38 checks, including independent shortcut payloads, retained shortcut drafts after library reload and retained Home drafts after shortcut saves.
 
 On an authorized physical device, open Dashboard Home and test each color key, returning with Back between checks. For reproducible Android injection use `adb -s DEVICE shell input keyevent KEYCODE_PROG_RED` (and GREEN/YELLOW/BLUE). Separately test the actual remote. The current physical pass contains 20 installation/API/injected-key checks; no camera playback, light command or HDMI selection was performed.
+
+## Hue standby automation (0.9.1)
+
+Start the existing loopback Hue fixture and route emulator port 443 as described above, install the current app, then run:
+
+```sh
+python3 tests/integration/prepare.py --serial emulator-5580 --task prepare
+python3 tests/integration/prepare.py --serial emulator-5580 --task standby --report test-results/standby.json
+```
+
+Only the disposable emulator is accepted. The standby task uses Android sleep/wake key events while another activity is in front, then checks recorded fixture command attempts and redacted app results. It restores the previous automation flag, fixture bridge configuration and interactive screen state. The fixture now records attempted PUTs separately from successful writes, so failed commands cannot hide retries. Eighteen checks passed. This does not turn off real lamps or certify OEM TV standby behavior.
+
+The current web run passed 43 checks, adding default-off/no-command behavior, boolean-only saves, independent drafts, setup guidance and disabled-option recovery after setup becomes invalid. The physical install check intentionally leaves the option off and performs no TV sleep or real lighting action. For real acceptance, enable the option for the chosen room, use the normal TV power button and check lamp behavior; after waking, reopen Hue settings to inspect the last-attempt result. A confirmed command is a bridge acknowledgement, not proof that every physical bulb obeyed.

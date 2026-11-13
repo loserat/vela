@@ -1,9 +1,10 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="de.leisetv" android:versionCode="15" android:versionName="0.9.0">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="de.leisetv" android:versionCode="16" android:versionName="0.9.1">
     <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="28" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-feature android:name="android.software.leanback" android:required="true" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
     <application android:name=".NickApplication" android:label="TV-Dashboard" android:icon="@drawable/icon" android:banner="@drawable/banner" android:theme="@style/AppTheme" android:allowBackup="false" android:hardwareAccelerated="true" android:supportsRtl="true" android:usesCleartextTraffic="true">

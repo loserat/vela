@@ -77,6 +77,17 @@ final class HueController {
         }else throw new IOException("Unknown room command");
         api(cfg,"/groups/"+room+"/action","PUT",command);
     }
+    static JSONObject standbyTarget(Context c){return config(c);}
+    static synchronized boolean standbyOff(Context c,JSONObject expected,long deadline,java.util.function.BooleanSupplier active)throws Exception{
+        JSONObject cfg=config(c);String room=cfg.optString("group");
+        if(!cfg.has("key")||!room.matches("[1-9][0-9]{0,4}"))return false;
+        for(String field:new String[]{"host","cert","key","group"})if(!cfg.optString(field).equals(expected.optString(field)))return false;
+        // Recheck after acquiring the shared Hue lock: a queued command must not run after wake/disable/reconfiguration.
+        if(android.os.SystemClock.elapsedRealtime()>deadline||!active.getAsBoolean())return false;
+        Object reply=api(cfg,"/groups/"+room+"/action","PUT",new JSONObject().put("on",false));
+        if(!(reply instanceof JSONArray)||((JSONArray)reply).length()==0||!((JSONArray)reply).getJSONObject(0).has("success"))throw new IOException("Hue off not confirmed");
+        return true;
+    }
     private static Object request(String host,String pin,String path,String method,JSONObject body,X509Certificate[] captured)throws Exception{
         SSLContext tls=SSLContext.getInstance("TLS");final byte[] expected=pin==null?null:Base64.decode(pin,Base64.DEFAULT);
         tls.init(null,new TrustManager[]{new X509TrustManager(){public X509Certificate[] getAcceptedIssuers(){return new X509Certificate[0];}public void checkClientTrusted(X509Certificate[] c,String a)throws CertificateException{throw new CertificateException();}public void checkServerTrusted(X509Certificate[] certs,String auth)throws CertificateException{if(certs.length==0)throw new CertificateException();certs[0].checkValidity();if(expected!=null&&!MessageDigest.isEqual(expected,certs[0].getEncoded()))throw new CertificateException("Bridge certificate changed");if(captured!=null)captured[0]=certs[0];}}},new SecureRandom());

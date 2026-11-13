@@ -76,3 +76,11 @@ On Home, System and Apps, red/green/yellow/blue navigate to Cameras/Ambilight/Hu
 Only the first uncancelled key-down navigates; repeats and key-up are consumed. Other Dashboard detail pages, external apps and TV/HDMI viewing retain their own key handling. Shortcuts open pages, never perform lighting/source/playback commands directly. A TV may intercept the hardware keys before delivering Android events; injected-key checks do not certify a physical remote.
 
 [Web shortcut settings on mobile](images/web-settings-mobile.jpg).
+
+## Hue standby off
+
+Web **Hue → Hue mit dem TV ausschalten** contains the optional **Hue beim Ausschalten des Fernsehers ausschalten** switch and a separate Save button. It defaults off and requires an existing paired Bridge and selected room/zone. Saving only stores a preference; the next observed standby transition may send one off command to that selected group. Waking does not switch lights on. Room changes use the same existing explicit Hue-room selection.
+
+The panel reports the last recorded attempt as confirmed by the bridge, unconfirmed, or skipped after state/configuration changes. Results refresh when the Hue section is opened or the page reloaded. The normal bridge refresh button belongs to its separate setup card. All controls remain available to disable a previously enabled option even if the stored setup becomes invalid.
+
+[Hue automation settings](images/web-hue.jpg) · [Mobile](images/web-hue-mobile.jpg). Images use synthetic data with the option enabled for demonstration; the physical TV remains disabled until the owner enables it.

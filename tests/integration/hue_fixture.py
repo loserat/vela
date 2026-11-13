@@ -8,7 +8,7 @@ if not args.cert or not args.key:
     directory=Path(tempfile.mkdtemp(prefix='atpd-fixture-'));args.cert=str(directory/'cert.pem');args.key=str(directory/'key.pem')
     subprocess.run(['openssl','req','-x509','-newkey','rsa:2048','-nodes','-keyout',args.key,'-out',args.cert,'-days','2','-subj','/CN=0011223344556677'],check=True,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
 application_key='mock_hue_application_key_123456' # Deliberately synthetic, accepted only by this fixture.
-state={'paired':False,'link':False,'registrations':0,'writes':[],'reads':[],'outsideWrites':0,'delay':0,'failure':False,'scenesEnabled':False,'staleReads':False,'action':{'on':True,'bri':191,'hue':59110,'sat':165,'colormode':'hs'}}
+state={'paired':False,'link':False,'registrations':0,'writes':[],'attempts':[],'reads':[],'outsideWrites':0,'delay':0,'failure':False,'scenesEnabled':False,'staleReads':False,'action':{'on':True,'bri':191,'hue':59110,'sat':165,'colormode':'hs'}}
 lock=threading.Lock()
 class Handler(BaseHTTPRequestHandler):
     def reply(self,value,code=200):
@@ -45,7 +45,7 @@ class Handler(BaseHTTPRequestHandler):
             state['paired']=True;state['link']=False;state['registrations']+=1;self.reply([{'success':{'username':application_key}}]);return
         self.reply({},404)
     def do_PUT(self):
-        data=self.body();time.sleep(float(state['delay']))
+        data=self.body();state['attempts'].append({'path':self.path,'body':data});time.sleep(float(state['delay']))
         if state['failure']:self.reply({},503);return
         if self.path=='/api/'+application_key+'/groups/1/action':
             if 'hue' in data or 'sat' in data:data['colormode']='hs'
