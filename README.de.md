@@ -1,29 +1,33 @@
-# VELA
+# ATPD
 
 [English](README.md) · Deutsch
 
-**VELA** steht für *Visual Environment & Local Access*. Eine schlanke, fernbedienbare Startoberfläche für Android TV mit lokalen Web-Einstellungen und Kameraübersicht.
+**ATPD** steht für *Ambilight TV Private Dashboard*. Eine schlanke, fernbedienbare Startoberfläche für Android TV mit lokalen Web-Einstellungen und Kameraübersicht.
 
-**Stand: 0.4.1 · experimentelle Beta. Die letzte Geräteprüfung des direkten Kamerawechsels ist noch offen.** VELA ist eine Android-App und kann als Home-Oberfläche eingestellt werden.
+**Stand: 0.5.0 · experimentelle Beta. Die letzte Geräteprüfung des direkten Kamerawechsels ist noch offen.** Das Dashboard ist eine Android-App und kann als Home-Oberfläche eingestellt werden.
 
-Diese öffentliche Version konzentriert sich auf Startoberfläche und Kameras. Die unfertige Klima-Anbindung ist nicht enthalten.
+Diese Version konzentriert sich auf Startoberfläche, Kameras und lokale Ambilight-Bedienung. Die unfertige Klima-Anbindung ist nicht enthalten.
+
+Die TV-Oberfläche zeigt keinen Projektnamen und kein Logo. In Android heißt die App neutral `TV-Dashboard`.
 
 Die Repository-Dokumentation wird auf Englisch gepflegt; diese Datei ist die deutsche Projektbeschreibung. Die Benutzeroberfläche am Fernseher und die lokalen Web-Einstellungen bleiben auf Deutsch.
 
 ## Funktionen
 
-- Reduzierte Startseite mit Kamera-Kachel und Zugriff auf die Systemeinstellungen.
+- Reduzierte Startseite mit Kameras, Ambilight, Fernsehen und System.
+- Ruhige Farbverläufe, klare Fokusrahmen und große Ziele für die Fernbedienung.
+- Eigene Ambilight-Bedienung für Ein/Aus, Bild-/Musikanpassung, feste Farben und deren Helligkeit.
 - Kameraübersicht mit bis zu 24 konfigurierten Einträgen; jeweils eine Kamera im Vollbild.
 - Navigation mit Pfeiltasten und OK; Links/Rechts wechselt im Vollbild die Quelle.
 - Status für fehlende Streams und bei der Einrichtung als offline erkannte Kameras.
 - Lokale HTTPS-Einstellungsseite mit PIN-Anmeldung, geschützten Sitzungen und Zugriff auf Kamera- und Anzeigeeinstellungen.
-- Hinzufügen und Umbenennen von Kameras, Auswahl einer Startkamera und Entfernen von Einträgen aus VELA.
+- Hinzufügen und Umbenennen von Kameras, Auswahl einer Startkamera und Entfernen von Einträgen aus dem Dashboard.
 
 Der öffentliche Quellstand enthält keine eingerichteten Kameras, Kontozugänge, PINs, privaten Netzwerkadressen oder Kamerabilder. Quellen werden auf dem jeweiligen Fernseher eingerichtet.
 
 ## Voraussetzungen
 
-Der bisherige Zielaufbau ist ein Android-TV-Gerät mit Android 8.0 und 32-Bit-ARM-Prozessor. Im aktuellen Build werden ausschließlich `armeabi-v7a`-Bibliotheken verpackt. Andere Geräte und Android-Versionen sind nicht geprüft.
+Der bisherige Zielaufbau ist ein Android-TV-Gerät mit Android 8.0 und 32-Bit-ARM-Prozessor. Im aktuellen Build werden ausschließlich `armeabi-v7a`-Bibliotheken verpackt. Die neue Oberfläche wurde zusätzlich in einem separaten Android-14-Simulator geprüft. Andere physische Geräte sind nicht geprüft.
 
 Für einen lokalen Build werden benötigt:
 
@@ -39,7 +43,7 @@ python3 app/fetch_deps.py
 python3 app/build.py
 ```
 
-Der erste Schritt lädt das versionsgebundene VLC-SDK 3.7.7 vom Maven-Central-Repository und prüft dessen SHA256-Prüfsumme. Der zweite baut und signiert die APK lokal. Das Ergebnis liegt unter `dist/VELA-0.4.1.apk`.
+Der erste Schritt lädt das versionsgebundene VLC-SDK 3.7.7 vom Maven-Central-Repository und prüft dessen SHA256-Prüfsumme. Der zweite baut und signiert die APK lokal. Das Ergebnis liegt unter `dist/TV-Dashboard-0.5.0.apk`.
 
 Beim ersten Build wird ein eigener lokaler Test-Signierschlüssel erzeugt. Er bleibt lokal und wird durch `.gitignore` ausgeschlossen. Eine mit einem anderen Schlüssel signierte Installation lässt sich damit nicht überschreiben. Einen vorhandenen eigenen Schlüssel kann man über `NICKOS_KEYSTORE` und dessen Kennwort über `NICKOS_SIGN_PASSWORD` verwenden. Der erwartete Schlüsselalias ist aktuell `leisetv`.
 
@@ -48,7 +52,7 @@ Beim ersten Build wird ein eigener lokaler Test-Signierschlüssel erzeugt. Er bl
 Für ein bereits autorisiertes Android-Gerät:
 
 ```sh
-adb install -r dist/VELA-0.4.1.apk
+adb install -r dist/TV-Dashboard-0.5.0.apk
 adb shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -66,11 +70,19 @@ Am Fernseher **System → Web-Einstellungen** öffnen. Dort stehen die Adresse d
 
 Die Seite läuft direkt auf dem Fernseher auf Port `8766`. Port `8765` leitet auf HTTPS weiter. Das lokal erzeugte Zertifikat muss beim ersten Browserzugriff für das eigene Gerät bestätigt werden. Erreichbarkeit im Standby ist nicht zugesichert.
 
-Im Bereich **Kameras** einen lokalen UniFi-Protect-RTSPS-Link eintragen. Ein leeres Link-Feld erhält eine bereits gespeicherte Quelle. Das Entfernen eines Eintrags löscht nur die VELA-Konfiguration; es sendet keinen Löschbefehl an Protect und löscht keine Aufnahmen.
+Im Bereich **Kameras** einen lokalen UniFi-Protect-RTSPS-Link eintragen. Ein leeres Link-Feld erhält eine bereits gespeicherte Quelle. Das Entfernen eines Eintrags löscht nur die Dashboard-Konfiguration; es sendet keinen Löschbefehl an Protect und löscht keine Aufnahmen.
+
+## Ambilight
+
+Auf der Startseite **Ambilight** öffnen. Dabei wird nur der Zustand gelesen; erst ein Tastendruck ändert die Beleuchtung. Bedienelemente werden erst nach erfolgreichem Abruf freigegeben. Die Farbhelligkeit gilt für feste Farben, nicht für die Helligkeit der Bildanpassung.
+
+Die Anbindung unterstützt derzeit einen Philips-JointSpace-v6-Dienst ohne Anmeldung direkt auf dem Fernseher an Loopback-Port `1925`. Modelle mit zwingender HTTPS-Kopplung werden noch nicht unterstützt. Home Assistant ist nicht erforderlich. Protokollreferenz: [Pylips](https://github.com/eslavnov/pylips); dessen Code wird nicht eingebunden.
 
 ## Prüfstand und Grenzen
 
-Der Quellstand wurde lokal gebaut und die APK-Signatur geprüft. Die bisherigen Prüfungen von Version 0.4 umfassen 15 ursprüngliche Web-/Zugriffsprüfungen und 14 Prüfungen der erweiterten Kameraverwaltung; diese Zahlen stehen nicht für einen neuen vollständigen Prüflauf von Version 0.4.1. Einzelne echte Kamerabilder wurden am Zielgerät angesehen.
+Oberfläche und Ambilight-Anbindung von 0.5.0 haben 22 Navigations- und Befehlsprüfungen gegen einen lokalen Ersatzdienst im Android-Simulator bestanden. Echte LED-Änderungen und die neue Oberfläche auf dem Philips sind noch zu prüfen.
+
+Der Quellstand wurde lokal gebaut und die APK-Signatur geprüft. Die bisherigen Prüfungen von Version 0.4 umfassen 15 ursprüngliche Web-/Zugriffsprüfungen und 14 Prüfungen der erweiterten Kameraverwaltung; diese Zahlen stehen nicht für einen neuen vollständigen Geräteprüflauf von Version 0.5.0. Einzelne echte Kamerabilder wurden am Zielgerät angesehen.
 
 Die letzte automatische Geräteprüfung nach der Kamerawechselkorrektur wurde nicht erfolgreich abgeschlossen. Daher sind Kamerawechsel, Rückkehr, längerer Betrieb, Bildlatenz, Verhalten nach Neustart und Standby weiterhin zu prüfen. Siehe [Prüfstand (Englisch)](docs/STATUS.md).
 

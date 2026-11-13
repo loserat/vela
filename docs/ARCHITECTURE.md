@@ -6,9 +6,13 @@
 
 `MainActivity` provides the Home interface. `CameraListActivity` displays the camera collection, and `CameraActivity` plays a selected source.
 
-The existing Android package identifier `de.leisetv` is retained for update compatibility. The visible app name is VELA. The TV interface and local web settings are in German; repository documentation is maintained in English with a German README.
+The existing Android package identifier `de.leisetv` is retained for update compatibility. The launcher and settings pages show no project branding. Android lists the app under the generic label `TV-Dashboard`. The TV interface and local web settings are in German; repository documentation is maintained in English with a German README.
 
 Internal preference names, encryption-key aliases, and the `NickApplication` class retain their previous identifiers so existing installations keep their settings, PIN, and certificates. The build variables `NICKOS_KEYSTORE` and `NICKOS_SIGN_PASSWORD` also retain their existing names for compatibility.
+
+## Drawing and Ambilight
+
+`TvStyle` supplies static backgrounds, cards, and icons. The home screen redraws for focus changes and the minute clock; it has no continuous animation. `AmbilightActivity` uses a single worker for explicit commands and subsequent state reads. `AmbilightController` only addresses the local TV service on `127.0.0.1:1925/6`. It does not accept arbitrary remote hosts. No light state is changed on page entry. Failed reads disable controls; stale responses after leaving the page are ignored.
 
 ## Video
 

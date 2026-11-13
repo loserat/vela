@@ -3,8 +3,8 @@
         <item name="android:fontFamily">sans</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowActionModeOverlay">true</item>
-        <item name="android:windowBackground">#10191C</item>
-        <item name="android:colorAccent">#C7E9CB</item>
+        <item name="android:windowBackground">#0B1418</item>
+        <item name="android:colorAccent">#C9F1D1</item>
         <item name="android:windowAnimationStyle">@null</item>
     </style>
 </resources>

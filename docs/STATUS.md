@@ -2,7 +2,7 @@
 
 [README](../README.md) · [Deutsche Projektbeschreibung](../README.de.md)
 
-As of November 6, 2026, version 0.4.1.
+As of November 13, 2026, version 0.5.0 (experimental candidate).
 
 ## Implemented
 
@@ -35,11 +35,15 @@ Validation for this version:
 
 These checks do not replace a new device test run. No update has been installed on the TV.
 
-## VELA branding update
+## Current local candidate (0.5.0)
 
-The project is now named VELA (Visual Environment & Local Access). The TV and web interfaces remain in German.
+Repository name: ATPD (Ambilight TV Private Dashboard). The TV and web interfaces show no project branding; the generic Android app label is TV-Dashboard. Documentation remains English with a German README.
 
-The VELA branding was checked in a local Android build and a browser preview. The branding update has not been installed or verified on the TV; device testing remains paused.
+The native home and camera screens use a shared static visual style. The home screen provides direct camera, Ambilight, TV, and system access. Ambilight commands target the local JointSpace v6 HTTP service; authenticated HTTPS-only models are not yet supported.
+
+The 32-bit ARM TV build and a separate ARM64 simulator package were built and signature-checked. 22 checks covering remote navigation, read-only page entry, power and mode changes, fixed colors, bounded fixed-color brightness, failure handling, and recovery were tested against a local mock service on an isolated Android 34 emulator. The emulator package uses the same app classes with ARM64 LibVLC libraries. This does not verify video playback on the Philips.
+
+Read-only probes on the Philips confirmed JointSpace 6.2 and reported Ambilight power, current mode, supported styles, and LED topology. No write command has been sent to the physical TV during this work. The new app has not been installed on the Philips. Real LED changes, global video-mode brightness, and actual remote-control feel still need device verification.
 
 ## Not yet fully verified
 

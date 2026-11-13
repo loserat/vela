@@ -7,11 +7,11 @@ public final class SettingsService extends Service {
     @Override public void onCreate(){
         super.onCreate();
         NotificationManager nm=(NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-        nm.createNotificationChannel(new NotificationChannel("settings","VELA Einstellungen",NotificationManager.IMPORTANCE_MIN));
+        nm.createNotificationChannel(new NotificationChannel("settings","Dashboard-Einstellungen",NotificationManager.IMPORTANCE_MIN));
         PendingIntent open=PendingIntent.getActivity(this,0,new Intent(this,SettingsActivity.class),PendingIntent.FLAG_UPDATE_CURRENT|PendingIntent.FLAG_IMMUTABLE);
-        startForeground(101,new Notification.Builder(this,"settings").setSmallIcon(getResources().getIdentifier("icon","drawable",getPackageName())).setContentTitle("VELA")
+        startForeground(101,new Notification.Builder(this,"settings").setSmallIcon(getResources().getIdentifier("icon","drawable",getPackageName())).setContentTitle("TV-Dashboard")
             .setContentText("Lokale Einstellungen erreichbar").setContentIntent(open).build());
-        try{server=new AdminServer(this);server.start();}catch(Exception e){android.util.Log.e("VELA","settings-server:"+e.getClass().getSimpleName());}
+        try{server=new AdminServer(this);server.start();}catch(Exception e){android.util.Log.e("TV-Dashboard","settings-server:"+e.getClass().getSimpleName());}
     }
     @Override public int onStartCommand(Intent i,int flags,int id){return START_STICKY;}
     @Override public void onDestroy(){if(server!=null)server.close();super.onDestroy();}

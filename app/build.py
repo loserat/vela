@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build VELA with the installed Android SDK, JDK and pinned LibVLC AAR."""
+"""Build the TV dashboard with the installed Android SDK, JDK and pinned LibVLC AAR."""
 from pathlib import Path
 import os, shutil, subprocess, sys, zipfile, xml.etree.ElementTree as ET
 
@@ -41,10 +41,10 @@ run(TOOLS/'zipalign','-f','4',unsigned,BUILD/'aligned.apk')
 key=Path(os.environ.get('NICKOS_KEYSTORE',str(ROOT/'local-test-signing.p12')))
 ENV['NICKOS_SIGN_PASSWORD']=os.environ.get('NICKOS_SIGN_PASSWORD','nickos-local-test')
 if not key.exists():
-    run(JAVA/'bin/keytool','-genkeypair','-keystore',key,'-storetype','PKCS12','-storepass:env','NICKOS_SIGN_PASSWORD','-keypass:env','NICKOS_SIGN_PASSWORD','-alias','leisetv','-keyalg','RSA','-keysize','2048','-validity','3650','-dname','CN=VELA Local Test')
+    run(JAVA/'bin/keytool','-genkeypair','-keystore',key,'-storetype','PKCS12','-storepass:env','NICKOS_SIGN_PASSWORD','-keypass:env','NICKOS_SIGN_PASSWORD','-alias','leisetv','-keyalg','RSA','-keysize','2048','-validity','3650','-dname','CN=TV Dashboard Local Test')
     key.chmod(0o600)
 version=ET.parse(ROOT/'AndroidManifest.xml').getroot().get('{http://schemas.android.com/apk/res/android}versionName')
-apk=OUT/('VELA-'+version+'.apk')
+apk=OUT/('TV-Dashboard-'+version+'.apk')
 run(TOOLS/'apksigner','sign','--ks',key,'--ks-key-alias','leisetv','--ks-pass','env:NICKOS_SIGN_PASSWORD','--out',apk,BUILD/'aligned.apk')
 run(TOOLS/'apksigner','verify','--verbose',apk)
 print(str(apk)+' ('+str(apk.stat().st_size)+' bytes)')
