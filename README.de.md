@@ -6,7 +6,7 @@ Eine schlanke Startoberfläche für Philips Android TV: Kameras, Ambilight, Phil
 
 Als Android-App installieren und bei Bedarf als Home-Oberfläche zuordnen.
 
-**0.11.1 · experimentelle Beta.** Die Repository-Dokumentation ist auf Englisch; TV-Oberfläche und lokale Web-Einstellungen starten auf Deutsch und lassen sich gemeinsam auf Englisch umstellen. Am TV erscheinen kein Projektname und kein Logo. In Android heißt die App **TV-Dashboard**.
+**0.11.2 · experimentelle Beta.** Die Repository-Dokumentation ist auf Englisch; TV-Oberfläche und lokale Web-Einstellungen starten auf Deutsch und lassen sich gemeinsam auf Englisch umstellen. Am TV erscheinen kein Projektname und kein Logo. In Android heißt die App **TV-Dashboard**.
 
 ## So sieht es aus
 
@@ -52,7 +52,9 @@ Native Emulator-Screenshots mit Testdaten und eigener Reihenfolge. Die Kamera-Ka
 
 - Optionale Hue-Automatik unter **Hue → Hue mit dem TV ausschalten**: standardmäßig aus, nur für den ausgewählten Raum, ohne automatisches Wiedereinschalten und mit Anzeige des letzten Versuchs. Der reale Standby-Test am Philips steht noch aus; bei Stromverlust oder fehlender Bridge-Verbindung ist kein zuverlässiger Befehl möglich.
 
-- Vier belegbare Farbtasten: Rot → Kameras, Grün → Ambilight, Gelb → Hue, Blau → Geräte. Im IP-Dashboard unter **Startseite → Farbtasten der Fernbedienung** änderbar. Sie öffnen Seiten aus Home/System/Apps.
+- Eigener Reiter **Shortcuts** mit vier farbigen Karten, direkter Belegungsvorschau und Standardbelegung als Entwurf. [Desktop](docs/images/web-shortcuts.jpg) · [Handy](docs/images/web-shortcuts-mobile.jpg).
+
+- Vier belegbare Farbtasten: Rot → Kameras, Grün → Ambilight, Gelb → Hue, Blau → Geräte. Im IP-Dashboard unter **Shortcuts → Farbtasten belegen** änderbar. Sie öffnen Seiten aus Home/System/Apps.
 
 - Aufgeräumte Startseite mit großen Fokusflächen, TV-Zugriff, Geräten und System.
 - Bis zu 24 eingerichtete Kameras, sechs pro Übersichtsseite und jeweils ein Stream im Vollbild. Die Übersichtsseite bleibt bei der Rückkehr aus Einstellungen erhalten.
@@ -87,7 +89,7 @@ Voraussetzungen: Python 3, `curl`, JDK 21, Android-SDK-Plattform `android-34`, B
 python3 app/fetch_deps.py
 python3 tests/check_palette.py
 python3 app/build.py
-adb -s DEVICE install -r dist/TV-Dashboard-0.11.1.apk
+adb -s DEVICE install -r dist/TV-Dashboard-0.11.2.apk
 adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -109,7 +111,7 @@ adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 
 ## Prüfstand und Grenzen
 
-Für 0.11.1 bestanden **70** Web-Prüfungen. Alle sieben Rubriken wurden bei **320, 390, 768, 900, 901 und 1280 Pixeln** ohne seitlichen Seitenüberlauf geprüft, zusätzlich Englisch/Monospace bei 320 und 901 Pixeln. Tastaturwechsel, aufklappbare Hinweise und Sprach-/Schriftwechsel funktionieren. Die Browserprüfung ersetzt keinen Test auf einem echten iPhone; Acht Installations-/API-Prüfungen am Philips bestanden bei erhaltener TV-Ansicht; frühere native Prüfungen stehen getrennt im [Prüfstand](docs/STATUS.md).
+Für 0.11.2 bestanden **78** Web-Prüfungen, einschließlich separater Shortcut-Entwürfe, Vorschau, Standardbelegung, gesperrter Auswahl beim Speichern und Fehlerbehandlung. Die Browserprüfung umfasst 320–1280 Pixel, Englisch/Monospace, Speichern/Neuladen und alle acht Reiter bei 320 Pixeln ohne seitlichen Seitenüberlauf. Neun Installations-/API-Prüfungen am Philips bestanden mit erhaltener Belegung und laufender Ansicht; frühere native Prüfungen bleiben im [Prüfstand](docs/STATUS.md) getrennt dokumentiert.
 
 Die Hue-Prüfungen enthalten langsame, veraltete und fehlerhafte Antworten sowie den Vergleich der Bildpunkte außerhalb des Helligkeitsreglers. [Tests wiederholen (Englisch)](docs/TESTING.md). [Aktuelle Geräteergebnisse und offene Punkte (Englisch)](docs/STATUS.md).
 

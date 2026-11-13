@@ -2,17 +2,23 @@
 
 [Documentation](README.md) · [Testing](TESTING.md) · [Earlier evidence](VALIDATION-HISTORY.md)
 
-**November 13, 2026 · 0.11.1 · experimental beta.** Installed behavior, fixture checks and real provider acceptance are distinguished below.
+**November 13, 2026 · 0.11.2 · experimental beta.** Installed behavior, fixture checks and real provider acceptance are distinguished below.
 
 ## Implemented and installed
 
 - Compact Home connection dot/name, reading the actual active SSID where Android permits it; no location permission or custom internet probe.
 - Editable persisted Home heading and web dashboard name, with separate labels, bounded input, defaults and native text ellipsis.
-- Seven web sections including TV information/maintenance, redacted diagnostic export, explicit dashboard-open request and screensaver styling controls.
+- Eight web sections including TV information/maintenance, redacted diagnostic export, explicit dashboard-open request and screensaver styling controls.
 - Optional local UniFi Network inventory with explicit site choice, encrypted key/pinned certificate, upstream GET-only calls, bounded pagination and stale/unknown states.
 - Existing cameras, Hue, Ambilight, HDMI selection and automatic screensaver activation settings retained.
 
-## 0.11.1 compact phone/tablet administration
+## 0.11.2 dedicated Shortcuts tab
+
+- Four colour-coded cards, independent assignment preview, translated disabled state, saved hidden-camera guidance and an explicit draft-only default reset. Home now contains names/visibility only. Existing native mappings and navigation scope are retained.
+- 78 web checks passed. Browser checks passed for the new editor at six widths from 320–1280 px, English/monospace at three widths, all eight tabs at 320 px, save/reload, retained Home drafts and unsaved-reset recovery. No console warnings/errors or final body overflow.
+- Both signed builds and nine physical installation/API checks passed: retained-key hash/runtime, full settings/package retention including the existing shortcut map, foreground preservation, exact served HTML/catalog, separate Shortcuts panel and unauthenticated rejection. No native TV activity or provider command was opened. Reviewed synthetic shortcut and Home images were updated. Native/provider suites retain their earlier documented scope.
+
+## Previous 0.11.1 compact phone/tablet administration
 
 - Smaller page chrome and spacing, sticky swipeable section strip through 900 px, labelled visibility tiles, full-width phone save controls, 44 px order buttons and expandable translated setup guidance. No provider action or new permission.
 - 70 production web checks passed. All seven panels at 320/390/768/900/901/1280 px and English/monospace at 320/901 px passed without horizontal body overflow. Keyboard selection/reveal, guidance expansion, shared language/font saves and scrolled section changes passed; no console warnings/errors.

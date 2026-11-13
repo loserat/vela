@@ -11,7 +11,7 @@ class Element{
 }
 const elements={};for(const m of html.matchAll(/<[^>]*\bid="([^"]+)"[^>]*>/g)){const e=elements[m[1]]=new Element(m[1]);e.hidden=/\bhidden\b/.test(m[0]);e.checked=/\bchecked\b/.test(m[0]);}
 elements['preview-grid'].children=['camera','ambilight','hue','tv','inputs','system'].map(id=>elements['preview-'+id]);
-const names=['display','design','camera','hue','devices','network','tv'],nav=names.map(n=>{const e=elements['tab-'+n];e.dataset.tab=n;return e;}),requests=[];
+const names=['display','design','shortcuts','camera','hue','devices','network','tv'],nav=names.map(n=>{const e=elements['tab-'+n];e.dataset.tab=n;return e;}),requests=[];
 const state={version:'fixture',device:{displayName:'Philips Test TV',manufacturer:'Philips',model:'TEST'},display:{camera:true,clock:true,date:true,homeTitle:'Zuhause'},defaultCameraId:'one',cameras:[{id:'one',name:'Eingang',available:true},{id:'two',name:'Garten',available:false,status:'missing'}]};
 state.interface={language:'de',textFont:'sans',clockFont:'sans'};
 state.appearance={theme:'nordlicht',layout:'focus',order:['cameras','ambilight','hue','tv','inputs','system']};
@@ -104,6 +104,7 @@ function run(code){return vm.runInContext(code,sandbox)}
  check('Language save preserves independent names and shortcut drafts',elements['home-title'].value==='Noch offen'&&elements['display-state'].textContent==='Unsaved changes'&&elements['remote-yellow'].value==='apps'&&elements['remote-state'].textContent==='Unsaved changes');
  check('Language save updates camera status and missing-stream suffix without resetting camera drafts',elements['camera-status'].textContent==='Stream configured'&&elements['camera-select'].options[1].textContent==='Garten · Stream missing'&&elements['camera-name'].value==='Camera draft'&&elements['camera-url'].value==='pending stream');
  check('User-defined heading is never translated even if it matches an app term',elements['device-title'].textContent==='Geräte');
+ check('Shortcut preview uses current language and shows disabled keys explicitly',elements['remote-preview-red'].textContent==='Network'&&elements['remote-preview-blue'].textContent==='No action'&&elements['remote-preview-key-blue'].className==='inactive');
  check('Generated order labels switch languages without losing the order',elements['home-order'].children.some(row=>row.children[1].children[0].textContent==='Cameras')&&run('appearance.order.length')===6);
  await run('loadHue()');await run('loadHueAutomation()');check('Hue app status and automation are localized',elements['hue-status'].textContent.startsWith('Connected')&&elements['hue-automation-state'].textContent==='Enabled');
  network={...network,transport:'WLAN',ssid:'Zuhause',internet:'validated'};await run('loadNetwork()');check('Network labels are translated while SSID stays unchanged',elements['network-transport'].textContent==='Wi-Fi'&&elements['network-internet'].textContent==='Internet confirmed'&&elements['network-ssid'].textContent==='Zuhause');
@@ -112,10 +113,20 @@ function run(code){return vm.runInContext(code,sandbox)}
  unifi.devices[0].state='UPDATING';await run('loadUniFi()');check('Provider update labels use the current saved language',elements['unifi-devices'].children[0].children[1].children[1].textContent==='Updating');
  check('Clock and text choices remain independent',elements['interface-text-font'].value==='mono'&&elements['interface-clock-font'].value==='serif');
  elements['interface-language'].value='de';await elements['interface-form'].listeners.submit({preventDefault(){},currentTarget:elements['interface-form']});await tick();check('Switching back restores German mutable labels',run('interfaceValue.language')==='de'&&elements['display-state'].textContent==='Nicht gespeichert'&&elements['home-order'].children.some(row=>row.children[1].children[0].textContent==='Kameras'));
- const strip={clientWidth:210,scrollWidth:630,scrollLeft:0};nav.forEach((button,i)=>{button.parentElement=strip;button.offsetLeft=i*90;button.offsetWidth=90});
+ const beforeTab=requests.length;run('tab(nav[2])');await tick();check('Shortcuts opens its own panel without requests or resetting Home drafts',!elements.shortcuts.hidden&&elements.display.hidden&&nav[2]['aria-selected']==='true'&&requests.length===beforeTab&&elements['home-title'].value==='Noch offen');
+ const beforeDraft=requests.length;elements['remote-red'].value='hue';elements['remote-red'].listeners.change();
+ check('Shortcut selection changes only the preview until Save',elements['remote-preview-red'].textContent==='Hue'&&elements['remote-state'].textContent==='Nicht gespeichert'&&requests.length===beforeDraft&&state.remote.red==='network');
+ elements['remote-reset'].listeners.click();check('Default assignments reset only the draft and preserve other drafts',elements['remote-red'].value==='cameras'&&elements['remote-blue'].value==='inputs'&&elements['remote-preview-yellow'].textContent==='Hue'&&state.remote.red==='network'&&requests.length===beforeDraft&&elements['home-title'].value==='Noch offen'&&elements['remote-state'].textContent==='Nicht gespeichert');
+ run('state.display.camera=false;renderRemotePreview()');check('Hidden-camera guidance reflects saved visibility without discarding the assignment',!elements['remote-camera-note'].hidden&&elements['remote-red'].value==='cameras');run('state.display.camera=true;renderRemotePreview()');
+ let releaseRemote;const previousFetch=sandbox.fetch;sandbox.fetch=(url,options)=>url==='/api/remote/configure'?new Promise(resolve=>releaseRemote=()=>resolve(previousFetch(url,options))):previousFetch(url,options);
+ const pendingRemote=elements['remote-form'].listeners.submit({preventDefault(){},currentTarget:elements['remote-form']});
+ const pendingValues=run("JSON.stringify(remoteColors.map(key=>$('remote-'+key).value))");elements['remote-reset'].listeners.click();check('Pending shortcut save locks selectors and ignores a reset',run("remoteColors.every(key=>$('remote-'+key).disabled)")&&run("JSON.stringify(remoteColors.map(key=>$('remote-'+key).value))")===pendingValues);releaseRemote();await pendingRemote;await tick();sandbox.fetch=previousFetch;
+ check('Shortcut save acknowledges defaults and releases all selectors',state.remote.red==='cameras'&&elements['remote-state'].textContent==='Gespeichert'&&run("remoteColors.every(key=>!$('remote-'+key).disabled)"));
+ status=503;elements['remote-red'].value='apps';elements['remote-red'].listeners.change();await elements['remote-form'].listeners.submit({preventDefault(){},currentTarget:elements['remote-form']});await tick();status=200;check('Failed shortcut save preserves the draft and releases selectors',elements['remote-red'].value==='apps'&&elements['remote-state'].textContent==='Nicht gespeichert'&&run("remoteColors.every(key=>!$('remote-'+key).disabled)")&&elements['app-error'].textContent);
+ const strip={clientWidth:210,scrollWidth:720,scrollLeft:0};nav.forEach((button,i)=>{button.parentElement=strip;button.offsetLeft=i*90;button.offsetWidth=90});
  nav[0].listeners.keydown({key:'End',preventDefault(){}});await tick();
- check('Keyboard End selects the final rubric and reveals it inside the compact strip',nav[6].focused&&nav[6]['aria-selected']==='true'&&strip.scrollLeft===420&&!elements.tv.hidden);
- nav[6].listeners.keydown({key:'Home',preventDefault(){}});await tick();
+ check('Keyboard End selects the final rubric and reveals it inside the compact strip',nav[7].focused&&nav[7]['aria-selected']==='true'&&strip.scrollLeft===510&&!elements.tv.hidden);
+ nav[7].listeners.keydown({key:'Home',preventDefault(){}});await tick();
  check('Keyboard Home returns the strip to the first rubric without losing drafts',nav[0].focused&&strip.scrollLeft===0&&!elements.display.hidden&&elements['home-title'].value==='Noch offen');
  console.log(checks+' web state/payload checks passed; no browser or real services used.');
 })().catch(e=>{console.error(e);process.exitCode=1});

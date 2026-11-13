@@ -12,7 +12,7 @@ python3 tests/check_palette.py
 python3 app/build.py
 ```
 
-`fetch_deps.py` downloads LibVLC 3.7.7 from Maven Central and verifies the pinned SHA256. The build packages `armeabi-v7a` and produces `dist/TV-Dashboard-0.11.1.apk`; generated dependencies and APKs are ignored by Git.
+`fetch_deps.py` downloads LibVLC 3.7.7 from Maven Central and verifies the pinned SHA256. The build packages `armeabi-v7a` and produces `dist/TV-Dashboard-0.11.2.apk`; generated dependencies and APKs are ignored by Git.
 
 ## Signing and retained data
 
@@ -28,7 +28,7 @@ Select the actual device explicitly, especially when an emulator is also running
 
 ```sh
 adb devices
-adb -s DEVICE install -r dist/TV-Dashboard-0.11.1.apk
+adb -s DEVICE install -r dist/TV-Dashboard-0.11.2.apk
 adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -66,3 +66,5 @@ Open the local web **Design** tab. **Design & Anordnung** contains themes and ti
 Reload an already-open web page after updating the APK to receive the new Design tab and translation catalog. Other open browser sessions receive the shared language on reload; the saving session changes immediately. This changes the dashboards, not Android/Philips or third-party app languages.
 
 After the 0.11.1 update, reload any already-open browser page. On phones/tablets, swipe the sticky section strip sideways to reach all seven rubrics; expanded guidance retains the full setup instructions.
+
+Since 0.11.2, use the separate **Shortcuts** tab to choose each remote colour key. The default reset changes only the preview/draft; save explicitly to apply it. Existing assignments are retained when updating. Reload an existing browser page to receive the eighth tab.

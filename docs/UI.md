@@ -57,7 +57,7 @@ The app's clock/color styles and preview do not silently enable an automatic scr
 
 The Home footer contains a small focusable status dot/name without an idle card or arrow; Down from the lower shortcut row reaches it and OK opens the native network detail page. Refresh keeps focus. Android capability callbacks update only the visible status card/button. Network settings open only after the user selects that explicit action. No UniFi site-wide assertion or signal-strength estimate is shown.
 
-The local web page carries the same teal/purple background and mint focus accents, with teal cameras, warm Hue and blue device/network areas. Seven responsive sections share consistent spacing, keyboard-accessible tabs (Left/Right/Home/End) and explicit save feedback. At 320/390 px cards stack and action headings wrap. Existing camera streamlinks are not returned into a field; deletion names the source in a confirmation dialog. [Web screenshot](images/web-settings.jpg) · [Mobile network screenshot](images/web-network-mobile.jpg).
+The local web page carries the same teal/purple background and mint focus accents, with teal cameras, warm Hue and blue device/network areas. Eight responsive sections share consistent spacing, keyboard-accessible tabs (Left/Right/Home/End) and explicit save feedback. At 320/390 px cards stack and action headings wrap. Existing camera streamlinks are not returned into a field; deletion names the source in a confirmation dialog. [Web screenshot](images/web-settings.jpg) · [Mobile network screenshot](images/web-network-mobile.jpg).
 
 The web Startseite form stores two distinct names: the Home heading on the TV (40 characters, empty restores Zuhause), and the web dashboard name (80 characters, empty restores Android manufacturer/model). Long native headings ellipsize before the clock; long web labels wrap. Changing a friendly label does not change hardware identity.
 
@@ -71,7 +71,7 @@ Since 0.8.2, **TV-Modell** is a separate stored sales designation. **TV-Modell e
 
 ## Color-key shortcuts
 
-On Home, System and Apps, red/green/yellow/blue navigate to Cameras/Ambilight/Hue/Devices by default. A small color-and-text legend appears below the Home navigation hints. The web Startseite section stores all four mappings separately from the Home form; available destinations are Cameras, Ambilight, Hue, Devices, Network, System, Apps and disabled. Saving preserves unrelated unsaved Home edits. Disabled keys have no Home legend entry. Hiding cameras also hides their legend and blocks that shortcut.
+On Home, System and Apps, red/green/yellow/blue navigate to Cameras/Ambilight/Hue/Devices by default. A small color-and-text legend appears below the Home navigation hints. The web Shortcuts section stores all four mappings separately from the Home form; available destinations are Cameras, Ambilight, Hue, Devices, Network, System, Apps and disabled. Saving preserves unrelated unsaved Home edits. Disabled keys have no Home legend entry. Hiding cameras also hides their legend and blocks that shortcut.
 
 Only the first uncancelled key-down navigates; repeats and key-up are consumed. Other Dashboard detail pages, external apps and TV/HDMI viewing retain their own key handling. Shortcuts open pages, never perform lighting/source/playback commands directly. A TV may intercept the hardware keys before delivering Android events; injected-key checks do not certify a physical remote.
 
@@ -101,7 +101,7 @@ Hiding cameras removes their visible tile and preview, while retaining their cho
 
 ## Shared language and independent fonts (0.11.0)
 
-The dedicated **Design** tab groups the theme/order editor and **Sprache & Schrift**. **Startseite** retains names, visibility and remote color shortcuts. A complete explicit Save selects German or English for both dashboards and independent default/condensed/serif/monospace fonts for body text and the clock. Clock/date in Home and the screensaver follow the same choices. The web font sample and Home preview show unsaved choices without changing the TV.
+The dedicated **Design** tab groups the theme/order editor and **Sprache & Schrift**. **Startseite** retains names and visibility; since 0.11.2, remote color shortcuts live in their own **Shortcuts** tab. A complete explicit Save selects German or English for both dashboards and independent default/condensed/serif/monospace fonts for body text and the clock. Clock/date in Home and the screensaver follow the same choices. The web font sample and Home preview show unsaved choices without changing the TV.
 
 Only app-owned labels are translated. User headings, camera names, Hue rooms/scenes, SSIDs, app labels and provider/device names stay literal, even when a name matches a German menu word. A stored Home name such as Zuhause remains a custom name; only an unset default is localized. Android/Philips settings and third-party apps keep their own language.
 
@@ -118,3 +118,13 @@ Camera, Hue and connectivity explanations remain available in expandable, transl
 At the same 390 px synthetic fixture, the first Home form moved from approximately 419 px to 215 px; total initial Home scroll height decreased from about 1772 px to 1340 px (around 24%). Browser scrollbar/font settling can shift these values. These are layout measurements, not a general performance benchmark or physical-phone certification.
 
 [Phone Home](images/web-settings-mobile.jpg) · [Phone Design](images/web-design-mobile.jpg) · [Phone network](images/web-network-mobile.jpg).
+
+## Dedicated shortcut editor (0.11.2)
+
+**Shortcuts → Farbtasten belegen** contains four colour-coded cards with labelled destination selectors. Four columns fit wide desktops, two fit tablets and one fits narrow phones. A translated preview shows the current draft, including explicitly disabled keys. If the saved Home visibility hides cameras, a contextual note explains why camera shortcuts are inactive; an unsaved Home visibility draft does not change that fact.
+
+**Standardbelegung** restores Cameras/Ambilight/Hue/Devices in the draft only. **Shortcuts speichern** is the explicit commit. Selectors/reset are locked during a save; a failed save releases controls and retains the draft. Saving Home, cameras, design or language does not discard independent shortcut drafts. The Home tab contains only names and visibility.
+
+![Four colour-key settings](images/web-shortcuts.jpg)
+
+[Phone view](images/web-shortcuts-mobile.jpg). Native key handling and its Home/System/Apps scope are unchanged; physical remote forwarding remains a separate validation boundary.

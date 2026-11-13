@@ -6,7 +6,7 @@ A lightweight dashboard for Philips Android TV: cameras, Ambilight, Philips Hue,
 
 Install as an Android app and optionally assign it as Home.
 
-**0.11.1 · experimental beta.** Repository documentation is in English; the TV interface and local web settings default to German, with a shared English option. The TV interface has no project name or logo; Android lists the app as **TV-Dashboard**.
+**0.11.2 · experimental beta.** Repository documentation is in English; the TV interface and local web settings default to German, with a shared English option. The TV interface has no project name or logo; Android lists the app as **TV-Dashboard**.
 
 ## A look at the interface
 
@@ -52,7 +52,9 @@ These native emulator screenshots use synthetic data and a reordered Home. The c
 
 - Optional Hue standby-off automation in web **Hue → Hue mit dem TV ausschalten**: off by default, targets only the selected room, sends no wake/on command and shows the last attempt result. Actual TV standby acceptance remains pending; power loss or a disconnected bridge cannot be handled reliably.
 
-- Four configurable remote color keys: red → Cameras, green → Ambilight, yellow → Hue, blue → Devices by default. Change them in web **Startseite → Farbtasten der Fernbedienung**; shortcuts navigate only within Home/System/Apps.
+- A dedicated **Shortcuts** tab with four colour-coded cards, live assignment preview and draft-only default reset. [Desktop](docs/images/web-shortcuts.jpg) · [Phone](docs/images/web-shortcuts-mobile.jpg).
+
+- Four configurable remote color keys: red → Cameras, green → Ambilight, yellow → Hue, blue → Devices by default. Change them in web **Shortcuts → Farbtasten belegen**; shortcuts navigate only within Home/System/Apps.
 
 - A clean Home screen with large focus targets, direct TV access, devices, and system settings.
 - Up to 24 configured cameras, six per overview page, with one full-screen stream at a time. The overview retains its page when returning from settings.
@@ -87,7 +89,7 @@ Requirements: Python 3, `curl`, JDK 21, Android SDK platform `android-34`, Build
 python3 app/fetch_deps.py
 python3 tests/check_palette.py
 python3 app/build.py
-adb -s DEVICE install -r dist/TV-Dashboard-0.11.1.apk
+adb -s DEVICE install -r dist/TV-Dashboard-0.11.2.apk
 adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -110,7 +112,7 @@ Replace `DEVICE` with the explicitly selected authorized device. Preserve your s
 
 ## Validation and limits
 
-Version 0.11.1 passed **70** web state/payload checks. Browser checks covered all seven sections at **320, 390, 768, 900, 901 and 1280 px**, plus English/monospace at 320 and 901 px, without horizontal body overflow. Keyboard tab reveal, expandable guidance and language/font round trips passed. Eight physical installation/API checks passed with the watched TV activity retained; prior native/provider checks keep their separate scope in [current status](docs/STATUS.md).
+Version 0.11.2 passed **78** web state/payload checks, including independent shortcut drafts, preview, default reset, in-flight locking and failed-save recovery. Browser checks covered the new editor at 320–1280 px, English/monospace, custom save/reload and all eight tabs at 320 px without horizontal body overflow. Nine physical installation/API checks passed with existing assignments and foreground retained; earlier native/provider results keep their separate scope in [current status](docs/STATUS.md).
 
 Slow, stale and failing Hue replies are included, as are pixel comparisons outside the brightness slider. [Reproduce the tests](docs/TESTING.md). [Current device results and known limits](docs/STATUS.md).
 

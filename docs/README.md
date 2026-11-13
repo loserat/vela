@@ -23,6 +23,7 @@ The repository and documentation are public. Device addresses, account data, cam
 
 - Version 0.9.1 adds optional Hue standby off, with isolated testing and an explicit real-device acceptance boundary.
 
+- Version 0.11.2 adds a separate colour-key shortcut editor with preview and a draft-only default reset.
 - Version 0.11.1 refines phone/tablet spacing, section navigation, touch controls and expandable setup guidance.
 - Version 0.11.0 adds a dedicated Design tab, shared German/English UI language and separate clock/text system fonts.
 - Version 0.10.0 adds four static TV designs and a web Home grid editor with separately validated appearance preferences.

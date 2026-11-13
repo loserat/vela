@@ -24,7 +24,7 @@ The owner-reported marketed model is **55PUS6581/12**. This number was not indep
 ## What was verified on this TV
 
 - Installation of the signed dashboard update with package identity preserved.
-- Runtime version 0.11.1 and installed APK hash.
+- Runtime version 0.11.2 and installed APK hash.
 - Local HTTPS settings, certificate continuity, login, and retained camera IDs.
 - Exact final responsive web asset, authenticated passive network snapshot and native network page/Back. Android reported WLAN with validated internet; no connectivity settings were changed.
 - Real Hue Bridge HTTPS identity, physical-button pairing, explicit selected-room persistence, live state/capability reads, and a controlled brightness adjustment with restoration.
@@ -88,3 +88,7 @@ Native font-family/locale/translated-control checks use the isolated emulator. F
 ## Mobile web refinement 0.11.1
 
 The retained-key update passed eight physical installation/API checks, including the exact served mobile asset/catalog, unchanged current settings and installed package set, and the previously watched foreground activity. No TV activity or provider command was opened. Mobile layout was checked in browser viewports, not on physical phone hardware. Earlier native/provider results retain their documented scope.
+
+## Separate shortcut editor 0.11.2
+
+Nine physical installation/API checks passed with the existing map and all other settings retained. The TV served the exact new web asset with Shortcuts outside Home; the previously watched activity stayed in front. Browser preview separately verifies editing/preview/save behavior. Native remote forwarding was not changed or newly certified.

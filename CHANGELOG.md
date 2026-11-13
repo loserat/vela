@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.11.2 — 2026-11-13
+
+- Moved remote colour-key settings into a dedicated Shortcuts tab with four coloured cards and a responsive assignment preview. Home now contains names and visibility only.
+- Added a draft-only default assignment reset, explicit disabled-key preview and saved hidden-camera guidance. Existing mappings remain intact until Save.
+- Locked selectors/reset during a save and retained drafts after failures. Native key handling and configuration endpoints remain unchanged.
+- Passed 78 web checks and browser save/reload/language/responsive checks; updated English/German documentation and reviewed synthetic screenshots.
+
 ## 0.11.1 — 2026-11-13
 
 - Made local web settings more compact on phones/tablets, with less header/card spacing, visibility tiles, smaller previews and two-column font choices.

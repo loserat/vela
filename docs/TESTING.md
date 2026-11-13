@@ -201,3 +201,13 @@ An intermediate 768 px Network heading overflowed beside its refresh control. Fl
 Both signed builds and installation/API checks are separate from the browser preview. This CSS/navigation release does not rerun earlier native lighting/player suites: their 0.11.0 and earlier scope remains documented. iOS Safari, the mobile keyboard and physical touch scrolling were not tested on a real phone.
 
 Eight physical installation/API checks passed for 0.11.1: retained-key APK hash/runtime, unchanged configuration/package set, foreground preservation, exact rendered web response/catalog, compact navigation/guidance markers and unauthenticated state rejection. Only the existing DUMP-protected receiver with an absent import file initialized the background service after package replacement; no Dashboard activity was opened.
+
+## Dedicated shortcuts (0.11.2)
+
+The 78 web checks add separate-panel navigation without requests, translated preview/disabled keys, draft-only selection/reset, saved hidden-camera guidance, pending-save locking, acknowledgement/unlocking and failed-save draft retention. An initial harness check mutated the fixture's outer state rather than the page's cloned state; the fixture was corrected and the final run passed. No production failure was inferred from that mismatch.
+
+Synthetic browser checks covered Shortcuts at 320/390/768/900/901/1280 px, English/monospace at 320/901/1280 px, and all eight tabs at 320 px with the selected tab visible and no body overflow. Custom red/disabled blue persisted after reload, Home drafts survived shortcut saves, and an unsaved default reset disappeared on reload. Defaults were restored explicitly for the reviewed synthetic screenshots. No console warnings/errors were recorded.
+
+This is a web editor change. Earlier native color-key event/hardware boundaries remain unchanged; no real light, HDMI or camera action is needed to check this page. Physical phone/Safari input remains separate from viewport testing.
+
+Nine physical installation/API checks passed: final installed hash/runtime, all retained settings/package set and foreground activity, exact new HTML/catalog, separate Shortcuts panel, compact navigation/guidance and unauthenticated rejection. The existing background service was initialized through the DUMP-protected receiver only after checking that its import file was absent; no Dashboard activity was opened.

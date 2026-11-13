@@ -61,7 +61,7 @@ The unfinished AC Infinity/climate integration remains absent from current publi
 
 Authenticated read-only `GET /api/network/state` returns `source`, `checkedAt`, `connected`, `transport`, `internet`, `address`, and `ssid`. No network configuration write endpoint exists. [Network semantics](NETWORK.md) explain the distinction from UniFi health.
 
-The single local HTML asset has seven accessible tab panels, local CSS/system fonts, scoped pending-form locks and explicit save feedback. Switching sections fetches Hue/HDMI/network data on demand; there is no web polling timer. Camera saves refresh the library while preserving unsaved Home toggles. HDMI inventory is read-only in the browser; actual input selection stays on the TV. Hue setup uses the existing authenticated/pinned adapter; reading the page never pairs or changes room automatically.
+The single local HTML asset has eight accessible tab panels, local CSS/system fonts, scoped pending-form locks and explicit save feedback. Switching sections fetches Hue/HDMI/network data on demand; there is no web polling timer. Camera saves refresh the library while preserving unsaved Home toggles. HDMI inventory is read-only in the browser; actual input selection stays on the TV. Hue setup uses the existing authenticated/pinned adapter; reading the page never pairs or changes room automatically.
 
 ## Added 0.8.0 components and endpoints
 
@@ -127,3 +127,9 @@ Web static source text/attributes are captured before loading user values. Mutab
 ## Compact responsive administration (0.11.1)
 
 The only production Java change is the release metadata. CSS adds a compact layout through 900 px, a sticky overflow-scrolling tab strip, bounded controls and expandable native HTML guidance. `revealTab` adjusts only the tab strip's horizontal scroll position; mobile panel navigation uses the existing allowlisted tab IDs. Existing authenticated routes, independent forms, encrypted storage, native TV controls and permissions are unchanged. The three guidance summaries use the existing static translation catalog. No external font, UI framework, dependency or polling timer is introduced.
+
+## Independent shortcut presentation (0.11.2)
+
+The existing `remote-form` moved from Home into an eighth `shortcuts` panel. It still writes the same complete, allowlisted `/api/remote/configure` payload. The native shortcut model, permissions and stored map are unchanged. `renderRemotePreview` uses owned translated labels and the current selector values; a camera warning uses the saved `state.display.camera`, not an unsaved Home draft.
+
+Default reset changes only the local draft and dirty state. During POST, all four selectors and the reset button are locked; `finally` releases selectors on success or failure. Saving returns the acknowledged map. Language refresh regenerates preview labels without resetting selectors. Existing independent-form/session/origin handling remains intact.
