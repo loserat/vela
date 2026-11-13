@@ -7,23 +7,37 @@
 | [Installation](INSTALLATION.md) | Build, signing, update, Home assignment, rollback and retained data |
 | [UI](UI.md) | Screens, focus/remote behavior, screenshots and rendering choices |
 | [Architecture](ARCHITECTURE.md) | Components, local integrations, storage and API boundaries |
+| [Network](NETWORK.md) | Passive TV connectivity, Android validation and local UniFi boundaries |
 | [Testing](TESTING.md) | Reproducible isolated fixtures and interpretation of test evidence |
 | [Current status](STATUS.md) | Current validation and outstanding checks |
 | [Hardware](HARDWARE.md) | Live device properties, provenance and compatibility limits |
+| [Proposed extensions](ROADMAP.md) | Future ideas, dependencies, suggested order and acceptance criteria; not implemented features |
 | [Changelog](../CHANGELOG.md) | Changes by version |
 | [Validation history](VALIDATION-HISTORY.md) | Earlier checks, failed attempts and limitations retained through 0.6.1 |
 
-The repository and documentation are public. Device addresses, account data, camera imagery, actual application keys and signing material are not part of the published project.
+## Current application: 0.11.2
 
-- [Network status](NETWORK.md): passive TV connectivity, Android validation and UniFi boundaries.
+The TV provides native Home, cameras, Ambilight, Hue, HDMI selection and System screens. The local web dashboard has eight sections:
 
-- Version 0.8.0 adds editable Home/model names, local Network inventory and TV-info/maintenance with redacted diagnostics and app-only screensaver styling.
+| Web section | Settings and information |
+| --- | --- |
+| Startseite | TV heading, dashboard name and camera/clock/date visibility |
+| Design | Themes, tile order/layout, shared language and separate clock/text fonts |
+| Shortcuts | Four colour-key assignments, draft preview and draft-only default reset |
+| Kameras | Camera names, protected stream setup and default camera |
+| Hue | Bridge pairing, selected room and optional standby-off setting |
+| Geräte | Read-only HDMI inventory; source selection remains on the TV |
+| Netzwerk | Android connectivity snapshot and optional local UniFi device inventory |
+| TV-Info | Separate sales model, Android identity, device facts, saver styling and diagnostics |
 
-- Version 0.9.0 adds configurable app-local remote color keys; see [UI](UI.md#color-key-shortcuts) and [testing](TESTING.md#color-key-shortcuts-090).
+The default interface language is German, with a shared English option. Repository documentation is English; the [German README](../README.de.md) provides an introduction and links to the same guides. Screenshots use synthetic data and are linked from the [UI guide](UI.md).
 
-- Version 0.9.1 adds optional Hue standby off, with isolated testing and an explicit real-device acceptance boundary.
+## Reading the evidence
 
-- Version 0.11.2 adds a separate colour-key shortcut editor with preview and a draft-only default reset.
-- Version 0.11.1 refines phone/tablet spacing, section navigation, touch controls and expandable setup guidance.
-- Version 0.11.0 adds a dedicated Design tab, shared German/English UI language and separate clock/text system fonts.
-- Version 0.10.0 adds four static TV designs and a web Home grid editor with separately validated appearance preferences.
+Implemented behavior, local fixture/browser testing and physical verification are separate claims. Version 0.11.2 has recorded 78 web checks and nine physical installation/API checks; earlier native/provider results retain their release-specific scope. [Current status](STATUS.md) lists the remaining acceptance work. A documentation-only change does not rerun those checks or update a TV.
+
+The [roadmap](ROADMAP.md) records eleven discussed extensions, including direct favourites, lighting presets and combined actions. It is a planning document with no promised delivery dates. Completed changes remain in the [changelog](../CHANGELOG.md).
+
+## Publication boundary
+
+The repository and documentation are public. Device addresses, account data, camera imagery, actual application keys and signing material are not part of the published project. Examples and gallery images use synthetic data. Portable settings export and a guided updater are proposals, not existing backup/update facilities; current signing, retained-data and rollback guidance is in [Installation](INSTALLATION.md).

@@ -117,9 +117,13 @@ Die Hue-Prüfungen enthalten langsame, veraltete und fehlerhafte Antworten sowie
 
 Andere TV-Modelle, Ambilight-Geräte mit zwingender HTTPS-Kopplung, längerer Live-Kamerawechsel und die automatische Bildschirmschoner-Aktivierung dieses Philips sind noch nicht vollständig geprüft. Der Philips fängt den direkten Bildschirmschoner-Aufruf ab; die App erklärt das und bietet die allgemeinen TV-Einstellungen an. Es gibt keine allgemeine Zusage für Bildrate oder Gerätekompatibilität.
 
+## Vorgeschlagene nächste Schritte
+
+Die [Roadmap auf Englisch](docs/ROADMAP.md) dokumentiert die besprochenen Erweiterungen mit Voraussetzungen und Prüfkriterien. Als Reihenfolge sind direkte Favoriten, gemeinsame Licht-Presets und danach kombinierte Aktionen wie „Filmabend“ vorgeschlagen. Smart-Home-Anzeigen, UniFi-Kurzstatus, weitere Kachelgrößen, zeitabhängige Designs, Einstellungsübertragung, geführte Updates, Einrichtungsassistent und Klingelvorschau sind ebenfalls Ideen. Sie sind noch nicht umgesetzt und haben keinen festgelegten Veröffentlichungstermin.
+
 ## Dokumentation
 
-[Übersicht](docs/README.md) · [Oberfläche](docs/UI.md) · [Aufbau und Daten](docs/ARCHITECTURE.md) · [Installation](docs/INSTALLATION.md) · [Tests](docs/TESTING.md) · [Prüfstand](docs/STATUS.md) · [Hardware](docs/HARDWARE.md) · [Netzwerk](docs/NETWORK.md) · [Änderungen](CHANGELOG.md)
+[Übersicht](docs/README.md) · [Oberfläche](docs/UI.md) · [Aufbau und Daten](docs/ARCHITECTURE.md) · [Installation](docs/INSTALLATION.md) · [Tests](docs/TESTING.md) · [Prüfstand](docs/STATUS.md) · [Hardware](docs/HARDWARE.md) · [Netzwerk](docs/NETWORK.md) · [Roadmap](docs/ROADMAP.md) · [Änderungen](CHANGELOG.md)
 
 ## Lizenzen
 

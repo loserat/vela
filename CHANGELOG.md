@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased — documentation
+
+- Recorded eleven proposed extensions with dependencies, a suggested first-increment order and acceptance boundaries in the roadmap. These are not implemented features or scheduled releases.
+- Linked the roadmap from both READMEs and reorganised the documentation index around setup, current behavior, evidence and future work.
+- Consolidated outstanding remote, standby, phone and typography checks without changing the 0.11.2 application or its recorded test scope.
+
 ## 0.11.2 — 2026-11-13
 
 - Moved remote colour-key settings into a dedicated Shortcuts tab with four coloured cards and a responsive assignment preview. Home now contains names and visibility only.

@@ -4,6 +4,8 @@
 
 **November 13, 2026 · 0.11.2 · experimental beta.** Installed behavior, fixture checks and real provider acceptance are distinguished below.
 
+The [roadmap](ROADMAP.md) separately records proposed extensions. The documentation update adds no runtime feature and does not rerun or expand the physical acceptance results below.
+
 ## Implemented and installed
 
 - Compact Home connection dot/name, reading the actual active SSID where Android permits it; no location permission or custom internet probe.
@@ -99,6 +101,10 @@ The earlier physical Hue slider/pixel/restore and Apple TV HDMI 4 routing result
 
 ## Remaining boundaries
 
+- Physical infrared/Bluetooth colour-key forwarding remains unverified; Android-injected event checks do not establish that the remote firmware delivers those keys.
+- Phone/tablet layouts were checked in browser viewports. Physical phone/Safari behavior and the on-screen mobile keyboard remain unverified.
+- Native font-family/locale behavior was checked in the emulator. Physical-panel typography and real-stream continuity through an explicit language/font change remain separate acceptance work.
+- Real Hue standby-off/lamp acceptance remains pending despite the isolated sleep/wake tests; bridge acknowledgement alone does not prove every lamp obeyed.
 - Real UniFi controller credentials/setup were deferred by the owner. The API adapter is implemented and fixture-tested; real site/device values and exact firmware compatibility are not yet verified.
 - SSID access can be redacted by other Android versions. The fallback is WLAN, with no inferred name or automatic permission/settings changes.
 - Repeated real video switching, extended operation/heat/standby and automatic idle screensaver activation on this Philips remain separate acceptance work.

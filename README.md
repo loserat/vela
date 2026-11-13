@@ -118,9 +118,13 @@ Slow, stale and failing Hue replies are included, as are pixel comparisons outsi
 
 Other TV models, authenticated HTTPS-only Ambilight adapters, extended live-camera switching, and automatic screensaver activation on this Philips remain outside the completed validation scope. The Philips intercepts the standard screensaver settings intent, so the app explains the limitation and offers general TV settings. This is a beta, with no universal frame-rate or compatibility claim.
 
+## Proposed next steps
+
+[Roadmap](docs/ROADMAP.md) records the discussed extensions, prerequisites and acceptance boundaries. The suggested starting order is direct favourites, shared lighting presets, then combined actions such as Filmabend. Smart-home widgets, a UniFi summary, portable settings, guided updates, first-run setup and doorbell previews are also proposals, not delivered features or scheduled releases.
+
 ## Documentation
 
-[Documentation index](docs/README.md) · [UI](docs/UI.md) · [Architecture and data](docs/ARCHITECTURE.md) · [Installation](docs/INSTALLATION.md) · [Testing](docs/TESTING.md) · [Status](docs/STATUS.md) · [Hardware](docs/HARDWARE.md) · [Network](docs/NETWORK.md) · [Changelog](CHANGELOG.md)
+[Documentation index](docs/README.md) · [UI](docs/UI.md) · [Architecture and data](docs/ARCHITECTURE.md) · [Installation](docs/INSTALLATION.md) · [Testing](docs/TESTING.md) · [Status](docs/STATUS.md) · [Hardware](docs/HARDWARE.md) · [Network](docs/NETWORK.md) · [Roadmap](docs/ROADMAP.md) · [Changelog](CHANGELOG.md)
 
 ## Licensing
 
