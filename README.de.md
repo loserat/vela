@@ -6,7 +6,7 @@ Eine schlanke Startoberfläche für Philips Android TV: Kameras, Ambilight, Phil
 
 Als Android-App installieren und bei Bedarf als Home-Oberfläche zuordnen.
 
-**0.11.0 · experimentelle Beta.** Die Repository-Dokumentation ist auf Englisch; TV-Oberfläche und lokale Web-Einstellungen starten auf Deutsch und lassen sich gemeinsam auf Englisch umstellen. Am TV erscheinen kein Projektname und kein Logo. In Android heißt die App **TV-Dashboard**.
+**0.11.1 · experimentelle Beta.** Die Repository-Dokumentation ist auf Englisch; TV-Oberfläche und lokale Web-Einstellungen starten auf Deutsch und lassen sich gemeinsam auf Englisch umstellen. Am TV erscheinen kein Projektname und kein Logo. In Android heißt die App **TV-Dashboard**.
 
 ## So sieht es aus
 
@@ -43,6 +43,8 @@ Native Emulator-Screenshots mit Testdaten und eigener Reihenfolge. Die Kamera-Ka
 </details>
 
 ## Funktionen
+
+- Kompakte Handy-/Tablet-Einstellungen: beim Scrollen erreichbare Rubrikenleiste zum seitlichen Wischen, große Bedienflächen, kompakte Sichtbarkeitsschalter und aufklappbare Hilfetexte. [Startseite am Handy](docs/images/web-settings-mobile.jpg) · [Design am Handy](docs/images/web-design-mobile.jpg).
 
 - Eigene Rubrik **Design** für Design, Anordnung, Sprache und Schrift. Deutsch oder Englisch gilt für TV und IP-Dashboard. Uhr und Texte bekommen getrennte Systemschriften: Standard, Schmal, Serif oder Mono. Eigene Namen bleiben erhalten.
 
@@ -85,7 +87,7 @@ Voraussetzungen: Python 3, `curl`, JDK 21, Android-SDK-Plattform `android-34`, B
 python3 app/fetch_deps.py
 python3 tests/check_palette.py
 python3 app/build.py
-adb -s DEVICE install -r dist/TV-Dashboard-0.11.0.apk
+adb -s DEVICE install -r dist/TV-Dashboard-0.11.1.apk
 adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -107,7 +109,7 @@ adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 
 ## Prüfstand und Grenzen
 
-Für 0.11.0 bestanden **68** Web-Prüfungen, **2.880** Layoutkombinationen, **19** native Sprach-/Schriftprüfungen, **19** Designprüfungen und **26** Hue-Bedienungs-/Helligkeitsprüfungen. **15** Installations-/API-Prüfungen am Philips bestanden; dabei blieb das TV-Programm im Vordergrund. Die native Schriftdarstellung wurde im isolierten Emulator geprüft. Einzelheiten und Grenzen stehen im [Prüfstand](docs/STATUS.md).
+Für 0.11.1 bestanden **70** Web-Prüfungen. Alle sieben Rubriken wurden bei **320, 390, 768, 900, 901 und 1280 Pixeln** ohne seitlichen Seitenüberlauf geprüft, zusätzlich Englisch/Monospace bei 320 und 901 Pixeln. Tastaturwechsel, aufklappbare Hinweise und Sprach-/Schriftwechsel funktionieren. Die Browserprüfung ersetzt keinen Test auf einem echten iPhone; Acht Installations-/API-Prüfungen am Philips bestanden bei erhaltener TV-Ansicht; frühere native Prüfungen stehen getrennt im [Prüfstand](docs/STATUS.md).
 
 Die Hue-Prüfungen enthalten langsame, veraltete und fehlerhafte Antworten sowie den Vergleich der Bildpunkte außerhalb des Helligkeitsreglers. [Tests wiederholen (Englisch)](docs/TESTING.md). [Aktuelle Geräteergebnisse und offene Punkte (Englisch)](docs/STATUS.md).
 

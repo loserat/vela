@@ -97,7 +97,7 @@ Hiding cameras removes their visible tile and preview, while retaining their cho
 
 ![Design and order editor](images/web-design.jpg)
 
-[Earlier 0.10.0 mobile editor](images/web-design-mobile.jpg) · [Four native designs](../README.md#a-look-at-the-interface).
+[Mobile editor](images/web-design-mobile.jpg) · [Four native designs](../README.md#a-look-at-the-interface).
 
 ## Shared language and independent fonts (0.11.0)
 
@@ -106,3 +106,15 @@ The dedicated **Design** tab groups the theme/order editor and **Sprache & Schri
 Only app-owned labels are translated. User headings, camera names, Hue rooms/scenes, SSIDs, app labels and provider/device names stay literal, even when a name matches a German menu word. A stored Home name such as Zuhause remains a custom name; only an unset default is localized. Android/Philips settings and third-party apps keep their own language.
 
 The saving web session updates immediately. Other browser sessions pick up the shared setting on reload. Native Home preserves its focused destination. An open native detail activity is recreated on a language/font change, so an open dialog or transient player view can close/restart; ordinary theme-only updates still preserve detail controls. This explicit settings action is separate from the stable brightness-slider path. Browser system-font fallbacks can differ from Android glyphs.
+
+## Compact administration (0.11.1)
+
+The web page uses a narrower desktop content width and smaller card/heading spacing. Up to 900 px, the seven sections become a sticky, horizontally scrollable strip. Touch swipe reveals additional sections; keyboard Left/Right/Home/End retains roving focus and scrolls the selected tab into view. Switching from a stuck strip brings the new panel into view. Navigation changes do not reset independent drafts.
+
+The phone header omits the decorative eyebrow/tagline and keeps the TV name/version. Home visibility choices form three compact labelled switch tiles. Inputs retain a 16 px font and 48 px height; order-arrow buttons have 44 px touch targets. Mobile save actions span their card. Theme swatches, the TV preview, font selectors, facts and device rows use less space while allowing text wrapping. Safe-area insets and reduced-motion preferences are respected.
+
+Camera, Hue and connectivity explanations remain available in expandable, translated guidance sections. Hue automation and UniFi inventory precede their guidance in both DOM and visual order. No pairing, light/input action or background polling is added.
+
+At the same 390 px synthetic fixture, the first Home form moved from approximately 419 px to 215 px; total initial Home scroll height decreased from about 1772 px to 1340 px (around 24%). Browser scrollbar/font settling can shift these values. These are layout measurements, not a general performance benchmark or physical-phone certification.
+
+[Phone Home](images/web-settings-mobile.jpg) · [Phone Design](images/web-design-mobile.jpg) · [Phone network](images/web-network-mobile.jpg).

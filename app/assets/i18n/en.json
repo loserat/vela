@@ -471,5 +471,8 @@
   "TV-Modell": "TV model",
   "TV-Laufzeit": "TV uptime",
   "Vorschau zeigt offene Änderungen. Die Bereiche werden separat gespeichert.": "The preview includes pending changes. Save each section separately.",
-  "TV-Programm": "TV guide"
+  "TV-Programm": "TV guide",
+  "Kamera einrichten · Hinweise": "Camera setup · Help",
+  "Hue verbinden · Hinweise": "Hue setup · Help",
+  "Netzwerkstatus verstehen": "Understanding network status"
 }

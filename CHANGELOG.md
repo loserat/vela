@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.11.1 — 2026-11-13
+
+- Made local web settings more compact on phones/tablets, with less header/card spacing, visibility tiles, smaller previews and two-column font choices.
+- Added a sticky swipeable section strip through 900 px, selected-tab reveal and retained keyboard navigation/drafts.
+- Kept full-size touch fields/buttons and added translated expandable camera/Hue/network guidance, preserving all instructions.
+- Passed 70 web checks and a responsive browser matrix including narrow English/monospace views; refreshed reviewed synthetic screenshots and documentation. Native provider behavior remains unchanged.
+
 ## 0.11.0 — 2026-11-13
 
 - Moved appearance and arrangement into their own **Design** web tab, alongside new language/font settings. Home retains names, visibility and color shortcuts.

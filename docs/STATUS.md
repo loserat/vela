@@ -2,7 +2,7 @@
 
 [Documentation](README.md) · [Testing](TESTING.md) · [Earlier evidence](VALIDATION-HISTORY.md)
 
-**November 13, 2026 · 0.11.0 · experimental beta.** Installed behavior, fixture checks and real provider acceptance are distinguished below.
+**November 13, 2026 · 0.11.1 · experimental beta.** Installed behavior, fixture checks and real provider acceptance are distinguished below.
 
 ## Implemented and installed
 
@@ -12,7 +12,14 @@
 - Optional local UniFi Network inventory with explicit site choice, encrypted key/pinned certificate, upstream GET-only calls, bounded pagination and stale/unknown states.
 - Existing cameras, Hue, Ambilight, HDMI selection and automatic screensaver activation settings retained.
 
-## 0.11.0 language, fonts and a dedicated Design tab
+## 0.11.1 compact phone/tablet administration
+
+- Smaller page chrome and spacing, sticky swipeable section strip through 900 px, labelled visibility tiles, full-width phone save controls, 44 px order buttons and expandable translated setup guidance. No provider action or new permission.
+- 70 production web checks passed. All seven panels at 320/390/768/900/901/1280 px and English/monospace at 320/901 px passed without horizontal body overflow. Keyboard selection/reveal, guidance expansion, shared language/font saves and scrolled section changes passed; no console warnings/errors.
+- Both signed builds passed. Eight physical installation/API checks passed: installed hash/version, retained names/models/cameras/Hue/interface/appearance/shortcuts/saver/automation/package set, retained foreground activity, exact final HTML/catalog, compact navigation markers, three guides and unauthenticated rejection. No TV activity, camera stream, light or input action was opened.
+- Reviewed synthetic Home/Design/network screenshots were refreshed. Earlier native/provider test results retain their own scope; no physical phone/Safari certification is claimed.
+
+## Previous 0.11.0 language, fonts and a dedicated Design tab
 
 The Design tab groups theme/order and shared language/fonts. German remains the default; English translates owned labels while custom/provider names stay literal. Clock/body families are independent and use built-in system fonts. No provider or Android system-language setting changes.
 

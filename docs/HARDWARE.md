@@ -24,7 +24,7 @@ The owner-reported marketed model is **55PUS6581/12**. This number was not indep
 ## What was verified on this TV
 
 - Installation of the signed dashboard update with package identity preserved.
-- Runtime version 0.11.0 and installed APK hash.
+- Runtime version 0.11.1 and installed APK hash.
 - Local HTTPS settings, certificate continuity, login, and retained camera IDs.
 - Exact final responsive web asset, authenticated passive network snapshot and native network page/Back. Android reported WLAN with validated internet; no connectivity settings were changed.
 - Real Hue Bridge HTTPS identity, physical-button pairing, explicit selected-room persistence, live state/capability reads, and a controlled brightness adjustment with restoration.
@@ -84,3 +84,7 @@ Version 0.10.0 was installed in place on the physical Philips. The four backgrou
 ## Language/font update 0.11.0
 
 Native font-family/locale/translated-control checks use the isolated emulator. Fifteen physical installation/API checks passed through its existing pinned HTTPS identity and retained-key installed hash, without opening the Dashboard over the current TV programme. Physical panel typography and real video continuity across an explicit language change remain outside this acceptance pass.
+
+## Mobile web refinement 0.11.1
+
+The retained-key update passed eight physical installation/API checks, including the exact served mobile asset/catalog, unchanged current settings and installed package set, and the previously watched foreground activity. No TV activity or provider command was opened. Mobile layout was checked in browser viewports, not on physical phone hardware. Earlier native/provider results retain their documented scope.

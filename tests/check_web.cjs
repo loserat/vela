@@ -112,5 +112,10 @@ function run(code){return vm.runInContext(code,sandbox)}
  unifi.devices[0].state='UPDATING';await run('loadUniFi()');check('Provider update labels use the current saved language',elements['unifi-devices'].children[0].children[1].children[1].textContent==='Updating');
  check('Clock and text choices remain independent',elements['interface-text-font'].value==='mono'&&elements['interface-clock-font'].value==='serif');
  elements['interface-language'].value='de';await elements['interface-form'].listeners.submit({preventDefault(){},currentTarget:elements['interface-form']});await tick();check('Switching back restores German mutable labels',run('interfaceValue.language')==='de'&&elements['display-state'].textContent==='Nicht gespeichert'&&elements['home-order'].children.some(row=>row.children[1].children[0].textContent==='Kameras'));
+ const strip={clientWidth:210,scrollWidth:630,scrollLeft:0};nav.forEach((button,i)=>{button.parentElement=strip;button.offsetLeft=i*90;button.offsetWidth=90});
+ nav[0].listeners.keydown({key:'End',preventDefault(){}});await tick();
+ check('Keyboard End selects the final rubric and reveals it inside the compact strip',nav[6].focused&&nav[6]['aria-selected']==='true'&&strip.scrollLeft===420&&!elements.tv.hidden);
+ nav[6].listeners.keydown({key:'Home',preventDefault(){}});await tick();
+ check('Keyboard Home returns the strip to the first rubric without losing drafts',nav[0].focused&&strip.scrollLeft===0&&!elements.display.hidden&&elements['home-title'].value==='Noch offen');
  console.log(checks+' web state/payload checks passed; no browser or real services used.');
 })().catch(e=>{console.error(e);process.exitCode=1});

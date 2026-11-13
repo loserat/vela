@@ -6,7 +6,7 @@ A lightweight dashboard for Philips Android TV: cameras, Ambilight, Philips Hue,
 
 Install as an Android app and optionally assign it as Home.
 
-**0.11.0 · experimental beta.** Repository documentation is in English; the TV interface and local web settings default to German, with a shared English option. The TV interface has no project name or logo; Android lists the app as **TV-Dashboard**.
+**0.11.1 · experimental beta.** Repository documentation is in English; the TV interface and local web settings default to German, with a shared English option. The TV interface has no project name or logo; Android lists the app as **TV-Dashboard**.
 
 ## A look at the interface
 
@@ -43,6 +43,8 @@ These native emulator screenshots use synthetic data and a reordered Home. The c
 </details>
 
 ## What it does
+
+- Compact phone/tablet settings: a sticky, horizontally scrollable section strip, full-size touch controls, compact Home visibility tiles and expandable setup guidance. [Phone Home](docs/images/web-settings-mobile.jpg) · [Phone Design](docs/images/web-design-mobile.jpg).
 
 - A dedicated web **Design** section for appearance, arrangement, language and fonts. Choose German or English for both dashboards, plus separate clock/text system fonts: default, condensed, serif or monospace. Custom names stay unchanged.
 
@@ -85,7 +87,7 @@ Requirements: Python 3, `curl`, JDK 21, Android SDK platform `android-34`, Build
 python3 app/fetch_deps.py
 python3 tests/check_palette.py
 python3 app/build.py
-adb -s DEVICE install -r dist/TV-Dashboard-0.11.0.apk
+adb -s DEVICE install -r dist/TV-Dashboard-0.11.1.apk
 adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -108,7 +110,7 @@ Replace `DEVICE` with the explicitly selected authorized device. Preserve your s
 
 ## Validation and limits
 
-Version 0.11.0 passed **68** web checks, **2,880** layout configurations, **19** native language/font checks, **19** appearance checks and **26** Hue interaction/brightness regressions. **15** physical installation/API checks passed for the retained-key update, settings preservation and language/font round trips while TV playback remained in front; native typography was inspected in the isolated emulator. Earlier component checks retain their scope in [current status](docs/STATUS.md) and [validation history](docs/VALIDATION-HISTORY.md).
+Version 0.11.1 passed **70** web state/payload checks. Browser checks covered all seven sections at **320, 390, 768, 900, 901 and 1280 px**, plus English/monospace at 320 and 901 px, without horizontal body overflow. Keyboard tab reveal, expandable guidance and language/font round trips passed. Eight physical installation/API checks passed with the watched TV activity retained; prior native/provider checks keep their separate scope in [current status](docs/STATUS.md).
 
 Slow, stale and failing Hue replies are included, as are pixel comparisons outside the brightness slider. [Reproduce the tests](docs/TESTING.md). [Current device results and known limits](docs/STATUS.md).
 
