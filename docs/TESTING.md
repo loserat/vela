@@ -15,11 +15,13 @@
 | UniFi local adapter | 10 | Synthetic pinned HTTPS, explicit site, pagination, encrypted configuration, rejected host/site/key, stale/recovery and redaction |
 | Native UniFi inventory | 10 | Compact indicator, bounds, pagination, unknown/stale/recovery, Back and GET-only upstream calls |
 | Passive network UI | 6 | Home shortcut, Android source/caveat, bounds, initial focus, refresh and Back |
+| Home layout geometry | 2,880 configurations | Every tile permutation × two visibility states × two geometries: bounds, overlap, order and D-pad reachability |
+| Native appearance | 19 | Complete validation, rendered order, compact camera, actual D-pad traversal, four themes, focus/detail-control retention and no light commands |
 | Hue standby automation | 18 | Actual emulator screen-state broadcasts with loopback Hue, default/disabled behavior, validation, scoped off, no wake-on/retry and stale target suppression |
 | Color-key native events | 12 | Android code mapping, repeat/key-up/cancel suppression, disabled action and custom System/Apps navigation on the isolated emulator |
-| Web state/payload logic | 43 | Draft/title/name retention, fixed technical model after rename, blank stream payload, explicit room/site, inventory/stale/unknown states, saver styling, TV facts, cancelled remote open, duplicate submits, session expiry and errors |
+| Web state/payload logic | 55 | Draft/title/name retention, fixed technical model after rename, blank stream payload, explicit room/site, inventory/stale/unknown states, saver styling, TV facts, cancelled remote open, duplicate submits, session expiry and errors |
 
-For 0.8.0 the palette, web, UniFi adapter/inventory, network and screensaver suites were repeated. The most recent complete Hue/Ambilight/general navigation suite runs remain the 0.7.0 component evidence.
+For 0.8.0 the palette, web, UniFi adapter/inventory, network and screensaver suites were repeated. The most recent complete Ambilight/general navigation suite runs remain the 0.7.0 component evidence; the 26-check Hue suite was rerun for 0.10.0.
 
 The suites cover overlapping behavior and different environments. Their counts are not a single exhaustive acceptance result. Build/signature checks and actual-TV checks are reported separately. Published screenshots are native emulator captures with synthetic data; they do not prove real video or HDMI behavior.
 
@@ -112,7 +114,7 @@ On this old Philips, `am start -W` sometimes waits indefinitely even though the 
 python3 tests/web_fixture.py
 ```
 
-Open the printed loopback URL in a browser. This intentionally unauthenticated **synthetic preview** never contacts the TV, Bridge or router; it is not the production HTTPS server. The current manual browser pass checked all six tabs at 390 px and 320 px, with `scrollWidth <= innerWidth`; camera rename/save, retained unsaved Home edits, save feedback, Hue room selection, keyboard tab navigation, logout/login and console errors were also checked. The screenshots are from that preview. The network snapshot there is synthetic; the real Android snapshot and authentication are separately checked on the physical TV.
+Open the printed loopback URL in a browser. This intentionally unauthenticated **synthetic preview** never contacts the TV, Bridge or router; it is not the production HTTPS server. The 0.8.0 manual browser pass checked all six tabs at 390 px and 320 px, with `scrollWidth <= innerWidth`; camera rename/save, retained unsaved Home edits, save feedback, Hue room selection, keyboard tab navigation, logout/login and console errors were also checked. The screenshots are from that preview. The network snapshot there is synthetic; the real Android snapshot and authentication are separately checked on the physical TV.
 
 ## Isolated local UniFi adapter and UI
 
@@ -153,4 +155,25 @@ python3 tests/integration/prepare.py --serial emulator-5580 --task standby --rep
 
 Only the disposable emulator is accepted. The standby task uses Android sleep/wake key events while another activity is in front, then checks recorded fixture command attempts and redacted app results. It restores the previous automation flag, fixture bridge configuration and interactive screen state. The fixture now records attempted PUTs separately from successful writes, so failed commands cannot hide retries. Eighteen checks passed. This does not turn off real lamps or certify OEM TV standby behavior.
 
-The current web run passed 43 checks, adding default-off/no-command behavior, boolean-only saves, independent drafts, setup guidance and disabled-option recovery after setup becomes invalid. The physical install check intentionally leaves the option off and performs no TV sleep or real lighting action. For real acceptance, enable the option for the chosen room, use the normal TV power button and check lamp behavior; after waking, reopen Hue settings to inspect the last-attempt result. A confirmed command is a bridge acknowledgement, not proof that every physical bulb obeyed.
+The 0.9.1 web run passed 43 checks, adding default-off/no-command behavior, boolean-only saves, independent drafts, setup guidance and disabled-option recovery after setup becomes invalid. The physical install check intentionally leaves the option off and performs no TV sleep or real lighting action. For real acceptance, enable the option for the chosen room, use the normal TV power button and check lamp behavior; after waking, reopen Hue settings to inspect the last-attempt result. A confirmed command is a bridge acknowledgement, not proof that every physical bulb obeyed.
+
+## Appearance and Home layout (0.10.0)
+
+```sh
+python3 tests/check_home_layout.py
+node tests/check_web.cjs
+```
+
+The Java geometry suite needs a JDK, not Android. The web adapter tracks preview-node detachment so a browser-only first-load failure cannot be hidden by a permanent ID map. The current 55 checks include theme/order drafts, arrow movement, internal versus external drop, hidden-camera retention, in-flight save guards, complete payloads and independent-form preservation. Browser checks use synthetic data; 320 px width had no body overflow, save/reload retained appearance and preview controls recovered after hiding/showing cameras.
+
+With the existing disposable emulator and local Hue fixture prepared:
+
+```sh
+python3 tests/integration/prepare.py --serial emulator-5580 --task prepare
+python3 tests/integration/prepare.py --serial emulator-5580 --task appearance --report test-results/appearance.json
+python3 tests/integration/hue_ui.py --serial emulator-5580 --output test-results/hue
+```
+
+The appearance probe restores the prior appearance and camera-visibility flag. It records synthetic theme images in the app's fixture files, verifies 19 native cases and checks the mock received no appearance-triggered light commands. The current Hue regression run passed 26 checks against the same application classes. Four native images were visually reviewed before publication.
+
+Fourteen physical installation/API/visual checks separately passed: retained APK hash/version, existing data/settings, complete custom map, an equal-size reordered grid, distinct backgrounds, three atomic invalid-input rejections, authentication, restored prior appearance and exact final web asset. Prior appearance was restored after the visual test; no real light/video/source action was used. Physical remote hardware and long-running performance remain separate from these injected/UI checks.

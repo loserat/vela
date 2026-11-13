@@ -6,7 +6,7 @@ Eine schlanke Startoberfläche für Philips Android TV: Kameras, Ambilight, Phil
 
 Als Android-App installieren und bei Bedarf als Home-Oberfläche zuordnen.
 
-**0.9.1 · experimentelle Beta.** Die Repository-Dokumentation ist auf Englisch; TV-Oberfläche und lokale Web-Einstellungen bleiben auf Deutsch. Am TV erscheinen kein Projektname und kein Logo. In Android heißt die App **TV-Dashboard**.
+**0.10.0 · experimentelle Beta.** Die Repository-Dokumentation ist auf Englisch; TV-Oberfläche und lokale Web-Einstellungen bleiben auf Deutsch. Am TV erscheinen kein Projektname und kein Logo. In Android heißt die App **TV-Dashboard**.
 
 ## So sieht es aus
 
@@ -28,7 +28,23 @@ Native Ansichten aus einem separaten Simulator mit künstlichen Kameras, Lichtzu
 
 [Oberfläche und Fernbedienung (Englisch)](docs/UI.md) · [Apps-Screenshot](docs/images/apps.png)
 
+
+<details>
+<summary>Vier Designs mit eigener Kachel-Reihenfolge</summary>
+
+| Nordlicht | Mitternacht |
+| --- | --- |
+| ![Nordlicht](docs/images/home-nordlicht.png) | ![Mitternacht](docs/images/home-mitternacht.png) |
+| **Abendrot** | **Wald** |
+| ![Abendrot](docs/images/home-abendrot.png) | ![Wald](docs/images/home-wald.png) |
+
+Native Emulator-Screenshots mit Testdaten und eigener Reihenfolge. Die Kamera-Kachel steht in der kleinen Reihe; alle Ziele bleiben erreichbar.
+
+</details>
+
 ## Funktionen
+
+- Vier TV-Designs (**Nordlicht, Mitternacht, Abendrot, Wald**) und verschiebbare Startseiten-Kacheln. Unter **Startseite → Design & Anordnung** Kacheln zwischen den Reihen ziehen oder per Pfeilen verschieben. Wahlweise groß oben/klein unten oder alle gleich groß. Vorschau und Zurücksetzen ändern den TV erst nach dem Speichern. [Editor](docs/images/web-design.jpg) · [Mobil](docs/images/web-design-mobile.jpg).
 
 - Optionale Hue-Automatik unter **Hue → Hue mit dem TV ausschalten**: standardmäßig aus, nur für den ausgewählten Raum, ohne automatisches Wiedereinschalten und mit Anzeige des letzten Versuchs. Der reale Standby-Test am Philips steht noch aus; bei Stromverlust oder fehlender Bridge-Verbindung ist kein zuverlässiger Befehl möglich.
 
@@ -67,7 +83,7 @@ Voraussetzungen: Python 3, `curl`, JDK 21, Android-SDK-Plattform `android-34`, B
 python3 app/fetch_deps.py
 python3 tests/check_palette.py
 python3 app/build.py
-adb -s DEVICE install -r dist/TV-Dashboard-0.9.1.apk
+adb -s DEVICE install -r dist/TV-Dashboard-0.10.0.apk
 adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -89,7 +105,7 @@ adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 
 ## Prüfstand und Grenzen
 
-Für 0.9.1 bestanden **43** Web-Prüfungen und **18** isolierte Standby-/Hue-Prüfungen. Dabei wurden echte Android-Schlaf-/Aufwachereignisse mit simulierten Lampen einschließlich Fehler- und Abbruchfällen geprüft. Installation und deaktivierte Einstellung am echten TV sind separat geprüft; das Ausschalten echter Lampen beim Philips-Standby steht noch aus. Frühere Navigations-, Licht- und Integrationsprüfungen behalten ihren Umfang im [Prüfstand](docs/STATUS.md) und [Verlauf](docs/VALIDATION-HISTORY.md).
+Für 0.10.0 bestanden **55** Web-Prüfungen, **2.880** Layoutkombinationen, **19** isolierte native Design-Prüfungen und **26** Hue-Bedienungs-/Helligkeitsprüfungen. **14** Installations-/API-/Sichtprüfungen am Philips bestätigten vier unterschiedliche Designs, umsortierte gleich große Kacheln, Validierung, Anmeldung, Wiederherstellung der bisherigen Ansicht und den Erhalt der Einstellungen. Frühere Prüfungen behalten ihren Umfang im [Prüfstand](docs/STATUS.md) und [Verlauf](docs/VALIDATION-HISTORY.md).
 
 Die Hue-Prüfungen enthalten langsame, veraltete und fehlerhafte Antworten sowie den Vergleich der Bildpunkte außerhalb des Helligkeitsreglers. [Tests wiederholen (Englisch)](docs/TESTING.md). [Aktuelle Geräteergebnisse und offene Punkte (Englisch)](docs/STATUS.md).
 

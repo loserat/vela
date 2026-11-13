@@ -12,7 +12,7 @@ python3 tests/check_palette.py
 python3 app/build.py
 ```
 
-`fetch_deps.py` downloads LibVLC 3.7.7 from Maven Central and verifies the pinned SHA256. The build packages `armeabi-v7a` and produces `dist/TV-Dashboard-0.9.1.apk`; generated dependencies and APKs are ignored by Git.
+`fetch_deps.py` downloads LibVLC 3.7.7 from Maven Central and verifies the pinned SHA256. The build packages `armeabi-v7a` and produces `dist/TV-Dashboard-0.10.0.apk`; generated dependencies and APKs are ignored by Git.
 
 ## Signing and retained data
 
@@ -28,7 +28,7 @@ Select the actual device explicitly, especially when an emulator is also running
 
 ```sh
 adb devices
-adb -s DEVICE install -r dist/TV-Dashboard-0.9.1.apk
+adb -s DEVICE install -r dist/TV-Dashboard-0.10.0.apk
 adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 ```
 

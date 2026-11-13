@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.10.0 — 2026-11-13
+
+- Added four static TV designs: Nordlicht, Mitternacht, Abendrot and Wald. Shared screen backgrounds/cards update without changing light colors or rebuilding detail controls.
+- Added a web Home editor with drag-and-drop, accessible move buttons, live preview, two row-size modes and an explicit Save. Reset edits the draft only.
+- Home destinations can move between featured and compact rows, including cameras. Hidden cameras retain their stored position. Deterministic D-pad navigation reaches every visible tile; live Home edits preserve the focused destination.
+- Added bounded/atomic appearance validation and separate preferences, leaving names/model, provider settings, shortcuts and standby automation intact.
+- Passed 55 web checks, 2,880 layout configurations, 19 native appearance checks, 26 Hue regressions and 14 physical installation/API/visual checks. Updated documentation and reviewed synthetic screenshots.
+
 ## 0.9.1 — 2026-11-13
 
 - Added optional Hue room off on Android standby, disabled by default and configurable in local web Hue settings. Saving never sends a light command; waking never sends on.

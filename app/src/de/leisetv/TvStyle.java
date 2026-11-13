@@ -7,6 +7,14 @@ final class TvStyle {
     static final int BG=0xff101722, INK=0xffF5F3EF, MUTED=0xffA1AEAE, MINT=0xffCBF0D9;
     static final Typeface NORMAL=Typeface.create("sans-serif",0), MEDIUM=Typeface.create("sans-serif-medium",0), LIGHT=Typeface.create("sans-serif-light",0);
     private static Bitmap backdrop;
+    private static int theme;
+    private static final int[][] PALETTES={
+        {0xff192B36,BG,0xff1B1E2B,0xff28514C,0x655E4D91,0x354E3975,0xff15212C},
+        {0xff122541,0xff0B1428,0xff171E33,0xff17416A,0x65434C8F,0x35314169,0xff111C31},
+        {0xff34242B,0xff20171E,0xff2D202D,0xff62452F,0x65543454,0x355E3545,0xff251F28},
+        {0xff1B3028,0xff101F1C,0xff1C2924,0xff31573F,0x65445543,0x35344632,0xff16251F}
+    };
+    static synchronized boolean theme(String value){int next="mitternacht".equals(value)?1:"abendrot".equals(value)?2:"wald".equals(value)?3:0;if(next==theme)return false;theme=next;backdrop=null;return true;}
     static void text(Canvas c,Paint p,String s,float x,float y,float size,int color,boolean bold){
         p.setShader(null);p.setAlpha(255);p.setStyle(Paint.Style.FILL);p.setColor(color);p.setTextSize(size);p.setTypeface(bold?MEDIUM:NORMAL);c.drawText(s,x,y,p);
     }
@@ -15,11 +23,12 @@ final class TvStyle {
     static void focus(android.view.View v){if(v!=null&&v.isEnabled()&&!v.requestFocus())v.requestFocusFromTouch();}
     static synchronized void background(Canvas c,Paint p,float w,float h){
         if(backdrop==null){
+            int[] colors=PALETTES[theme];
             backdrop=Bitmap.createBitmap(1920,1080,Bitmap.Config.ARGB_8888);backdrop.setDensity(Bitmap.DENSITY_NONE);Canvas b=new Canvas(backdrop);Paint brush=new Paint(Paint.ANTI_ALIAS_FLAG);
-            brush.setShader(new LinearGradient(0,0,1920,1080,new int[]{0xff192B36,BG,0xff1B1E2B},null,Shader.TileMode.CLAMP));b.drawRect(0,0,1920,1080,brush);
-            brush.setShader(new RadialGradient(300,0,1200,0xff28514C,0x0028514C,Shader.TileMode.CLAMP));b.drawRect(0,0,1920,1080,brush);
-            brush.setShader(new RadialGradient(1770,80,1100,0x655E4D91,0x005E4D91,Shader.TileMode.CLAMP));b.drawRect(0,0,1920,1080,brush);
-            brush.setShader(new RadialGradient(1250,1080,1000,0x354E3975,0x004E3975,Shader.TileMode.CLAMP));b.drawRect(0,0,1920,1080,brush);
+            brush.setShader(new LinearGradient(0,0,1920,1080,new int[]{colors[0],colors[1],colors[2]},null,Shader.TileMode.CLAMP));b.drawRect(0,0,1920,1080,brush);
+            brush.setShader(new RadialGradient(300,0,1200,colors[3],colors[3]&0x00FFFFFF,Shader.TileMode.CLAMP));b.drawRect(0,0,1920,1080,brush);
+            brush.setShader(new RadialGradient(1770,80,1100,colors[4],colors[4]&0x00FFFFFF,Shader.TileMode.CLAMP));b.drawRect(0,0,1920,1080,brush);
+            brush.setShader(new RadialGradient(1250,1080,1000,colors[5],colors[5]&0x00FFFFFF,Shader.TileMode.CLAMP));b.drawRect(0,0,1920,1080,brush);
         }
         p.setShader(null);p.setAlpha(255);p.setStyle(Paint.Style.FILL);c.drawBitmap(backdrop,null,new RectF(0,0,w,h),p);
     }
@@ -27,7 +36,7 @@ final class TvStyle {
     static int blend(int base,int tint,float amount){return Color.rgb(Math.round(Color.red(base)*(1-amount)+Color.red(tint)*amount),Math.round(Color.green(base)*(1-amount)+Color.green(tint)*amount),Math.round(Color.blue(base)*(1-amount)+Color.blue(tint)*amount));}
     static void card(Canvas c,Paint p,float l,float t,float r,float b,boolean focus,float radius){card(c,p,l,t,r,b,focus,radius,MINT);}
     static void card(Canvas c,Paint p,float l,float t,float r,float b,boolean focus,float radius,int accent){
-        p.setShader(null);p.setAlpha(255);p.setStyle(Paint.Style.FILL);p.setColor(blend(0xff15212C,accent,focus?.19f:.085f));c.drawRoundRect(l,t,r,b,radius,radius,p);
+        p.setShader(null);p.setAlpha(255);p.setStyle(Paint.Style.FILL);p.setColor(blend(PALETTES[theme][6],accent,focus?.19f:.085f));c.drawRoundRect(l,t,r,b,radius,radius,p);
         p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(focus?3:1);p.setColor(focus?MINT:blend(0xff34414F,accent,.25f));c.drawRoundRect(l,t,r,b,radius,radius,p);p.setStyle(Paint.Style.FILL);
     }
     static void icon(Canvas c,Paint p,String type,float x,float y,float size,int color){

@@ -6,7 +6,7 @@ A lightweight dashboard for Philips Android TV: cameras, Ambilight, Philips Hue,
 
 Install as an Android app and optionally assign it as Home.
 
-**0.9.1 · experimental beta.** Repository documentation is in English; the TV interface and local web settings are in German. The TV interface has no project name or logo; Android lists the app as **TV-Dashboard**.
+**0.10.0 · experimental beta.** Repository documentation is in English; the TV interface and local web settings are in German. The TV interface has no project name or logo; Android lists the app as **TV-Dashboard**.
 
 ## A look at the interface
 
@@ -28,7 +28,23 @@ Native screens captured in an isolated emulator with synthetic cameras, light st
 
 [More about the UI and remote navigation](docs/UI.md) · [Apps screenshot](docs/images/apps.png) · [TV info](docs/images/web-tv.jpg) · [Mobile TV info](docs/images/web-tv-mobile.jpg)
 
+
+<details>
+<summary>Four designs with a custom tile order</summary>
+
+| Nordlicht | Mitternacht |
+| --- | --- |
+| ![Nordlicht](docs/images/home-nordlicht.png) | ![Mitternacht](docs/images/home-mitternacht.png) |
+| **Abendrot** | **Wald** |
+| ![Abendrot](docs/images/home-abendrot.png) | ![Wald](docs/images/home-wald.png) |
+
+These native emulator screenshots use synthetic data and a reordered Home. The camera tile is in the small row; every destination remains reachable.
+
+</details>
+
 ## What it does
+
+- Four TV designs (**Nordlicht, Mitternacht, Abendrot, Wald**) and movable Home tiles. In web **Startseite → Design & Anordnung**, drag tiles between rows or use the arrow buttons; choose featured/compact rows or an equal-size grid. Preview/reset stays local until Save. [Editor](docs/images/web-design.jpg) · [Mobile](docs/images/web-design-mobile.jpg).
 
 - Optional Hue standby-off automation in web **Hue → Hue mit dem TV ausschalten**: off by default, targets only the selected room, sends no wake/on command and shows the last attempt result. Actual TV standby acceptance remains pending; power loss or a disconnected bridge cannot be handled reliably.
 
@@ -67,7 +83,7 @@ Requirements: Python 3, `curl`, JDK 21, Android SDK platform `android-34`, Build
 python3 app/fetch_deps.py
 python3 tests/check_palette.py
 python3 app/build.py
-adb -s DEVICE install -r dist/TV-Dashboard-0.9.1.apk
+adb -s DEVICE install -r dist/TV-Dashboard-0.10.0.apk
 adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -89,7 +105,7 @@ Replace `DEVICE` with the explicitly selected authorized device. Preserve your s
 
 ## Validation and limits
 
-Version 0.9.1 passed **43** web checks and **18** isolated standby/Hue-fixture checks. The latter exercise real Android sleep/wake events with simulated lamps, including failure and cancellation paths. Physical installation and disabled configuration are checked separately; switching the real lamps during Philips standby remains pending. Earlier navigation, light and integration checks retain their scope in [current status](docs/STATUS.md) and [validation history](docs/VALIDATION-HISTORY.md).
+Version 0.10.0 passed **55** web checks, **2,880** layout configurations, **19** isolated native appearance checks and **26** Hue interaction/brightness regressions. **14** physical installation/API/visual checks passed for four distinct themes, reordered equal-size tiles, validation, authentication, restored prior appearance and retained settings. Earlier component checks retain their scope in [current status](docs/STATUS.md) and [validation history](docs/VALIDATION-HISTORY.md).
 
 Slow, stale and failing Hue replies are included, as are pixel comparisons outside the brightness slider. [Reproduce the tests](docs/TESTING.md). [Current device results and known limits](docs/STATUS.md).
 

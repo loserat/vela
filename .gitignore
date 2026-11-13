@@ -57,3 +57,11 @@ __pycache__/
 
 !/docs/images/web-hue.jpg
 !/docs/images/web-hue-mobile.jpg
+
+# Reviewed synthetic design/layout screenshots
+!/docs/images/web-design.jpg
+!/docs/images/web-design-mobile.jpg
+!/docs/images/home-nordlicht.png
+!/docs/images/home-mitternacht.png
+!/docs/images/home-abendrot.png
+!/docs/images/home-wald.png

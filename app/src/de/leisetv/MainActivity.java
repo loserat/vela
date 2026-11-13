@@ -29,7 +29,7 @@ public final class MainActivity extends Activity {
     private static final int MINT = TvStyle.MINT;
     private final Handler handler = new Handler();
     private final SharedPreferences.OnSharedPreferenceChangeListener preferencesChanged=(p,k)->{
-        if("revision".equals(k))handler.post(()->{homeDirty=true;if(this.resumed&&this.root!=null&&!this.drawer&&!this.systemMenu)showHome();});
+        if("revision".equals(k))handler.post(()->{homeDirty=true;if(this.resumed&&this.root!=null&&!this.drawer&&!this.systemMenu)showHome(true);});
     };
     private final List<App> apps = new ArrayList<>();
     private final List<Tile> tiles = new ArrayList<>();
@@ -69,7 +69,7 @@ public final class MainActivity extends Activity {
     }
     @Override protected void onResume() {
         super.onResume();resumed=true;
-        connectivity=(ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);if(connectivity!=null)try{connectivity.registerDefaultNetworkCallback(networkCallback,handler);networkRegistered=true;}catch(RuntimeException ignored){}handler.post(networkChanged);if(homeDirty&&!drawer&&!systemMenu)showHome();handler.removeCallbacks(clock);clock.run();
+        connectivity=(ConnectivityManager)getSystemService(CONNECTIVITY_SERVICE);if(connectivity!=null)try{connectivity.registerDefaultNetworkCallback(networkCallback,handler);networkRegistered=true;}catch(RuntimeException ignored){}handler.post(networkChanged);if(homeDirty&&!drawer&&!systemMenu)showHome(true);handler.removeCallbacks(clock);clock.run();
     }
     @Override protected void onPause() { resumed=false;handler.removeCallbacks(clock);handler.removeCallbacks(networkChanged);if(networkRegistered){connectivity.unregisterNetworkCallback(networkCallback);networkRegistered=false;}super.onPause(); }
     @Override protected void onDestroy() { handler.removeCallbacks(clock);AdminServer.preferences(this).unregisterOnSharedPreferenceChangeListener(preferencesChanged); super.onDestroy(); }
@@ -126,6 +126,7 @@ public final class MainActivity extends Activity {
         return null;
     }
     private void stage(boolean isDrawer) {
+        TvStyle.theme(HomeAppearance.theme(this));
         drawer=isDrawer; systemMenu=false; networkButton=null;tiles.clear();
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -153,24 +154,39 @@ public final class MainActivity extends Activity {
         }
         if(!items.isEmpty())TvStyle.focus(items.get(0));
     }
-    private void showHome() {
+    private Tile homeTile(String id,boolean large){
+        switch(id){
+            case "cameras":return large?new DashboardTile("Kameras",CameraLibrary.all(this).length()+" Quellen",()->open(new Intent(this,CameraListActivity.class))):new HomeActionTile("Kameras",CameraLibrary.all(this).length()+" Quellen","camera",()->open(new Intent(this,CameraListActivity.class)));
+            case "ambilight":return new HomeActionTile("Ambilight","Farben & Licht","ambilight",()->open(new Intent(this,AmbilightActivity.class)));
+            case "hue":return new HomeActionTile("Hue","Dein Raumlicht","hue",()->open(new Intent(this,HueActivity.class)));
+            case "tv":return new HomeActionTile("Fernsehen","TV-Programm","tv",()->openTV());
+            case "inputs":return new HomeActionTile("Geräte","HDMI & Zuspieler","devices",()->open(new Intent(this,InputsActivity.class)));
+            case "system":return new HomeActionTile("System","Einstellungen","settings",()->showSystem());
+            default:throw new IllegalArgumentException("Unknown Home tile");
+        }
+    }
+    private void showHome(){showHome(false);}
+    private void showHome(boolean retainFocus) {
+        View focused=retainFocus&&root!=null?root.findFocus():null;
+        String focus=focused instanceof Tile?((Tile)focused).homeId:focused instanceof NetworkBadge?"network":"";
         stage(false);homeDirty=false;appsFromSystem=false;
-        List<Tile> primary=new ArrayList<>(),shortcuts=new ArrayList<>();
-        if(AdminServer.preferences(this).getBoolean("show_camera",true))primary.add(new DashboardTile("Kameras",CameraLibrary.all(this).length()+" Quellen",()->open(new Intent(this,CameraListActivity.class))));
-        primary.add(new HomeActionTile("Ambilight","Farben & Licht","ambilight",()->open(new Intent(this,AmbilightActivity.class))));
-        primary.add(new HomeActionTile("Hue","Dein Raumlicht","hue",()->open(new Intent(this,HueActivity.class))));
-        shortcuts.add(new HomeActionTile("Fernsehen","TV-Programm","tv",()->openTV()));
-        shortcuts.add(new HomeActionTile("Geräte","HDMI & Zuspieler","devices",()->open(new Intent(this,InputsActivity.class))));
-        shortcuts.add(new HomeActionTile("System","Einstellungen","settings",()->showSystem()));
-        int width=(1728-(primary.size()-1)*24)/primary.size();
-        for(int i=0;i<primary.size();i++)place(primary.get(i),96+i*(width+24),300,width,392);
-        for(int i=0;i<3;i++)place(shortcuts.get(i),96+i*584,724,560,132);
-        for(int i=0;i<primary.size();i++){Tile t=primary.get(i);t.setNextFocusLeftId(primary.get(Math.max(0,i-1)).getId());t.setNextFocusRightId(primary.get(Math.min(primary.size()-1,i+1)).getId());t.setNextFocusUpId(t.getId());t.setNextFocusDownId(shortcuts.get(Math.min(i,2)).getId());}
-        for(int i=0;i<3;i++){Tile t=shortcuts.get(i);t.setNextFocusLeftId(shortcuts.get(Math.max(0,i-1)).getId());t.setNextFocusRightId(shortcuts.get(Math.min(2,i+1)).getId());t.setNextFocusUpId(primary.get(Math.min(primary.size()-1,i)).getId());t.setNextFocusDownId(t.getId());}
+        List<HomeLayout.Slot> slots;
+        boolean camera=AdminServer.preferences(this).getBoolean("show_camera",true);
+        try{org.json.JSONObject appearance=HomeAppearance.view(this);slots=HomeLayout.positions(HomeAppearance.order(appearance),camera,appearance.getString("layout"));}
+        catch(Exception error){slots=HomeLayout.positions(Arrays.asList(HomeLayout.DEFAULT_ORDER),camera,"focus");}
+        List<Tile> home=new ArrayList<>();
+        for(HomeLayout.Slot slot:slots){Tile tile=homeTile(slot.id,slot.h>180);tile.homeId=slot.id;place(tile,slot.x,slot.y,slot.w,slot.h);home.add(tile);}
+        for(int i=0;i<home.size();i++){
+            Tile tile=home.get(i);tile.setNextFocusLeftId(home.get(HomeLayout.neighbor(slots,i,0)).getId());tile.setNextFocusRightId(home.get(HomeLayout.neighbor(slots,i,1)).getId());
+            tile.setNextFocusUpId(home.get(HomeLayout.neighbor(slots,i,2)).getId());tile.setNextFocusDownId(home.get(HomeLayout.neighbor(slots,i,3)).getId());
+        }
         networkButton=new NetworkBadge(this,()->open(new Intent(this,NetworkActivity.class)));
         FrameLayout.LayoutParams netLayout=new FrameLayout.LayoutParams(Math.round(440*scale),Math.round(64*scale));netLayout.leftMargin=Math.round(offsetX+1384*scale);netLayout.topMargin=Math.round(offsetY+914*scale);networkButton.setId(View.generateViewId());root.addView(networkButton,netLayout);
-        for(Tile shortcut:shortcuts)shortcut.setNextFocusDownId(networkButton.getId());networkButton.setNextFocusUpId(shortcuts.get(1).getId());
-        TvStyle.focus(primary.get(0));Log.i("LeiseTV","screen:home");
+        int nearest=home.size()-1,distance=Integer.MAX_VALUE;
+        for(int i=0;i<home.size();i++)if(slots.get(i).row==1){home.get(i).setNextFocusDownId(networkButton.getId());int delta=Math.abs(slots.get(i).center()-1604);if(delta<distance){distance=delta;nearest=i;}}
+        networkButton.setNextFocusUpId(home.get(nearest).getId());networkButton.setNextFocusDownId(networkButton.getId());networkButton.setNextFocusLeftId(networkButton.getId());networkButton.setNextFocusRightId(networkButton.getId());
+        View target=home.get(0);if("network".equals(focus))target=networkButton;else for(Tile tile:home)if(tile.homeId.equals(focus))target=tile;
+        TvStyle.focus(target);Log.i("LeiseTV","screen:home");
     }
     private void openTV(){
         if(apps.isEmpty())discover();App tv=find("org.droidtv.zapster");
@@ -280,6 +296,7 @@ public final class MainActivity extends Activity {
     private class Tile extends View {
         final TextPaint p=new TextPaint(Paint.ANTI_ALIAS_FLAG);
         final String title,subtitle;
+        String homeId="";
         final App app;
         final int color;
         final boolean featured;

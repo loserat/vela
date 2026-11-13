@@ -22,3 +22,5 @@ The repository and documentation are public. Device addresses, account data, cam
 - Version 0.9.0 adds configurable app-local remote color keys; see [UI](UI.md#color-key-shortcuts) and [testing](TESTING.md#color-key-shortcuts-090).
 
 - Version 0.9.1 adds optional Hue standby off, with isolated testing and an explicit real-device acceptance boundary.
+
+- Version 0.10.0 adds four static TV designs and a web Home grid editor with separately validated appearance preferences.

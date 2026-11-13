@@ -6,7 +6,7 @@
 
 | Screen | Main actions |
 | --- | --- |
-| Home | Cameras, Ambilight and Hue; TV, HDMI devices and System below |
+| Home | Six reorderable destinations, with featured/compact or equal-size rows; custom Home title and compact network badge |
 | Cameras | Six cards per page, previous/next page, setup and Back; up to 24 sources |
 | Ambilight | 16 colors, modes, power, light preview and fixed-color brightness |
 | Hue | One explicitly selected room, colors, power, brightness and available room scenes |
@@ -84,3 +84,17 @@ Web **Hue → Hue mit dem TV ausschalten** contains the optional **Hue beim Auss
 The panel reports the last recorded attempt as confirmed by the bridge, unconfirmed, or skipped after state/configuration changes. Results refresh when the Hue section is opened or the page reloaded. The normal bridge refresh button belongs to its separate setup card. All controls remain available to disable a previously enabled option even if the stored setup becomes invalid.
 
 [Hue automation settings](images/web-hue.jpg) · [Mobile](images/web-hue-mobile.jpg). Images use synthetic data with the option enabled for demonstration; the physical TV remains disabled until the owner enables it.
+
+## Designs and Home arrangement
+
+Web **Startseite → Design & Anordnung** provides four designs: Nordlicht (the original look), Mitternacht (blue), Abendrot (warm brown/rose) and Wald (green). The theme changes shared native backgrounds/card surfaces, preserving light preset colors, text/focus contrast and controls. The web administration itself retains its current style.
+
+Drag any of the six existing Home destinations to a new slot, including across rows, or use its **nach vorne/nach hinten** buttons. The arrow buttons retain keyboard focus after moving. Choose **Groß oben · klein unten** or **Alle Kacheln gleich groß**. The header/clock, network badge and color-key legend retain their fixed TV-safe locations. This is a bounded grid editor, not arbitrary pixel coordinates or a custom-app launcher.
+
+The preview reflects the current draft, including unsaved Home names/visibility; those fields still use their own Save button. Appearance saves preserve other drafts. **Zurücksetzen** restores the appearance draft to Nordlicht/default order/featured layout; the TV changes only after explicit Save. Pending saves reject conflicting reorder/theme/layout edits.
+
+Hiding cameras removes their visible tile and preview, while retaining their chosen stored slot. Re-enabling restores that position. With five visible tiles the featured layout uses two large/three compact tiles; equal mode uses three/two, filling the width. Live Home updates preserve the focused destination where still visible; explicit Home navigation starts at the first configured tile. Detail-page theme updates invalidate drawing without recreating controls or sending commands.
+
+![Design and order editor](images/web-design.jpg)
+
+[Mobile editor](images/web-design-mobile.jpg) · [Four native designs](../README.md#a-look-at-the-interface).

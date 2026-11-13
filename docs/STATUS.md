@@ -2,7 +2,7 @@
 
 [Documentation](README.md) · [Testing](TESTING.md) · [Earlier evidence](VALIDATION-HISTORY.md)
 
-**November 13, 2026 · 0.9.1 · experimental beta.** Installed behavior, fixture checks and real provider acceptance are distinguished below.
+**November 13, 2026 · 0.10.0 · experimental beta.** Installed behavior, fixture checks and real provider acceptance are distinguished below.
 
 ## Implemented and installed
 
@@ -12,7 +12,18 @@
 - Optional local UniFi Network inventory with explicit site choice, encrypted key/pinned certificate, upstream GET-only calls, bounded pagination and stale/unknown states.
 - Existing cameras, Hue, Ambilight, HDMI selection and automatic screensaver activation settings retained.
 
-## 0.9.1 optional Hue standby off
+## 0.10.0 designs and Home arrangement
+
+Four static designs update the shared TV backgrounds/cards. Home has an independent six-destination order and featured/compact or equal-size row geometry. Web Startseite offers theme swatches, live preview, drag-and-drop and keyboard/touch move buttons, plus explicit Save and draft-only Reset.
+
+- 55 production web checks passed, including draft protection, internal/external drag behavior, save-in-flight guards and detached preview-node retention. Browser save/reload, hidden-camera preview/recovery and a 320 px viewport without overflow passed.
+- All 2,880 combinations of six-tile permutations, visibility and geometry passed bounds, non-overlap, order and D-pad reachability checks.
+- 19 isolated native checks passed: input validation, custom first/compact camera, actual D-pad traversal, all four backgrounds, retained focused destination, unchanged detail-page controls/focus, equal-size grid and hidden-camera position. No light command was emitted by appearance changes.
+- The 26 Hue interaction/brightness regressions passed on the isolated HTTPS fixture, including stable pixels outside the brightness slider, no catalog reload and error recovery. Other earlier suites retain their own release scope.
+- Public and retained-key builds/signature verification passed. 14 physical installation/API/visual checks passed: final hash/version, retained configuration, complete custom save, equal-size reordered grid, four distinct backgrounds, invalid-input/authentication guards, restored prior appearance and exact final web asset. No real lamp command, camera playback or HDMI selection was performed.
+- During preview development, a removed DOM node broke first load; stable preview-node references and a DOM-adapter regression fixed it before final builds. The first native test probe lost touch-mode focus; using the same touch-to-D-pad focus handoff as the app resolved the harness issue and the final actual traversal passed. Initial partial evidence is retained privately.
+
+## Previous 0.9.1 optional Hue standby off
 
 The local web Hue section has an explicit off-by-default automation switch, selected-room guidance and redacted last-attempt feedback. A service-owned Android screen-state receiver runs while other apps are in front. Saving has no lighting side effect; wake never switches lights on.
 

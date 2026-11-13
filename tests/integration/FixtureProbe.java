@@ -39,6 +39,48 @@ public final class FixtureProbe extends Instrumentation {
     }
     @Override public void onStart(){Bundle result=new Bundle();try{
         if(!android.os.Build.FINGERPRINT.contains("/emu64a:")&&!android.os.Build.FINGERPRINT.contains("generic"))throw new Exception("Disposable emulator only");context=getTargetContext();String task=arguments.getString("task","prepare");
+        if(task.equals("appearance")){
+            JSONObject original=(JSONObject)call("HomeAppearance","view",new Class[]{Context.class},context);
+            android.content.SharedPreferences prefs=(android.content.SharedPreferences)call("AdminServer","preferences",new Class[]{Context.class},context);boolean camera=prefs.getBoolean("show_camera",true);
+            JSONObject remote=(JSONObject)call("RemoteShortcuts","view",new Class[]{Context.class},context),hue=(JSONObject)call("HueController","setup",new Class[]{Context.class},context),automation=automation();
+            int attempts=fixtureState().getJSONArray("attempts").length();
+            try{
+                check("Appearance defaults preserve the existing Home",original.getString("theme").equals("nordlicht")&&original.getString("layout").equals("focus")&&original.getJSONArray("order").getString(0).equals("cameras"));
+                JSONObject custom=new JSONObject().put("theme","abendrot").put("layout","focus").put("order",new JSONArray("[\"inputs\",\"system\",\"ambilight\",\"tv\",\"hue\",\"cameras\"]"));
+                JSONObject saved=(JSONObject)call("HomeAppearance","save",new Class[]{Context.class,JSONObject.class},context,custom);
+                check("Complete appearance map persists",saved.toString().equals(custom.toString()));
+                for(String invalid:new String[]{"{\"theme\":\"unknown\",\"layout\":\"focus\",\"order\":[\"inputs\",\"system\",\"ambilight\",\"tv\",\"hue\",\"cameras\"]}","{\"theme\":\"wald\",\"layout\":\"unknown\",\"order\":[\"inputs\",\"system\",\"ambilight\",\"tv\",\"hue\",\"cameras\"]}","{\"theme\":\"wald\",\"layout\":\"grid\",\"order\":[\"cameras\",\"cameras\",\"hue\",\"tv\",\"inputs\",\"system\"]}","{\"theme\":\"wald\",\"layout\":\"grid\",\"order\":[\"inputs\",\"system\"]}"}){
+                    boolean rejected=false;try{call("HomeAppearance","save",new Class[]{Context.class,JSONObject.class},context,new JSONObject(invalid));}catch(Exception e){rejected=true;}
+                    check("Invalid appearance is rejected atomically "+checks.length(),rejected&&((JSONObject)call("HomeAppearance","view",new Class[]{Context.class},context)).toString().equals(custom.toString()));
+                }
+                android.app.Activity home=startActivitySync(new android.content.Intent().setClassName(context,"de.leisetv.MainActivity").addCategory(android.content.Intent.CATEGORY_HOME).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK|android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK));waitForIdleSync();
+                Field rootField=home.getClass().getDeclaredField("root"),scaleField=home.getClass().getDeclaredField("scale");rootField.setAccessible(true);scaleField.setAccessible(true);android.view.ViewGroup root=(android.view.ViewGroup)rootField.get(home);float scale=scaleField.getFloat(home);
+                check("Reordered native Home starts with Devices",root.getChildAt(1).getContentDescription().toString().startsWith("Geräte,"));
+                check("Camera renders correctly in the small row",root.getChildAt(6).getContentDescription().toString().startsWith("Kameras,")&&root.getChildAt(6).getHeight()==Math.round(132*scale));
+                final android.view.View first=root.getChildAt(1);runOnMainSync(()->first.requestFocusFromTouch());waitForIdleSync();Thread.sleep(300);java.util.Set<String> reached=new java.util.HashSet<>();reached.add(home.getCurrentFocus().getContentDescription().toString());
+                for(int key:new int[]{22,22,20,21,21,20,19}){sendKeyDownUpSync(key);waitForIdleSync();reached.add(home.getCurrentFocus().getContentDescription().toString());}
+                check("Actual D-pad reaches six reordered tiles and network",reached.size()==7);
+                final android.view.View selectedCamera=root.getChildAt(6);runOnMainSync(()->selectedCamera.requestFocusFromTouch());
+                java.util.Set<Integer> colors=new java.util.HashSet<>();
+                for(String theme:new String[]{"nordlicht","mitternacht","abendrot","wald"}){
+                    custom.put("theme",theme);call("HomeAppearance","save",new Class[]{Context.class,JSONObject.class},context,custom);waitForIdleSync();Thread.sleep(150);
+                    android.graphics.Bitmap image=getUiAutomation().takeScreenshot();colors.add(image.getPixel(40,40));
+                    try(FileOutputStream out=new FileOutputStream(new File(context.getFilesDir(),"fixture-home-"+theme+".png"))){image.compress(android.graphics.Bitmap.CompressFormat.PNG,100,out);}
+                    check("Theme "+theme+" preserves focused camera destination",home.getCurrentFocus().getContentDescription().toString().startsWith("Kameras,"));
+                }
+                check("Four themes produce four distinct native backgrounds",colors.size()==4);
+                android.app.Activity inputs=startActivitySync(new android.content.Intent().setClassName(context,"de.leisetv.InputsActivity").addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK));waitForIdleSync();Thread.sleep(200);Field inputRoot=inputs.getClass().getSuperclass().getDeclaredField("root");inputRoot.setAccessible(true);Object beforeRoot=inputRoot.get(inputs);android.view.View beforeFocus=inputs.getCurrentFocus();
+                custom.put("theme","mitternacht");call("HomeAppearance","save",new Class[]{Context.class,JSONObject.class},context,custom);waitForIdleSync();
+                check("Theme update leaves detail-page controls and focus intact",inputRoot.get(inputs)==beforeRoot&&inputs.getCurrentFocus()==beforeFocus);
+                runOnMainSync(()->inputs.finish());waitForIdleSync();custom.put("layout","grid");call("HomeAppearance","save",new Class[]{Context.class,JSONObject.class},context,custom);waitForIdleSync();root=(android.view.ViewGroup)rootField.get(home);
+                boolean equal=true;for(int i=1;i<=6;i++)equal&=root.getChildAt(i).getHeight()==Math.round(260*scale);check("Native equal grid uses six equal-size tiles",equal);
+                prefs.edit().putBoolean("show_camera",false).putLong("revision",System.currentTimeMillis()+1).commit();waitForIdleSync();root=(android.view.ViewGroup)rootField.get(home);
+                check("Hidden camera removes only its visible tile",root.getChildCount()==7&&((JSONObject)call("HomeAppearance","view",new Class[]{Context.class},context)).getJSONArray("order").getString(5).equals("cameras"));
+                check("Appearance never changes shortcuts or Hue setup",((JSONObject)call("RemoteShortcuts","view",new Class[]{Context.class},context)).toString().equals(remote.toString())&&((JSONObject)call("HueController","setup",new Class[]{Context.class},context)).toString().equals(hue.toString())&&automation().toString().equals(automation.toString()));
+                check("Appearance sends no light command",fixtureState().getJSONArray("attempts").length()==attempts);
+            }finally{prefs.edit().putBoolean("show_camera",camera).commit();call("HomeAppearance","save",new Class[]{Context.class,JSONObject.class},context,original);waitForIdleSync();}
+            result.putString("checks",checks.toString());result.putString("fixture","ready");finish(-1,result);return;
+        }
         if(task.equals("standby")){
             JSONObject original=automation();boolean originalEnabled=original.optBoolean("enabled");
             JSONObject originalTarget=(JSONObject)call("HueController","standbyTarget",new Class[]{Context.class},context);
@@ -128,5 +170,5 @@ public final class FixtureProbe extends Instrumentation {
         int count=Integer.parseInt(arguments.getString("cameras","8"));JSONArray cameras=new JSONArray();String[] names={"Eingang","Garten","Garage","Terrasse","Werkstatt","Hof","Flur","Gästehaus"};
         for(int i=0;i<count;i++)cameras.put(new JSONObject().put("id","fixture-"+i).put("name",names[i%names.length]).put("url","rtsps://127.0.0.1:7441/fixture-"+i).put("certificatePem",new String(new char[128]).replace('\0','X')).put("available",true).put("status","ready"));
         call("CameraLibrary","save",new Class[]{Context.class,JSONObject.class},context,new JSONObject().put("cameras",cameras).put("defaultCameraId",count>0?"fixture-0":""));result.putString("fixture","ready");finish(-1,result);
-    }catch(Exception e){result.putString("failure",e.getClass().getSimpleName());result.putString("checks",checks.toString());finish(0,result);}}
+    }catch(Exception e){result.putString("failure",e.getClass().getSimpleName());if(e.getStackTrace().length>0)result.putString("where",e.getStackTrace()[0].toString());result.putString("checks",checks.toString());finish(0,result);}}
 }
