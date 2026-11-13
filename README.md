@@ -29,7 +29,7 @@ Live device properties were checked on **November 13, 2026**:
 | Target | Verified details | Evidence scope |
 | --- | --- | --- |
 | Physical Philips TV | Android model `QM163E`, platform `mt5890`, Android 8.0.0 / API 26, `armeabi-v7a`, 1920 × 1080 Android display, 320 dpi | Installed and running on the actual TV |
-| Philips Hue Bridge | BSB002 | HTTPS bridge identity/configuration verified; physical-button pairing and lamp control pending |
+| Philips Hue Bridge | BSB002 | HTTPS identity, physical-button pairing, selected-room persistence and state/capability reads verified; lamp actions pending |
 | Isolated Android emulator | Android 14 / API 34, ARM64, 1920 × 1080 | UI and mock-service checks; not a second supported physical TV |
 
 The owner identifies the TV as a **55PUS6581/12**. Its [Philips data sheet](https://www.documents.philips.com/assets/20230307/fe892bffbb3a4e078c21afbe012b73a3.pdf) describes a 4K panel; the app currently renders at the Android-reported 1920 × 1080 resolution. The marketed model number was not independently read from the live device. See [Hardware verification](docs/HARDWARE.md) for methods and limits.
@@ -119,7 +119,7 @@ Open **System → Bildschirmschoner**. Choose **Uhr** (clock) or **Farbfläche**
 
 The redesigned Ambilight page passed 14 interaction checks in an Android emulator, and 53 production-class regression checks cover the palette and Hue value conversion. Hardware probes verified the processed LED RGB values for red, green, blue, and pink after correcting the protocol scaling. These are device-reported values, not a calibrated measurement of the room lighting.
 
-Version 0.6.0 was installed on the physical Philips; APK hash, HTTPS/PIN login, camera IDs, unchanged screensaver activation, Hue Bridge identity, and Android dream-service registration were checked. Actual Hue pairing/lamps and automatic screensaver activation on the TV remain pending. Fifteen Hue controller checks and eleven screensaver checks passed using an isolated emulator and local fixtures.
+Version 0.6.0 was installed on the physical Philips; APK hash, HTTPS/PIN login, camera IDs, unchanged screensaver activation, Hue Bridge identity, and Android dream-service registration were checked. Physical-button Hue pairing, user-selected room persistence, and live state/capability reads were subsequently verified. Actual lamp changes and automatic screensaver activation on the TV remain pending. Fifteen Hue controller checks and eleven screensaver checks passed using an isolated emulator and local fixtures.
 
 The source has been built locally and the APK signature verified. Earlier checks of version 0.4 included 15 original web/access checks and 14 checks of the expanded camera management; these counts do not represent a new complete device test run of version 0.6.0. Individual live camera images have been viewed on the target device.
 

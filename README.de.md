@@ -29,7 +29,7 @@ Direkt am Gerät geprüft am **13. November 2026**:
 | Ziel | Verifizierte Angaben | Aussagekraft |
 | --- | --- | --- |
 | Echter Philips-TV | Android-Modell `QM163E`, Plattform `mt5890`, Android 8.0.0 / API 26, `armeabi-v7a`, Android-Anzeige 1920 × 1080, 320 dpi | Auf dem echten Fernseher installiert und ausgeführt |
-| Philips Hue Bridge | BSB002 | HTTPS-Identität und Einrichtung geprüft; Kopplung per Knopf und Lampensteuerung noch offen |
+| Philips Hue Bridge | BSB002 | HTTPS-Identität, Knopf-Kopplung, gespeicherte Raumauswahl und Zustands-/Funktionsabruf geprüft; Lampenbefehle noch offen |
 | Separater Android-Simulator | Android 14 / API 34, ARM64, 1920 × 1080 | Oberflächen- und Ersatzdienstprüfungen; kein weiterer unterstützter physischer TV |
 
 Der Besitzer nennt als TV-Modell **55PUS6581/12**. Das [Philips-Datenblatt](https://www.documents.philips.com/assets/20230307/fe892bffbb3a4e078c21afbe012b73a3.pdf) beschreibt ein 4K-Panel; die App zeichnet aktuell in der von Android gemeldeten Auflösung von 1920 × 1080. Die Verkaufsmodellnummer wurde nicht unabhängig aus dem laufenden Gerät ausgelesen. Methoden und Grenzen stehen unter [Hardware-Prüfung (Englisch)](docs/HARDWARE.md).
@@ -117,7 +117,7 @@ Schalten, Helligkeit, unterstützte Farben und Szenen werden lokal über HTTPS g
 
 Die neue Ambilight-Seite hat 14 Bedienungsprüfungen im Android-Simulator bestanden; 53 Prüfungen laufen gegen die produktiven Klassen für Farbpalette und Hue-Wertumrechnung. Nach der Korrektur der Farbskala wurden die vom TV gemeldeten LED-RGB-Werte für Rot, Grün, Blau und Rosa am Gerät geprüft. Das ist keine kalibrierte Messung der tatsächlichen Raumbeleuchtung.
 
-Version 0.6.0 ist auf dem echten Philips installiert. Geprüft wurden APK-Prüfsumme, HTTPS-/PIN-Anmeldung, Kamera-IDs, unveränderte Bildschirmschoner-Aktivierung, Hue-Bridge-Identität und die Android-Dienstregistrierung. Echte Hue-Kopplung/Lampen und automatische Bildschirmschoner-Aktivierung am TV stehen noch aus. Im separaten Simulator mit lokalen Ersatzdiensten bestanden 15 Hue-Controller-Prüfungen und elf Bildschirmschoner-Prüfungen.
+Version 0.6.0 ist auf dem echten Philips installiert. Geprüft wurden APK-Prüfsumme, HTTPS-/PIN-Anmeldung, Kamera-IDs, unveränderte Bildschirmschoner-Aktivierung, Hue-Bridge-Identität und die Android-Dienstregistrierung. Anschließend wurden die echte Hue-Kopplung per Knopf, die vom Nutzer gewählte und gespeicherte Raumauswahl sowie Zustands- und Funktionsabrufe geprüft. Tatsächliche Lampenänderungen und automatische Bildschirmschoner-Aktivierung am TV stehen noch aus. Im separaten Simulator mit lokalen Ersatzdiensten bestanden 15 Hue-Controller-Prüfungen und elf Bildschirmschoner-Prüfungen.
 
 Der Quellstand wurde lokal gebaut und die APK-Signatur geprüft. Die bisherigen Prüfungen von Version 0.4 umfassen 15 ursprüngliche Web-/Zugriffsprüfungen und 14 Prüfungen der erweiterten Kameraverwaltung; diese Zahlen stehen nicht für einen neuen vollständigen Geräteprüflauf von Version 0.6.0. Einzelne echte Kamerabilder wurden am Zielgerät angesehen.
 

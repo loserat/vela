@@ -26,7 +26,7 @@ The owner-reported marketed model is **55PUS6581/12**. This number was not indep
 - Installation of the signed dashboard update with package identity preserved.
 - Runtime version 0.6.0 and installed APK hash.
 - Local HTTPS settings, certificate continuity, login, and retained camera IDs.
-- Real Hue Bridge HTTPS identity/configuration; pairing and lamp control are still pending.
+- Real Hue Bridge HTTPS identity, physical-button pairing, explicit selected-room persistence, and live state/capability reads; lamp actions are still pending.
 - Android registration of the screensaver service, native settings page, Philips fallback explanation, and unchanged activation settings; automatic idle activation is not yet verified.
 - Ambilight power, current mode, supported styles, and LED topology reads.
 - Corrected red, green, blue, and pink commands compared with device-reported processed LED RGB values, followed by restoring the previous state.
@@ -35,7 +35,7 @@ User perception of the actual wall color, long-running behavior, complete camera
 
 ## Hue Bridge
 
-A physical Hue Bridge reports model **BSB002**. Its local HTTPS identity and configuration were verified. Application registration through the physical link button and actual room/lamp actions are still pending. No network address, bridge identifier, certificate, or application key is published.
+A physical Hue Bridge reports model **BSB002**. Its local HTTPS identity, application registration through the physical link button, explicit user-selected room persistence, and live state/capability reads were verified. The selected room reports dimming, color, and color-temperature support. No light-changing commands were sent; actual lamp actions remain unverified. No network address, bridge identifier, certificate, or application key is published.
 
 ## Emulator evidence
 
