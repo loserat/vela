@@ -1,6 +1,8 @@
 # Changelog
 
-## Unreleased — documentation
+## Unreleased — repository maintenance
+
+- Audited ignore rules and the current index; excluded raw signing keys, known unencrypted setup files and mixed-case image extensions while preserving all 26 exact reviewed screenshot exceptions. Added reproducible Git-based publication checks and scope documentation.
 
 - Recorded eleven proposed extensions with dependencies, a suggested first-increment order and acceptance boundaries in the roadmap. These are not implemented features or scheduled releases.
 - Linked the roadmap from both READMEs and reorganised the documentation index around setup, current behavior, evidence and future work.

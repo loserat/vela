@@ -2,6 +2,10 @@
 
 [Documentation](README.md) · [Current device results](STATUS.md)
 
+## Publication rules
+
+Run `python3 tests/check_gitignore.py` to check Git's actual ignore behavior and the current index without creating secret files or contacting a TV. [Publication rules](PUBLICATION.md) document the exact exclusions, reviewed image exceptions and audit limits. This repository check is separate from application/device tests.
+
 ## Current automated suites
 
 | Suite | Checks | What it establishes |

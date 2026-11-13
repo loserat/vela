@@ -7,6 +7,7 @@
 | [Installation](INSTALLATION.md) | Build, signing, update, Home assignment, rollback and retained data |
 | [UI](UI.md) | Screens, focus/remote behavior, screenshots and rendering choices |
 | [Architecture](ARCHITECTURE.md) | Components, local integrations, storage and API boundaries |
+| [Publication rules](PUBLICATION.md) | Ignore rules, reviewed-image exceptions, index checks and audit limits |
 | [Network](NETWORK.md) | Passive TV connectivity, Android validation and local UniFi boundaries |
 | [Testing](TESTING.md) | Reproducible isolated fixtures and interpretation of test evidence |
 | [Current status](STATUS.md) | Current validation and outstanding checks |

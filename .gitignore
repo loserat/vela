@@ -1,17 +1,26 @@
-# Generated SDK files and local output
+# Generated Android SDK files and local packages
 /app/build/
 /app/deps/
 /dist/
+*.apk
+*.aab
+*.apks
+*.idsig
+
+# Python caches and operating-system files
 __pycache__/
 *.pyc
 .DS_Store
 
-# Signing material and local credentials
+# Private signing material and local credentials
 *.p12
 *.pfx
 *.jks
 *.keystore
 *.pem
+*.key
+*.p8
+*.pk8
 .env
 .env.*
 !.env.example
@@ -20,52 +29,46 @@ __pycache__/
 *.db
 *.db-*
 *.log
-*private*
 
-# Device packages, screenshots and private working material
-*.apk
-*.idsig
-*.png
-*.jpg
-*.jpeg
+# Known unencrypted local setup files; keep JSON source/catalogs trackable
+leise-tv-camera-config.json
+hue-bridge-local.json
+
+# Local work, integration evidence and explicitly private filenames
 /work/
 /outputs/
-
-# Reviewed UI screenshots; private camera images remain excluded
-!/docs/images/home.png
-!/docs/images/ambilight.png
-!/docs/images/screensaver.png
-!/docs/images/hue.png
-!/docs/images/devices.png
-!/docs/images/cameras.png
-!/docs/images/system.png
-!/docs/images/apps.png
-
-# Local integration-test output
 /test-results/
+*private*
 
+# Images require an explicit reviewed exception, including uppercase extensions
+*.[pP][nN][gG]
+*.[jJ][pP][gG]
+*.[jJ][pP][eE][gG]
+
+# Reviewed synthetic documentation screenshots only
+!/docs/images/ambilight.png
+!/docs/images/apps.png
+!/docs/images/cameras.png
+!/docs/images/devices.png
+!/docs/images/home-abendrot.png
+!/docs/images/home-mitternacht.png
+!/docs/images/home-nordlicht.png
+!/docs/images/home-wald.png
+!/docs/images/home.png
+!/docs/images/hue.png
 !/docs/images/network.png
-!/docs/images/web-settings.jpg
-!/docs/images/web-network-mobile.jpg
-
+!/docs/images/screensaver.png
+!/docs/images/system.png
 !/docs/images/unifi.png
+!/docs/images/web-design-mobile.jpg
+!/docs/images/web-design.jpg
+!/docs/images/web-hue-mobile.jpg
+!/docs/images/web-hue.jpg
+!/docs/images/web-network-mobile.jpg
+!/docs/images/web-settings-mobile.jpg
+!/docs/images/web-settings.jpg
+!/docs/images/web-shortcuts-mobile.jpg
+!/docs/images/web-shortcuts.jpg
+!/docs/images/web-tv-mobile.jpg
 !/docs/images/web-tv.jpg
 !/docs/images/web-unifi.jpg
-!/docs/images/web-tv-mobile.jpg
-
-!/docs/images/web-settings-mobile.jpg
-
-!/docs/images/web-hue.jpg
-!/docs/images/web-hue-mobile.jpg
-
-# Reviewed synthetic design/layout screenshots
-!/docs/images/web-design.jpg
-!/docs/images/web-design-mobile.jpg
-!/docs/images/home-nordlicht.png
-!/docs/images/home-mitternacht.png
-!/docs/images/home-abendrot.png
-!/docs/images/home-wald.png
-
-# Reviewed synthetic shortcut settings
-!/docs/images/web-shortcuts.jpg
-!/docs/images/web-shortcuts-mobile.jpg
