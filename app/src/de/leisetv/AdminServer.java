@@ -189,7 +189,7 @@ final class AdminServer implements Closeable {
         JSONArray cameras=library.getJSONArray("cameras");
         for(int i=0;i<cameras.length();i++)if(cameras.getJSONObject(i).optString("id").equals(library.optString("defaultCameraId")))camera=cameras.getJSONObject(i);
         return new JSONObject().put("display",display).put("camera",camera).put("cameras",cameras).put("defaultCameraId",library.optString("defaultCameraId"))
-            .put("version","0.5.0");
+            .put("version","0.5.2");
     }
     private void saveCamera(JSONObject data)throws Exception{
         String name=data.optString("name").trim();if(name.isEmpty()||name.length()>80)throw new IOException("Kameraname fehlt");

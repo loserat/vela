@@ -30,3 +30,7 @@ __pycache__/
 *.jpeg
 /work/
 /outputs/
+
+# Reviewed UI screenshots; private camera images remain excluded
+!/docs/images/home.png
+!/docs/images/ambilight.png

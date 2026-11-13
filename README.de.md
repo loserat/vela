@@ -4,7 +4,7 @@
 
 **ATPD** steht für *Ambilight TV Private Dashboard*. Eine schlanke, fernbedienbare Startoberfläche für Android TV mit lokalen Web-Einstellungen und Kameraübersicht.
 
-**Stand: 0.5.0 · experimentelle Beta. Die letzte Geräteprüfung des direkten Kamerawechsels ist noch offen.** Das Dashboard ist eine Android-App und kann als Home-Oberfläche eingestellt werden.
+**Stand: 0.5.2 · experimentelle Beta. Die letzte Geräteprüfung des direkten Kamerawechsels ist noch offen.** Das Dashboard ist eine Android-App und kann als Home-Oberfläche eingestellt werden.
 
 Diese Version konzentriert sich auf Startoberfläche, Kameras und lokale Ambilight-Bedienung. Die unfertige Klima-Anbindung ist nicht enthalten.
 
@@ -12,11 +12,31 @@ Die TV-Oberfläche zeigt keinen Projektnamen und kein Logo. In Android heißt di
 
 Die Repository-Dokumentation wird auf Englisch gepflegt; diese Datei ist die deutsche Projektbeschreibung. Die Benutzeroberfläche am Fernseher und die lokalen Web-Einstellungen bleiben auf Deutsch.
 
+## Screenshots
+
+Echte native Android-Ansichten aus dem separaten Simulator. Der angezeigte Lichtzustand sind Testdaten; private Kamerabilder und Zugangsdaten sind nicht enthalten.
+
+![Startseite mit Kameras, Ambilight, Fernsehen und System](docs/images/home.png)
+
+![Ambilight mit 16 Farben, aktiver Auswahl und Helligkeitsregler](docs/images/ambilight.png)
+
+## Verifizierte Hardware
+
+Direkt am Gerät geprüft am **13. November 2026**:
+
+| Ziel | Verifizierte Angaben | Aussagekraft |
+| --- | --- | --- |
+| Echter Philips-TV | Android-Modell `QM163E`, Plattform `mt5890`, Android 8.0.0 / API 26, `armeabi-v7a`, Android-Anzeige 1920 × 1080, 320 dpi | Auf dem echten Fernseher installiert und ausgeführt |
+| Separater Android-Simulator | Android 14 / API 34, ARM64, 1920 × 1080 | Oberflächen- und Ersatzdienstprüfungen; kein weiterer unterstützter physischer TV |
+
+Der Besitzer nennt als TV-Modell **55PUS6581/12**. Das [Philips-Datenblatt](https://www.documents.philips.com/assets/20230307/fe892bffbb3a4e078c21afbe012b73a3.pdf) beschreibt ein 4K-Panel; die App zeichnet aktuell in der von Android gemeldeten Auflösung von 1920 × 1080. Die Verkaufsmodellnummer wurde nicht unabhängig aus dem laufenden Gerät ausgelesen. Methoden und Grenzen stehen unter [Hardware-Prüfung (Englisch)](docs/HARDWARE.md).
+
 ## Funktionen
 
 - Reduzierte Startseite mit Kameras, Ambilight, Fernsehen und System.
 - Ruhige Farbverläufe, klare Fokusrahmen und große Ziele für die Fernbedienung.
-- Eigene Ambilight-Bedienung für Ein/Aus, Bild-/Musikanpassung, feste Farben und deren Helligkeit.
+- Eigene Ambilight-Bedienung mit 16 beschrifteten Farbfeldern, aktiver Auswahl, Lichtvorschau, Modi und Helligkeitsregler für die Fernbedienung.
+- Korrekte 8-Bit-Umrechnung für Farbton und Sättigung; eine Farbauswahl schaltet das Licht bei Bedarf ein.
 - Kameraübersicht mit bis zu 24 konfigurierten Einträgen; jeweils eine Kamera im Vollbild.
 - Navigation mit Pfeiltasten und OK; Links/Rechts wechselt im Vollbild die Quelle.
 - Status für fehlende Streams und bei der Einrichtung als offline erkannte Kameras.
@@ -43,7 +63,7 @@ python3 app/fetch_deps.py
 python3 app/build.py
 ```
 
-Der erste Schritt lädt das versionsgebundene VLC-SDK 3.7.7 vom Maven-Central-Repository und prüft dessen SHA256-Prüfsumme. Der zweite baut und signiert die APK lokal. Das Ergebnis liegt unter `dist/TV-Dashboard-0.5.0.apk`.
+Der erste Schritt lädt das versionsgebundene VLC-SDK 3.7.7 vom Maven-Central-Repository und prüft dessen SHA256-Prüfsumme. Der zweite baut und signiert die APK lokal. Das Ergebnis liegt unter `dist/TV-Dashboard-0.5.2.apk`.
 
 Beim ersten Build wird ein eigener lokaler Test-Signierschlüssel erzeugt. Er bleibt lokal und wird durch `.gitignore` ausgeschlossen. Eine mit einem anderen Schlüssel signierte Installation lässt sich damit nicht überschreiben. Einen vorhandenen eigenen Schlüssel kann man über `NICKOS_KEYSTORE` und dessen Kennwort über `NICKOS_SIGN_PASSWORD` verwenden. Der erwartete Schlüsselalias ist aktuell `leisetv`.
 
@@ -52,7 +72,7 @@ Beim ersten Build wird ein eigener lokaler Test-Signierschlüssel erzeugt. Er bl
 Für ein bereits autorisiertes Android-Gerät:
 
 ```sh
-adb install -r dist/TV-Dashboard-0.5.0.apk
+adb install -r dist/TV-Dashboard-0.5.2.apk
 adb shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -74,17 +94,27 @@ Im Bereich **Kameras** einen lokalen UniFi-Protect-RTSPS-Link eintragen. Ein lee
 
 ## Ambilight
 
-Auf der Startseite **Ambilight** öffnen. Dabei wird nur der Zustand gelesen; erst ein Tastendruck ändert die Beleuchtung. Bedienelemente werden erst nach erfolgreichem Abruf freigegeben. Die Farbhelligkeit gilt für feste Farben, nicht für die Helligkeit der Bildanpassung.
+Auf der Startseite **Ambilight** öffnen. Dabei wird nur der Zustand gelesen; erst ein Tastendruck ändert die Beleuchtung. Bedienelemente werden erst nach erfolgreichem Abruf freigegeben. Die Farbhelligkeit gilt für feste Farben, nicht für die Helligkeit der Bildanpassung. Änderungen werden gesammelt und nacheinander gesendet; Fokus und übrige Oberfläche bleiben beim Nachregeln stabil.
 
-Die Anbindung unterstützt derzeit einen Philips-JointSpace-v6-Dienst ohne Anmeldung direkt auf dem Fernseher an Loopback-Port `1925`. Modelle mit zwingender HTTPS-Kopplung werden noch nicht unterstützt. Home Assistant ist nicht erforderlich. Protokollreferenz: [Pylips](https://github.com/eslavnov/pylips); dessen Code wird nicht eingebunden.
+Die Anbindung unterstützt derzeit einen Philips-JointSpace-v6-Dienst ohne Anmeldung direkt auf dem Fernseher an Loopback-Port `1925`. Modelle mit zwingender HTTPS-Kopplung werden noch nicht unterstützt. Home Assistant ist nicht erforderlich. Protokollreferenzen: [Pylips](https://github.com/eslavnov/pylips) und die [Philips-Implementierung von Home Assistant](https://github.com/home-assistant/core/blob/dev/homeassistant/components/philips_js/light.py). Deren Code wird nicht eingebunden. Farbton und Sättigung werden als Werte von 0 bis 255 übertragen, nicht als Grad und Prozent.
 
 ## Prüfstand und Grenzen
 
-Oberfläche und Ambilight-Anbindung von 0.5.0 haben 22 Navigations- und Befehlsprüfungen gegen einen lokalen Ersatzdienst im Android-Simulator bestanden. Echte LED-Änderungen und die neue Oberfläche auf dem Philips sind noch zu prüfen.
+Die neue Ambilight-Seite hat 14 Bedienungsprüfungen im Android-Simulator bestanden; 45 Farbprüfungen laufen gegen die produktive Palettenklasse. Nach der Korrektur der Farbskala wurden die vom TV gemeldeten LED-RGB-Werte für Rot, Grün, Blau und Rosa am Gerät geprüft. Das ist keine kalibrierte Messung der tatsächlichen Raumbeleuchtung.
 
-Der Quellstand wurde lokal gebaut und die APK-Signatur geprüft. Die bisherigen Prüfungen von Version 0.4 umfassen 15 ursprüngliche Web-/Zugriffsprüfungen und 14 Prüfungen der erweiterten Kameraverwaltung; diese Zahlen stehen nicht für einen neuen vollständigen Geräteprüflauf von Version 0.5.0. Einzelne echte Kamerabilder wurden am Zielgerät angesehen.
+Der Quellstand wurde lokal gebaut und die APK-Signatur geprüft. Die bisherigen Prüfungen von Version 0.4 umfassen 15 ursprüngliche Web-/Zugriffsprüfungen und 14 Prüfungen der erweiterten Kameraverwaltung; diese Zahlen stehen nicht für einen neuen vollständigen Geräteprüflauf von Version 0.5.2. Einzelne echte Kamerabilder wurden am Zielgerät angesehen.
 
 Die letzte automatische Geräteprüfung nach der Kamerawechselkorrektur wurde nicht erfolgreich abgeschlossen. Daher sind Kamerawechsel, Rückkehr, längerer Betrieb, Bildlatenz, Verhalten nach Neustart und Standby weiterhin zu prüfen. Siehe [Prüfstand (Englisch)](docs/STATUS.md).
+
+## Farbprüfungen
+
+Mit installiertem JDK:
+
+```sh
+python3 tests/check_palette.py
+```
+
+Dafür sind weder Fernseher noch Android SDK oder Konto erforderlich.
 
 ## Aufbau und Lizenzen
 

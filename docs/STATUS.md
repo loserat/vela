@@ -2,7 +2,7 @@
 
 [README](../README.md) · [Deutsche Projektbeschreibung](../README.de.md)
 
-As of November 13, 2026, version 0.5.0 (experimental candidate).
+As of November 13, 2026, version 0.5.2 (experimental beta).
 
 ## Implemented
 
@@ -43,7 +43,28 @@ The native home and camera screens use a shared static visual style. The home sc
 
 The 32-bit ARM TV build and a separate ARM64 simulator package were built and signature-checked. 22 checks covering remote navigation, read-only page entry, power and mode changes, fixed colors, bounded fixed-color brightness, failure handling, and recovery were tested against a local mock service on an isolated Android 34 emulator. The emulator package uses the same app classes with ARM64 LibVLC libraries. This does not verify video playback on the Philips.
 
-Read-only probes on the Philips confirmed JointSpace 6.2 and reported Ambilight power, current mode, supported styles, and LED topology. No write command has been sent to the physical TV during this work. The new app has not been installed on the Philips. Real LED changes, global video-mode brightness, and actual remote-control feel still need device verification.
+Version 0.5.0 was installed on the Philips at the user's request. APK identity, HTTPS certificate continuity, PIN login, API version, and retained camera entries passed. The home-only UI assertion did not complete because the foreground page had already changed; subsequent inspection found the live Ambilight page with an actual power state. The user then reported incorrect named colors, which triggered the correction below.
+
+## Color correction and Ambilight redesign (0.5.1)
+
+The original adapter incorrectly sent hue degrees and saturation percentages as raw protocol values. Philips expects both fields in the 0–255 range. The corrected palette uses a single conversion for button swatches, preset matching, and commands. Fixed-color brightness retains the exact current hue/saturation bytes.
+
+The page now offers 16 swatches, explicit current selection, a light preview, mode controls, and a remote/touch brightness slider. Selecting a color turns the light on when necessary; opening the page does not change the lights.
+
+Validation:
+
+- 45 palette regressions passed using the actual production Java class, including primary RGB previews, wire values, preset matching, and invalid ranges.
+- 14 simulator checks passed for the redesigned controls, color-to-wire mapping, automatic power-on, brightness without hue drift, focus restoration, mode switching, errors, and recovery.
+- Short hardware tests sent corrected red, green, blue, and pink colors and read the processed LED RGB output. All four matched their expected hue range; the previous TV configuration and power were then restored.
+- These RGB readings validate device-reported output, not a calibrated visual color match on the user's wall.
+
+## Brightness stability update (0.5.2)
+
+The brightness slider now batches rapid input and serializes updates separately from full page commands. It remains enabled and focused while an update is pending; other controls and the header are not dimmed or redrawn for each step. Successful brightness writes refresh only the color configuration and retain the exact acknowledged hue/saturation bytes.
+
+Ten targeted emulator checks passed, including delayed mock responses, stable focus and controls, bounded command counts, one final update for touch dragging, and identical pixels outside the slider during input. These checks establish UI behavior in the simulator; the user's real-device perception remains an independent check.
+
+Versions 0.5.1 and 0.5.2 were installed on the Philips with the existing signing identity. Version 0.5.1 runtime hash, HTTPS, login, API version, and five retained camera entries were verified. Live technical properties and screenshot provenance are documented in [HARDWARE.md](HARDWARE.md).
 
 ## Not yet fully verified
 

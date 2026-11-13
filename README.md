@@ -4,7 +4,7 @@ English · [Deutsch](README.de.md)
 
 **ATPD** stands for *Ambilight TV Private Dashboard*. A lightweight, remote-controlled home screen for Android TV with local web settings and a camera overview.
 
-**Version: 0.5.0 · experimental beta. The final device check for switching directly between cameras is still pending.** The dashboard is an Android app that can be assigned as the Home app.
+**Version: 0.5.2 · experimental beta. The final device check for switching directly between cameras is still pending.** The dashboard is an Android app that can be assigned as the Home app.
 
 This version focuses on the launcher, cameras, and local Ambilight controls. The unfinished climate integration is excluded.
 
@@ -12,11 +12,31 @@ The TV interface has no project name or logo. Android uses the generic app label
 
 Repository documentation is maintained in English, with a [German README](README.de.md). The TV interface and local web settings remain in German.
 
+## Screenshots
+
+Actual native Android screens rendered in the isolated emulator. The displayed light state is test data; no private camera images or credentials are included.
+
+![Home screen: cameras, Ambilight, TV and system settings](docs/images/home.png)
+
+![Ambilight controls with 16 colors, current selection and brightness slider](docs/images/ambilight.png)
+
+## Verified hardware
+
+Live device properties were checked on **November 13, 2026**:
+
+| Target | Verified details | Evidence scope |
+| --- | --- | --- |
+| Physical Philips TV | Android model `QM163E`, platform `mt5890`, Android 8.0.0 / API 26, `armeabi-v7a`, 1920 × 1080 Android display, 320 dpi | Installed and running on the actual TV |
+| Isolated Android emulator | Android 14 / API 34, ARM64, 1920 × 1080 | UI and mock-service checks; not a second supported physical TV |
+
+The owner identifies the TV as a **55PUS6581/12**. Its [Philips data sheet](https://www.documents.philips.com/assets/20230307/fe892bffbb3a4e078c21afbe012b73a3.pdf) describes a 4K panel; the app currently renders at the Android-reported 1920 × 1080 resolution. The marketed model number was not independently read from the live device. See [Hardware verification](docs/HARDWARE.md) for methods and limits.
+
 ## Features
 
 - Minimal home screen with cameras, Ambilight, TV access, and system settings.
 - Static gradients, clear focus borders, and large remote-friendly targets.
-- Native Ambilight controls for on/off, video/audio following, fixed colors, and fixed-color brightness.
+- Native Ambilight controls with 16 named color swatches, current-selection feedback, a light preview, mode choices, and a remote-friendly brightness slider.
+- Correct 8-bit hue/saturation conversion; selecting a color also switches the light on.
 - Overview of up to 24 configured cameras, with one camera displayed full screen at a time.
 - Navigation using the arrow and OK buttons; Left/Right switches sources in full-screen view.
 - Status indicators for missing streams and cameras detected as offline during setup.
@@ -43,7 +63,7 @@ python3 app/fetch_deps.py
 python3 app/build.py
 ```
 
-The first step downloads the pinned VLC SDK 3.7.7 from Maven Central and verifies its SHA256 checksum. The second builds and signs the APK locally. The output is `dist/TV-Dashboard-0.5.0.apk`.
+The first step downloads the pinned VLC SDK 3.7.7 from Maven Central and verifies its SHA256 checksum. The second builds and signs the APK locally. The output is `dist/TV-Dashboard-0.5.2.apk`.
 
 The first build generates a local test signing key. It stays on your machine and is excluded by `.gitignore`. An APK signed with this key cannot update an installation signed with a different key. To use your own existing key, set `NICKOS_KEYSTORE` and provide its password through `NICKOS_SIGN_PASSWORD`. The currently expected key alias is `leisetv`.
 
@@ -52,7 +72,7 @@ The first build generates a local test signing key. It stays on your machine and
 For an Android device that has already authorized your development machine:
 
 ```sh
-adb install -r dist/TV-Dashboard-0.5.0.apk
+adb install -r dist/TV-Dashboard-0.5.2.apk
 adb shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -74,17 +94,27 @@ Under **Kameras** (cameras), enter a local UniFi Protect RTSPS link. Leaving the
 
 ## Ambilight
 
-Open **Ambilight** from the home screen. Opening the page only reads the TV state; explicit button presses send changes. Supported controls are enabled only after a successful state read. Color brightness applies to fixed manual colors, not to video-following brightness.
+Open **Ambilight** from the home screen. Opening the page only reads the TV state; explicit button presses send changes. Supported controls are enabled only after a successful state read. Color brightness applies to fixed manual colors, not to video-following brightness. Updates are debounced and serialized; adjusting the slider keeps the rest of the interface and focus stable.
 
-The adapter currently targets an unauthenticated Philips JointSpace v6 service on the TV itself at loopback port `1925`. Models requiring authenticated HTTPS pairing are not supported yet. It does not require Home Assistant. The protocol reference is [Pylips](https://github.com/eslavnov/pylips); no Pylips code is bundled.
+The adapter currently targets an unauthenticated Philips JointSpace v6 service on the TV itself at loopback port `1925`. Models requiring authenticated HTTPS pairing are not supported yet. It does not require Home Assistant. Protocol references include [Pylips](https://github.com/eslavnov/pylips) and the [Home Assistant Philips implementation](https://github.com/home-assistant/core/blob/dev/homeassistant/components/philips_js/light.py). No code from either project is bundled. Hue and saturation use bytes from 0 to 255, rather than degrees and percentages.
 
 ## Validation and limitations
 
-The 0.5.0 interface and Ambilight adapter passed 22 navigation and command checks against a local mock service in an Android emulator. Actual LED changes and the new interface on the Philips still need verification.
+The redesigned Ambilight page passed 14 interaction checks in an Android emulator, and 45 color regressions run against the production palette class. Hardware probes verified the processed LED RGB values for red, green, blue, and pink after correcting the protocol scaling. These are device-reported values, not a calibrated measurement of the room lighting.
 
-The source has been built locally and the APK signature verified. Earlier checks of version 0.4 included 15 original web/access checks and 14 checks of the expanded camera management; these counts do not represent a new complete device test run of version 0.5.0. Individual live camera images have been viewed on the target device.
+The source has been built locally and the APK signature verified. Earlier checks of version 0.4 included 15 original web/access checks and 14 checks of the expanded camera management; these counts do not represent a new complete device test run of version 0.5.2. Individual live camera images have been viewed on the target device.
 
 The last automated device check after the camera-switching fix did not complete successfully. Camera switching, return navigation, extended operation, image latency, restart behavior, and standby still need verification. See [Validation status](docs/STATUS.md).
+
+## Color regression checks
+
+With a JDK installed, run:
+
+```sh
+python3 tests/check_palette.py
+```
+
+These tests need no TV, Android SDK, or account.
 
 ## Architecture and licensing
 

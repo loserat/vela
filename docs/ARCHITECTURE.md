@@ -14,6 +14,10 @@ Internal preference names, encryption-key aliases, and the `NickApplication` cla
 
 `TvStyle` supplies static backgrounds, cards, and icons. The home screen redraws for focus changes and the minute clock; it has no continuous animation. `AmbilightActivity` uses a single worker for explicit commands and subsequent state reads. `AmbilightController` only addresses the local TV service on `127.0.0.1:1925/6`. It does not accept arbitrary remote hosts. No light state is changed on page entry. Failed reads disable controls; stale responses after leaving the page are ignored.
 
+`AmbilightPalette` stores the 16 named presets and converts hue degrees/saturation percentages to JointSpace byte values (0–255). Swatches and wire commands share this mapping. Brightness changes retain the exact acknowledged hue/saturation bytes, avoiding cumulative color shifts. Selecting a preset explicitly updates the color and powers the light on; entering the page remains read-only.
+
+Brightness input uses a debounced, serialized queue separate from full commands. It keeps focus and enabled states stable, renders the local slider immediately, and refreshes only the color configuration after a write. Starting another command or leaving the activity cancels queued input; stale callbacks are ignored.
+
 ## Video
 
 LibVLC is initialized only when playback is needed. `SecureRtspProxy` pins the recorder's stored certificate and transports interleaved RTSP over TLS. Unencrypted RTSP exists only on the loopback interface inside the TV.
