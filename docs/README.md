@@ -16,3 +16,5 @@
 The repository and documentation are public. Device addresses, account data, camera imagery, actual application keys and signing material are not part of the published project.
 
 - [Network status](NETWORK.md): passive TV connectivity, Android validation and UniFi boundaries.
+
+- Version 0.8.0 adds editable Home/model names, local Network inventory and TV-info/maintenance with redacted diagnostics and app-only screensaver styling.

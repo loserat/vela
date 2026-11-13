@@ -35,8 +35,8 @@ public final class MainActivity extends Activity {
     private final List<Tile> tiles = new ArrayList<>();
     private FrameLayout root;
     private Backdrop backdrop;
-    private TvButton networkButton;private ConnectivityManager connectivity;private boolean networkRegistered;
-    private final Runnable networkChanged=()->{if(this.resumed&&networkButton!=null)networkButton.label(NetworkStatus.summary(this)+"  →");};
+    private NetworkBadge networkButton;private ConnectivityManager connectivity;private boolean networkRegistered;
+    private final Runnable networkChanged=()->{if(this.resumed&&networkButton!=null)networkButton.update();};
     private final ConnectivityManager.NetworkCallback networkCallback=new ConnectivityManager.NetworkCallback(){public void onAvailable(Network n){handler.post(networkChanged);}public void onLost(Network n){handler.post(networkChanged);}public void onCapabilitiesChanged(Network n,NetworkCapabilities c){handler.post(networkChanged);}};
     private float scale, offsetX, offsetY;
     private boolean resumed,homeDirty,appsFromSystem;
@@ -146,8 +146,8 @@ public final class MainActivity extends Activity {
         for(int i=0;i<3;i++)place(shortcuts.get(i),96+i*584,724,560,132);
         for(int i=0;i<primary.size();i++){Tile t=primary.get(i);t.setNextFocusLeftId(primary.get(Math.max(0,i-1)).getId());t.setNextFocusRightId(primary.get(Math.min(primary.size()-1,i+1)).getId());t.setNextFocusUpId(t.getId());t.setNextFocusDownId(shortcuts.get(Math.min(i,2)).getId());}
         for(int i=0;i<3;i++){Tile t=shortcuts.get(i);t.setNextFocusLeftId(shortcuts.get(Math.max(0,i-1)).getId());t.setNextFocusRightId(shortcuts.get(Math.min(2,i+1)).getId());t.setNextFocusUpId(primary.get(Math.min(primary.size()-1,i)).getId());t.setNextFocusDownId(t.getId());}
-        networkButton=new TvButton(this,NetworkStatus.summary(this)+"  →",()->open(new Intent(this,NetworkActivity.class)));networkButton.w=740;networkButton.h=64;
-        FrameLayout.LayoutParams netLayout=new FrameLayout.LayoutParams(Math.round(740*scale),Math.round(64*scale));netLayout.leftMargin=Math.round(offsetX+1084*scale);netLayout.topMargin=Math.round(offsetY+914*scale);networkButton.setId(View.generateViewId());root.addView(networkButton,netLayout);
+        networkButton=new NetworkBadge(this,()->open(new Intent(this,NetworkActivity.class)));
+        FrameLayout.LayoutParams netLayout=new FrameLayout.LayoutParams(Math.round(440*scale),Math.round(64*scale));netLayout.leftMargin=Math.round(offsetX+1384*scale);netLayout.topMargin=Math.round(offsetY+914*scale);networkButton.setId(View.generateViewId());root.addView(networkButton,netLayout);
         for(Tile shortcut:shortcuts)shortcut.setNextFocusDownId(networkButton.getId());networkButton.setNextFocusUpId(shortcuts.get(1).getId());
         TvStyle.focus(primary.get(0));Log.i("LeiseTV","screen:home");
     }
@@ -230,7 +230,7 @@ public final class MainActivity extends Activity {
             String t=time.format(now);p.setTextSize(home?96:48);p.setTypeface(TvStyle.LIGHT);p.setColor(INK);p.setStyle(Paint.Style.FILL);
             if(prefs.getBoolean("show_clock",true))c.drawText(t,1824-p.measureText(t),home?165:112,p);
             if(home){
-                text(c,p,"Zuhause",96,121,58,INK,false);
+                p.setTextSize(58);p.setTypeface(TvStyle.NORMAL);text(c,p,TvStyle.fit(p,prefs.getString("home_title","Zuhause"),1200),96,121,58,INK,false);
                 if(prefs.getBoolean("show_date",true))text(c,p,date.format(now),99,165,25,MUTED,false);
                 p.setColor(0xff2A3C40);c.drawRect(96,892,1824,893,p);
                 p.setColor(0xff243A3E);c.drawRoundRect(96,930,141,961,7,7,p);

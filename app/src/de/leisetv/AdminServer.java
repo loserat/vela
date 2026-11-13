@@ -163,14 +163,30 @@ final class AdminServer implements Closeable {
                 sessions.remove(token);reply(out,200,"application/json","{\"ok\":true}","nickos=; Secure; HttpOnly; SameSite=Strict; Path=/; Max-Age=0");return;
             }else if(method.equals("POST")&&path.equals("/api/display")){
                 JSONObject data=new JSONObject(body);
-                preferences(context).edit().putBoolean("show_camera",data.optBoolean("camera",true))
-                    .putBoolean("show_clock",data.optBoolean("clock",true)).putBoolean("show_date",data.optBoolean("date",true)).commit();
+                SharedPreferences.Editor displayEdit=preferences(context).edit().putBoolean("show_camera",data.optBoolean("camera",true))
+                    .putBoolean("show_clock",data.optBoolean("clock",true)).putBoolean("show_date",data.optBoolean("date",true));
+                if(data.has("deviceName")){String name=data.getString("deviceName").trim();if(name.length()>80||name.chars().anyMatch(value->Character.isISOControl(value)))throw new IOException("Invalid display name");if(name.isEmpty())displayEdit.remove("device_display_name");else displayEdit.putString("device_display_name",name);}
+                if(data.has("homeTitle")){String title=data.getString("homeTitle").trim();if(title.length()>40||title.chars().anyMatch(value->Character.isISOControl(value)))throw new IOException("Invalid home title");if(title.isEmpty())displayEdit.remove("home_title");else displayEdit.putString("home_title",title);}
+                displayEdit.commit();
                 changed();result.put("ok",true);
             }else if(method.equals("POST")&&path.equals("/api/camera")){
                 synchronized(CameraLibrary.class){saveCamera(new JSONObject(body));}changed();result.put("ok",true);
             }else if(method.equals("POST")&&path.equals("/api/camera/delete")){
                 CameraLibrary.remove(context,new JSONObject(body).getString("id"));changed();result.put("ok",true);
             }else if(method.equals("GET")&&path.equals("/api/network/state"))result=NetworkStatus.view(context);
+            else if(method.equals("GET")&&path.equals("/api/screensaver/state"))result=ScreensaverConfig.view(context);
+            else if(method.equals("POST")&&path.equals("/api/screensaver/configure"))result=ScreensaverConfig.save(context,new JSONObject(body));
+            else if(method.equals("GET")&&path.equals("/api/device/state"))result=DeviceInfo.view(context);
+            else if(method.equals("GET")&&path.equals("/api/device/diagnostic"))result=DeviceInfo.diagnostic(context);
+            else if(method.equals("POST")&&path.equals("/api/device/open")){
+                context.startActivity(new android.content.Intent(context,MainActivity.class).setAction(android.content.Intent.ACTION_MAIN).addCategory(android.content.Intent.CATEGORY_HOME).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK|android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP));result.put("requested",true);
+            }
+            else if(method.equals("GET")&&path.equals("/api/unifi/state"))result=UniFiController.view(context,false);
+            else if(method.equals("POST")&&path.equals("/api/unifi/refresh"))result=UniFiController.view(context,true);
+            else if(method.equals("POST")&&(path.equals("/api/unifi/configure")||path.equals("/api/unifi/site"))){
+                try{JSONObject input=new JSONObject(body);result=path.endsWith("configure")?UniFiController.configure(context,input):UniFiController.select(context,input.getString("id"));}
+                catch(Exception error){reply(out,400,"application/json",new JSONObject().put("message",UniFiController.error(error)).toString(),null);return;}
+            }
             else if(method.equals("GET")&&path.equals("/api/inputs/state"))result.put("inputs",InputCatalog.view(context));
             else if(method.equals("GET")&&path.equals("/api/hue/state"))result=HueController.view(context);
             else if(method.equals("POST")&&path.equals("/api/hue/configure"))result=HueController.configure(context,new JSONObject(body).getString("host"));
@@ -189,13 +205,14 @@ final class AdminServer implements Closeable {
     private JSONObject state()throws Exception{
         SharedPreferences p=preferences(context);
         JSONObject display=new JSONObject().put("camera",p.getBoolean("show_camera",true))
-            .put("clock",p.getBoolean("show_clock",true)).put("date",p.getBoolean("show_date",true));
+            .put("clock",p.getBoolean("show_clock",true)).put("date",p.getBoolean("show_date",true)).put("homeTitle",p.getString("home_title","Zuhause"));
         JSONObject library=CameraLibrary.publicView(context);
         JSONObject camera=new JSONObject().put("configured",false);
         JSONArray cameras=library.getJSONArray("cameras");
         for(int i=0;i<cameras.length();i++)if(cameras.getJSONObject(i).optString("id").equals(library.optString("defaultCameraId")))camera=cameras.getJSONObject(i);
         return new JSONObject().put("display",display).put("camera",camera).put("cameras",cameras).put("defaultCameraId",library.optString("defaultCameraId"))
-            .put("version","0.7.0");
+            .put("device",new JSONObject().put("manufacturer",android.os.Build.MANUFACTURER).put("model",android.os.Build.MODEL).put("displayName",p.getString("device_display_name",android.os.Build.MANUFACTURER+" "+android.os.Build.MODEL)))
+            .put("version","0.8.0");
     }
     private void saveCamera(JSONObject data)throws Exception{
         String name=data.optString("name").trim();if(name.isEmpty()||name.length()>80)throw new IOException("Kameraname fehlt");

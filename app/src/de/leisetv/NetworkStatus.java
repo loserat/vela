@@ -2,14 +2,15 @@ package de.leisetv;
 
 import android.content.Context;
 import android.net.*;
+import android.net.wifi.*;
 import java.net.*;
 import org.json.*;
 
-/** Passive Android connectivity snapshot. No probes, router login or SSID/location access. */
+/** Passive Android connectivity snapshot. No probes or router login; the active SSID is read only when Android exposes it. */
 final class NetworkStatus {
     static JSONObject view(Context context)throws JSONException{
         JSONObject result=new JSONObject().put("source","android").put("checkedAt",System.currentTimeMillis())
-            .put("connected",false).put("transport","Keine Verbindung").put("internet","unknown").put("address","");
+            .put("connected",false).put("transport","Keine Verbindung").put("internet","unknown").put("address","").put("ssid","");
         try{
             ConnectivityManager manager=(ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
             if(manager==null)return result;
@@ -18,6 +19,7 @@ final class NetworkStatus {
             String transport=caps.hasTransport(NetworkCapabilities.TRANSPORT_VPN)?"VPN":caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)?"LAN":caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)?"WLAN":caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)?"Mobilfunk":"Netzwerk";
             String internet=caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_CAPTIVE_PORTAL)?"portal":caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)?"validated":"unconfirmed";
             result.put("connected",true).put("transport",transport).put("internet",internet);
+            if("WLAN".equals(transport))try{WifiManager wifi=(WifiManager)context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);WifiInfo info=wifi==null?null:wifi.getConnectionInfo();String ssid=info==null?"":info.getSSID();if(ssid!=null&&!WifiManager.UNKNOWN_SSID.equals(ssid)){if(ssid.length()>=2&&ssid.startsWith("\"")&&ssid.endsWith("\""))ssid=ssid.substring(1,ssid.length()-1);result.put("ssid",ssid);}}catch(RuntimeException ignored){}
             LinkProperties properties=manager.getLinkProperties(active);
             if(properties!=null)for(LinkAddress link:properties.getLinkAddresses()){InetAddress address=link.getAddress();if(address instanceof Inet4Address&&!address.isLoopbackAddress()){result.put("address",address.getHostAddress());break;}}
         }catch(RuntimeException ignored){result.put("internet","unknown");}

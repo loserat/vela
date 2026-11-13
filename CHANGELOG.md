@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.8.0 — 2026-11-13
+
+- Replaced the large Home network card with a quiet dot and active WLAN name when available; no location permission was added.
+- Added optional local UniFi Network inventory with encrypted credentials, pinned HTTPS identity, explicit site selection, GET-only upstream requests, pagination and stale-state handling. Real-controller acceptance remains pending.
+- Added a dedicated TV-info/maintenance web panel, technical facts, redacted diagnostic export and explicit dashboard-open request.
+- Made the TV Home heading and web model label editable and persistent, with bounded input and native heading ellipsis.
+- Added web screensaver style/date/dim controls, synchronized with the native preview without changing Android activation.
+- Expanded web regression and isolated adapter/navigation tests and updated the screenshot gallery.
+
 ## 0.7.0 — 2026-11-13
 
 - Refined local web settings with five responsive sections, keyboard tabs, retained Home drafts and clear save feedback.

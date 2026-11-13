@@ -57,8 +57,30 @@ The unfinished AC Infinity/climate integration remains absent from current publi
 
 ## Passive network status and responsive administration
 
-`NetworkStatus` takes an Android `ConnectivityManager` snapshot of the active default network. It reads transport, Android validation/captive-portal capabilities, one local IPv4 address and a snapshot timestamp. `ACCESS_NETWORK_STATE` is a normal read-only permission. No router credentials, SSID/location access, pings, speed tests or custom external probes are used. `NetworkActivity` and the small Home button use visible-lifecycle callbacks and update only their own status view; they never rebuild the Home grid for a status event.
+`NetworkStatus` takes an Android `ConnectivityManager` snapshot of the active default network. It reads transport, Android validation/captive-portal capabilities, one local IPv4 address, an active SSID when exposed by Android, and a snapshot timestamp. `ACCESS_NETWORK_STATE` and `ACCESS_WIFI_STATE` are normal read-only permissions. No location permission, Wi-Fi scans, pings, speed tests or custom external probes are used for that snapshot. `NetworkActivity` and the small Home button use visible-lifecycle callbacks and update only their own status view; they never rebuild the Home grid for a status event.
 
-Authenticated read-only `GET /api/network/state` returns `source`, `checkedAt`, `connected`, `transport`, `internet`, and `address`. No network configuration write endpoint exists. [Network semantics](NETWORK.md) explain the distinction from UniFi health.
+Authenticated read-only `GET /api/network/state` returns `source`, `checkedAt`, `connected`, `transport`, `internet`, `address`, and `ssid`. No network configuration write endpoint exists. [Network semantics](NETWORK.md) explain the distinction from UniFi health.
 
-The single local HTML asset has five accessible tab panels, local CSS/system fonts, scoped pending-form locks and explicit save feedback. Switching sections fetches Hue/HDMI/network data on demand; there is no web polling timer. Camera saves refresh the library while preserving unsaved Home toggles. HDMI inventory is read-only in the browser; actual input selection stays on the TV. Hue setup uses the existing authenticated/pinned adapter; reading the page never pairs or changes room automatically.
+The single local HTML asset has six accessible tab panels, local CSS/system fonts, scoped pending-form locks and explicit save feedback. Switching sections fetches Hue/HDMI/network data on demand; there is no web polling timer. Camera saves refresh the library while preserving unsaved Home toggles. HDMI inventory is read-only in the browser; actual input selection stays on the TV. Hue setup uses the existing authenticated/pinned adapter; reading the page never pairs or changes room automatically.
+
+## Added 0.8.0 components and endpoints
+
+- `NetworkBadge` draws only a small dot/name and a focus-only border, updating independently of the Home grid.
+- `UniFiController` uses local sites/adopted-device GET endpoints; `UniFiActivity` renders only the whitelisted name/model/state fields. See [Network](NETWORK.md) for TLS enrollment, pagination and cache/failure semantics.
+- `DeviceInfo` reads the authenticated technical whitelist. `ScreensaverConfig` validates and updates existing app styling preferences; attached native views listen to those preferences without changing system activation.
+- `device_display_name` and `home_title` are ordinary app preferences. The local controller's key/certificate/host/site live in the separate Keystore-encrypted `unifi-network.enc`; secrets are never returned by setup/status/diagnostic routes.
+
+| Authenticated local route | Behavior |
+| --- | --- |
+| GET `/api/device/state` | Technical TV facts plus friendly model label |
+| GET `/api/device/diagnostic` | Redacted technical/network whitelist; excludes display label, IP, SSID, provider/camera data and credentials |
+| POST `/api/device/open` | Requests Main/Home through a standard Android intent; does not reboot the TV or restart its process |
+| GET `/api/screensaver/state` | Current app style/date/dim |
+| POST `/api/screensaver/configure` | Validates and saves app styling only |
+| GET `/api/unifi/state` | Local Network setup/status inventory, using the in-memory read cache |
+| POST `/api/unifi/refresh` | Requests an upstream read, subject to the two-second minimum |
+| POST `/api/unifi/configure` | Tests a local key/identity before replacing encrypted configuration |
+| POST `/api/unifi/site` | Validates and selects a site before reading its devices |
+| POST `/api/display` | Existing visibility flags plus optional bounded `homeTitle`/`deviceName`; validation completes before a single preference commit |
+
+Upstream UniFi has no mutation endpoint in this app. The local administration POSTs still use existing session/origin/content-type guards. A browser confirmation on the open action is a UI affordance, not a substitute for API authentication.

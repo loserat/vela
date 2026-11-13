@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 /** Styling stays local; automatic activation and timing remain actual TV settings. */
 public final class ScreensaverSettingsActivity extends TvScreen {
+    private final android.content.SharedPreferences.OnSharedPreferenceChangeListener preferenceChanged=(prefs,key)->{if(key!=null&&key.startsWith("saver_"))runOnUiThread(()->update());};
     private TvButton clock,color,date,dim,preview,system;private ScreensaverView live;
     private android.content.SharedPreferences prefs(){return AdminServer.preferences(this);}
     @Override public void onCreate(Bundle saved){super.onCreate(saved);stage("Bildschirmschoner","Dein Bildschirm in der Pause");
@@ -25,8 +26,8 @@ public final class ScreensaverSettingsActivity extends TvScreen {
         TvButton[] options={date,dim,preview};for(int i=0;i<3;i++){options[i].setNextFocusLeftId(options[Math.max(0,i-1)].getId());options[i].setNextFocusRightId(options[Math.min(2,i+1)].getId());options[i].setNextFocusUpId(i==0?clock.getId():color.getId());options[i].setNextFocusDownId(system.getId());}
         system.setNextFocusUpId(dim.getId());system.setNextFocusDownId(back.getId());back.setNextFocusUpId(system.getId());back.setNextFocusRightId(preview.getId());update();TvStyle.focus("color".equals(prefs().getString("saver_style","clock"))?color:clock);
     }
-    @Override protected void onResume(){super.onResume();if(live!=null){live.startClock();update();}}
-    @Override protected void onPause(){if(live!=null)live.stopClock();super.onPause();}
+    @Override protected void onResume(){super.onResume();prefs().registerOnSharedPreferenceChangeListener(preferenceChanged);if(live!=null){live.startClock();update();}}
+    @Override protected void onPause(){prefs().unregisterOnSharedPreferenceChangeListener(preferenceChanged);if(live!=null)live.stopClock();super.onPause();}
     private void openTvSettings(){try{startActivity(new Intent(Settings.ACTION_SETTINGS));}catch(ActivityNotFoundException ignored){Toast.makeText(this,"TV-Einstellungen nicht verfügbar",Toast.LENGTH_SHORT).show();}}
     private void update(){boolean isColor="color".equals(prefs().getString("saver_style","clock"));clock.selected(!isColor);color.selected(isColor);date.label(prefs().getBoolean("saver_date",true)?"Datum an":"Datum aus");date.setEnabled(!isColor);dim.label(prefs().getBoolean("saver_dim",true)?"Dunkle Darstellung":"Normale Darstellung");live.invalidate();}
 }

@@ -11,13 +11,14 @@ import java.util.*;
 /** A quiet, local screensaver view. Clock position changes once a minute, not every frame. */
 final class ScreensaverView extends View {
     private final Paint p=new Paint(Paint.ANTI_ALIAS_FLAG);private final Handler handler=new Handler();
+    private final SharedPreferences.OnSharedPreferenceChangeListener preferenceChanged=(prefs,key)->{if(key!=null&&key.startsWith("saver_"))postInvalidate();};
     private final String forcedStyle;private final boolean move;
     private final Runnable tick=new Runnable(){public void run(){invalidate();handler.postDelayed(this,60000-System.currentTimeMillis()%60000);}};
     ScreensaverView(Context c,String forcedStyle,boolean move){super(c);this.forcedStyle=forcedStyle;this.move=move;setContentDescription("Bildschirmschoner-Vorschau");}
     void startClock(){handler.removeCallbacks(tick);tick.run();}
     void stopClock(){handler.removeCallbacks(tick);}
-    @Override protected void onAttachedToWindow(){super.onAttachedToWindow();startClock();}
-    @Override protected void onDetachedFromWindow(){stopClock();super.onDetachedFromWindow();}
+    @Override protected void onAttachedToWindow(){super.onAttachedToWindow();AdminServer.preferences(getContext()).registerOnSharedPreferenceChangeListener(preferenceChanged);startClock();}
+    @Override protected void onDetachedFromWindow(){stopClock();AdminServer.preferences(getContext()).unregisterOnSharedPreferenceChangeListener(preferenceChanged);super.onDetachedFromWindow();}
     @Override protected void onDraw(Canvas c){
         float w=getWidth(),h=getHeight();SharedPreferences prefs=AdminServer.preferences(getContext());String style=forcedStyle==null?prefs.getString("saver_style","clock"):forcedStyle;
         c.drawColor(0xff050B0E);

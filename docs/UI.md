@@ -22,7 +22,7 @@
 ![HDMI devices](images/devices.png)
 ![Installed apps](images/apps.png)
 
-All published screenshots use the native application in an isolated emulator with synthetic data. The HDMI gallery uses instrumentation to render synthetic entries; its fake IDs cannot launch a real input. This is separate from actual Philips discovery and selection checks. The public gallery contains no camera video, access PIN, bridge key or personal address.
+Native screenshots use the application in an isolated emulator with synthetic data; web screenshots use a separate local preview with synthetic data. The HDMI gallery uses instrumentation to render synthetic entries; its fake IDs cannot launch a real input. This is separate from actual Philips discovery and selection checks. The public gallery contains no camera video, access PIN, bridge key or personal address.
 
 ## Navigation
 
@@ -55,6 +55,12 @@ The app's clock/color styles and preview do not silently enable an automatic scr
 
 ## Network and local web settings
 
-The Home footer contains a focusable LAN/WLAN/internet summary; Down from the lower shortcut row reaches it and OK opens the native network detail page. Refresh keeps focus. Android capability callbacks update only the visible status card/button. Network settings open only after the user selects that explicit action. No UniFi site-wide assertion or signal-strength estimate is shown.
+The Home footer contains a small focusable status dot/name without an idle card or arrow; Down from the lower shortcut row reaches it and OK opens the native network detail page. Refresh keeps focus. Android capability callbacks update only the visible status card/button. Network settings open only after the user selects that explicit action. No UniFi site-wide assertion or signal-strength estimate is shown.
 
-The local web page carries the same teal/purple background and mint focus accents, with teal cameras, warm Hue and blue device/network areas. Five responsive sections share consistent spacing, keyboard-accessible tabs (Left/Right/Home/End) and explicit save feedback. At 320/390 px cards stack and action headings wrap. Existing camera streamlinks are not returned into a field; deletion names the source in a confirmation dialog. [Web screenshot](images/web-settings.jpg) · [Mobile network screenshot](images/web-network-mobile.jpg).
+The local web page carries the same teal/purple background and mint focus accents, with teal cameras, warm Hue and blue device/network areas. Six responsive sections share consistent spacing, keyboard-accessible tabs (Left/Right/Home/End) and explicit save feedback. At 320/390 px cards stack and action headings wrap. Existing camera streamlinks are not returned into a field; deletion names the source in a confirmation dialog. [Web screenshot](images/web-settings.jpg) · [Mobile network screenshot](images/web-network-mobile.jpg).
+
+The web Startseite form stores two distinct names: the Home heading on the TV (40 characters, empty restores Zuhause), and the web model/display label (80 characters, empty restores Android manufacturer/model). Long native headings ellipsize before the clock; long web labels wrap. Changing a friendly label does not change hardware identity.
+
+TV-Info lists manufacturer/platform model, Android/API/security patch, app version/build, hardware/ABI, Android drawing area/density, boot uptime and free/total data-partition storage. Screensaver style/date/dim are editable there and notify attached native preview views. Activation/timing remain system settings. Diagnostic export strips the friendly label and includes only the technical whitelist plus transport/validation, without IP/SSID/credentials. A dashboard-open request is explicit and has a browser confirmation because it can leave the currently watched TV view.
+
+UniFi inventory is reached through the network detail page. Native cards are read-only, six per page. Setup and refresh remain explicit; failure retains grey historical labels and a timestamp. [UniFi screenshot](images/unifi.png) · [TV-info screenshot](images/web-tv.jpg).
