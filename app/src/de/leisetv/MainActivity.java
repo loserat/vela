@@ -133,18 +133,19 @@ public final class MainActivity extends Activity {
         List<Tile> active=new ArrayList<>();
         if(prefs.getBoolean("show_camera",true))active.add(cameras);
         Tile light=new HomeActionTile("Ambilight","Farben & Licht","ambilight",()->open(new Intent(this,AmbilightActivity.class)));
+        Tile hue=new HomeActionTile("Hue","Raumlicht","hue",()->open(new Intent(this,HueActivity.class)));
         Tile tv=new HomeActionTile("Fernsehen","TV-Programm","tv",()->openTV());
         Tile system=new HomeActionTile("System","Einstellungen & Apps","settings",()->showSystem());
         if(active.isEmpty()){
-            place(light,88,340,1000,492);place(tv,1112,340,720,234);place(system,1112,598,720,234);
-            light.setNextFocusRightId(tv.getId());light.setNextFocusDownId(system.getId());
-            tv.setNextFocusLeftId(light.getId());tv.setNextFocusDownId(system.getId());
-            system.setNextFocusLeftId(light.getId());system.setNextFocusUpId(tv.getId());
+            place(light,88,340,1000,492);place(hue,1112,340,720,304);place(tv,1112,668,348,164);place(system,1484,668,348,164);
+            light.setNextFocusRightId(hue.getId());light.setNextFocusDownId(tv.getId());hue.setNextFocusLeftId(light.getId());hue.setNextFocusDownId(tv.getId());
+            tv.setNextFocusLeftId(light.getId());tv.setNextFocusRightId(system.getId());tv.setNextFocusUpId(hue.getId());
+            system.setNextFocusLeftId(tv.getId());system.setNextFocusUpId(hue.getId());
             light.requestFocus();
         }else{
             int width=(1000-24*(active.size()-1))/active.size();
             for(int i=0;i<active.size();i++)place(active.get(i),88+i*(width+24),340,width,492);
-            place(light,1112,340,720,304);place(tv,1112,668,348,164);place(system,1484,668,348,164);
+            place(light,1112,340,348,304);place(hue,1484,340,348,304);place(tv,1112,668,348,164);place(system,1484,668,348,164);
             for(int i=0;i<active.size();i++){
                 Tile t=active.get(i);t.setNextFocusLeftId(active.get(Math.max(0,i-1)).getId());
                 t.setNextFocusRightId(i+1<active.size()?active.get(i+1).getId():light.getId());
@@ -152,10 +153,10 @@ public final class MainActivity extends Activity {
             }
             light.setNextFocusLeftId(active.get(active.size()-1).getId());light.setNextFocusDownId(tv.getId());
             tv.setNextFocusLeftId(active.get(active.size()-1).getId());tv.setNextFocusRightId(system.getId());tv.setNextFocusUpId(light.getId());
-            system.setNextFocusLeftId(tv.getId());system.setNextFocusUpId(light.getId());
+            system.setNextFocusLeftId(tv.getId());system.setNextFocusUpId(hue.getId());hue.setNextFocusLeftId(light.getId());hue.setNextFocusDownId(system.getId());
             active.get(0).requestFocus();
         }
-        light.setNextFocusUpId(light.getId());if(!active.isEmpty())light.setNextFocusRightId(light.getId());
+        light.setNextFocusUpId(light.getId());if(!active.isEmpty())light.setNextFocusRightId(hue.getId());hue.setNextFocusUpId(hue.getId());hue.setNextFocusRightId(hue.getId());
         tv.setNextFocusDownId(tv.getId());system.setNextFocusRightId(system.getId());system.setNextFocusDownId(system.getId());
         Log.i("LeiseTV","screen:home");
     }
@@ -165,24 +166,16 @@ public final class MainActivity extends Activity {
     }
     private void showSystem() {
         stage(false);systemMenu=true;
-        place(new Tile("Web-Einstellungen","Am Handy oder Mac",null,0xff1C282B,false,()->open(new Intent(this,SettingsActivity.class))),84,390,350,160);
-        place(new Tile("Apps","",null,0xff1C282B,false,()->{page=0;showApps();}),434,390,350,160);
-        place(new Tile("Fernsehen","Zum TV-Programm",null,0xff1C282B,false,()->{
-            if(apps.isEmpty())discover();
-            App tv=find("org.droidtv.zapster");
-            if(tv!=null)launch(tv); else open(new Intent(Intent.ACTION_VIEW).setData(android.net.Uri.parse("content://android.media.tv/channel")));
-        }),784,390,350,160);
-        place(new Tile("TV-Einstellungen","",null,0xff1C282B,false,()->open(new Intent(Settings.ACTION_SETTINGS))),1134,390,350,160);
-        place(new Tile("Android-Startseite","",null,0xff1C282B,false,()->{
-            // The stock TV launcher exposes HOME, not necessarily LAUNCHER.
-            // Resolve it explicitly so this action cannot loop back into our own home.
-            open(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
-                .setComponent(new ComponentName("com.google.android.tvlauncher",
-                    "com.google.android.tvlauncher.MainActivity"))
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-        }),1484,390,350,160);
-        link(tiles,5);
-        Log.i("LeiseTV","screen:system");
+        List<Tile> actions=Arrays.asList(
+            new Tile("Web-Einstellungen","Am Handy oder Mac",null,0xff1C282B,false,()->open(new Intent(this,SettingsActivity.class))),
+            new Tile("Bildschirmschoner","Uhr & Farbfläche",null,0xff1C282B,false,()->open(new Intent(this,ScreensaverSettingsActivity.class))),
+            new Tile("Apps","",null,0xff1C282B,false,()->{page=0;showApps();}),
+            new Tile("Fernsehen","Zum TV-Programm",null,0xff1C282B,false,()->openTV()),
+            new Tile("TV-Einstellungen","",null,0xff1C282B,false,()->open(new Intent(Settings.ACTION_SETTINGS))),
+            new Tile("Android-Startseite","",null,0xff1C282B,false,()->open(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setComponent(new ComponentName("com.google.android.tvlauncher","com.google.android.tvlauncher.MainActivity")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)))
+        );
+        for(int i=0;i<actions.size();i++)place(actions.get(i),88+(i%3)*589,350+(i/3)*208,565,184);
+        link(tiles,3);Log.i("LeiseTV","screen:system");
     }
     private void showApps() {
         if(apps.isEmpty())discover();

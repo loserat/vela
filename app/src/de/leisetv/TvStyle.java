@@ -23,6 +23,7 @@ final class TvStyle {
         if("camera".equals(type)){c.drawRoundRect(5,14,46,49,8,8,p);c.drawCircle(25,31,9,p);Path v=new Path();v.moveTo(46,24);v.lineTo(59,17);v.lineTo(59,46);v.lineTo(46,39);c.drawPath(v,p);}
         else if("tv".equals(type)){c.drawRoundRect(5,9,59,46,7,7,p);c.drawLine(24,56,40,56,p);c.drawLine(32,46,32,56,p);}
         else if("ambilight".equals(type)){c.drawRoundRect(12,17,52,47,6,6,p);c.drawLine(4,22,4,42,p);c.drawLine(60,22,60,42,p);c.drawLine(19,8,45,8,p);}
+        else if("hue".equals(type)){c.drawCircle(32,24,17,p);c.drawLine(22,38,24,48,p);c.drawLine(42,38,40,48,p);c.drawLine(24,48,40,48,p);c.drawLine(26,55,38,55,p);}
         else if("climate".equals(type)){c.drawRoundRect(22,6,37,43,8,8,p);c.drawCircle(30,47,12,p);c.drawLine(30,22,30,48,p);c.drawLine(47,18,58,18,p);c.drawLine(47,29,55,29,p);}
         else{c.drawCircle(32,32,11,p);for(int i=0;i<8;i++){c.save();c.rotate(i*45,32,32);c.drawLine(32,5,32,12,p);c.restore();}c.drawCircle(32,32,22,p);}
         p.setStyle(Paint.Style.FILL);c.restore();

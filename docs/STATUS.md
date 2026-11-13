@@ -66,6 +66,21 @@ Ten targeted emulator checks passed, including delayed mock responses, stable fo
 
 Versions 0.5.1 and 0.5.2 were installed on the Philips with the existing signing identity. Version 0.5.1 runtime hash, HTTPS, login, API version, and five retained camera entries were verified. Live technical properties and screenshot provenance are documented in [HARDWARE.md](HARDWARE.md).
 
+## Hue and screensaver settings (0.6.0)
+
+Hue controls use a separate local HTTPS adapter, explicitly paired with a physical Hue Bridge button. The user chooses one Room/Zone; no whole-home group is selected. Application keys and pinned bridge certificates remain encrypted in private app storage. Brightness uses Hue's 0–254 scale and colors use its 16-bit hue scale.
+
+- 53 pure Java checks passed for the production palette and Hue conversions.
+- Fifteen controller checks passed against a local TLS bridge fixture through instrumentation of the production controller: button-gated registration, encrypted key storage, public metadata without keys, explicit room selection, room-scoped scenes, conversion ranges, rejected other-room commands, and no duplicate registration.
+- Eleven emulator checks passed for saved screensaver preferences, reopen, preview/Back, unchanged activation on entry/preview, Android settings navigation, actual DreamService start, and restoring emulator system settings. Earlier test attempts failed on activity-launch synchronization and component-name formatting; these were corrected in the test harness.
+- Public and local TV builds passed compilation and signature verification.
+- Version 0.6.0 was installed on the Philips. Installed hash, runtime HTTPS/PIN version, exact camera-ID preservation, unchanged screensaver activation settings, real Hue Bridge HTTPS identity, and Android dream-service registration were verified. A first device assertion used the wrong component-name format; the service was then checked through Android's service resolver.
+- Real Hue pairing/room control and automatic idle activation of the screensaver on the Philips remain pending. No lamp changes or automatic screensaver activation were sent during installation checks.
+
+The Philips resolves `android.settings.DREAM_SETTINGS` to its `IgnoreIntents` activity. The dashboard detects this, explains the limitation, and offers general TV settings. Opening the native settings page and this explanatory dialog was verified on the physical Philips without changing activation. Style preferences and manual preview remain available; automatic activation on this model is not established.
+
+A Python HTTPS client could not negotiate the emulator administration server's TLS connection on Android 14. Hue integration was therefore tested directly using signed Android instrumentation; emulator API-over-HTTPS compatibility is unresolved. Physical Android 8 HTTPS access was verified successfully. This is not a claim of compatibility with other TV hardware.
+
 ## Not yet fully verified
 
 The subsequent automated check of opening a camera did not complete successfully. No successful complete device test run was recorded for the latest camera-switching fix. TV testing was then paused at the user's request.

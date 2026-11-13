@@ -1,11 +1,18 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="de.leisetv" android:versionCode="8" android:versionName="0.5.2">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="de.leisetv" android:versionCode="9" android:versionName="0.6.0">
     <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="28" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-feature android:name="android.software.leanback" android:required="true" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
     <application android:name=".NickApplication" android:label="TV-Dashboard" android:icon="@drawable/icon" android:banner="@drawable/banner" android:theme="@style/AppTheme" android:allowBackup="false" android:hardwareAccelerated="true" android:supportsRtl="true" android:usesCleartextTraffic="true">
+        <service android:name=".DashboardDreamService" android:label="Uhr &amp; Farbfläche" android:permission="android.permission.BIND_DREAM_SERVICE" android:exported="true">
+            <intent-filter><action android:name="android.service.dreams.DreamService" /><category android:name="android.intent.category.DEFAULT" /></intent-filter>
+            <meta-data android:name="android.service.dream" android:resource="@xml/dashboard_dream" />
+        </service>
+        <activity android:name=".ScreensaverSettingsActivity" android:exported="true" android:screenOrientation="landscape" />
+        <activity android:name=".ScreensaverPreviewActivity" android:exported="false" android:screenOrientation="landscape" />
         <service android:name=".SettingsService" android:exported="false" />
+        <activity android:name=".HueActivity" android:exported="false" android:screenOrientation="landscape" />
         <activity android:name=".AmbilightActivity" android:exported="false" android:screenOrientation="landscape" />
         <activity android:name=".SettingsActivity" android:exported="false" android:screenOrientation="landscape" />
         <activity android:name=".CameraActivity" android:exported="false" android:screenOrientation="landscape" />

@@ -18,6 +18,12 @@ Internal preference names, encryption-key aliases, and the `NickApplication` cla
 
 Brightness input uses a debounced, serialized queue separate from full commands. It keeps focus and enabled states stable, renders the local slider immediately, and refreshes only the color configuration after a write. Starting another command or leaving the activity cancels queued input; stale callbacks are ignored.
 
+## Hue and screensaver
+
+`HueController` restricts setup to local IPv4 addresses, validates Hue Bridge metadata/certificate identity, pins the certificate, and stores the application key using the existing encrypted `CameraConfig` storage. Public metadata omits keys and certificates. Pairing requires the physical bridge button. Room selection is explicit; actions and scenes are checked against the saved room. Configuration, reads, selection, pairing, and actions are serialized to prevent room changes racing a command. `HueActivity` provides native setup and manual room controls with debounced brightness. Authenticated `/api/hue/*` endpoints support the same adapter; the web page does not yet expose Hue forms.
+
+`ScreensaverSettingsActivity` stores local style/date/dim preferences and opens the system dream settings without silently changing activation. `ScreensaverPreviewActivity` renders a dismissible full-screen preview. `DashboardDreamService`, protected by `BIND_DREAM_SERVICE`, supplies the actual Android screensaver. `ScreensaverView` moves the clock once per minute and performs no network or continuous animation work. Idle activation and timing remain Android/manufacturer settings.
+
 ## Video
 
 LibVLC is initialized only when playback is needed. `SecureRtspProxy` pins the recorder's stored certificate and transports interleaved RTSP over TLS. Unencrypted RTSP exists only on the loopback interface inside the TV.

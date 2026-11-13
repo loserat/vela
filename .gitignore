@@ -34,3 +34,4 @@ __pycache__/
 # Reviewed UI screenshots; private camera images remain excluded
 !/docs/images/home.png
 !/docs/images/ambilight.png
+!/docs/images/screensaver.png

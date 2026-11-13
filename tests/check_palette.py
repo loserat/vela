@@ -21,5 +21,6 @@ java = Path(java_home) / 'bin'
 with tempfile.TemporaryDirectory(prefix='atpd-palette-') as output:
     subprocess.run([str(java / 'javac'), '-encoding', 'UTF-8', '-d', output,
                     str(root / 'app/src/de/leisetv/AmbilightPalette.java'),
+                    str(root / 'app/src/de/leisetv/HueColorValues.java'),
                     str(root / 'tests/java/de/leisetv/PaletteChecks.java')], check=True)
     subprocess.run([str(java / 'java'), '-cp', output, 'de.leisetv.PaletteChecks'], check=True)

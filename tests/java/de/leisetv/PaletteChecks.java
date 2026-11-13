@@ -13,6 +13,10 @@ public final class PaletteChecks {
         }
         boolean rejected=false;try{AmbilightPalette.hue8(360);}catch(IllegalArgumentException e){rejected=true;}check(rejected,"invalid hue rejected");
         rejected=false;try{AmbilightPalette.saturation8(101);}catch(IllegalArgumentException e){rejected=true;}check(rejected,"invalid saturation rejected");
+        check(HueColorValues.hue16(0)==0,"bridge red");check(HueColorValues.hue16(85)==21845,"bridge green");check(HueColorValues.hue16(170)==43690,"bridge blue");check(HueColorValues.hue16(255)==65535,"bridge hue upper bound");
+        check(HueColorValues.saturation254(255)==254,"bridge saturation");check(HueColorValues.brightness254(50)==127,"bridge brightness");
+        rejected=false;try{HueColorValues.hue16(256);}catch(IllegalArgumentException e){rejected=true;}check(rejected,"bridge invalid hue");
+        rejected=false;try{HueColorValues.brightness254(0);}catch(IllegalArgumentException e){rejected=true;}check(rejected,"bridge invalid brightness");
         System.out.println(checks+" palette checks passed against the actual production class.");
     }
 }
