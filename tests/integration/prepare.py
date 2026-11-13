@@ -2,7 +2,7 @@
 """Install a same-key test probe into an explicitly selected disposable AOSP emulator."""
 from pathlib import Path
 import argparse,subprocess,os,shutil,tempfile,zipfile,sys,json,re
-parser=argparse.ArgumentParser();parser.add_argument('--serial',required=True);parser.add_argument('--cameras',type=int,default=8);parser.add_argument('--task',default='prepare',choices=['prepare','cameras','hide-camera','show-camera','devices','unifi']);parser.add_argument('--report',type=Path);args=parser.parse_args()
+parser=argparse.ArgumentParser();parser.add_argument('--serial',required=True);parser.add_argument('--cameras',type=int,default=8);parser.add_argument('--task',default='prepare',choices=['prepare','cameras','hide-camera','show-camera','devices','unifi','remote']);parser.add_argument('--report',type=Path);args=parser.parse_args()
 root=Path(__file__).resolve().parents[2];sdk=Path(os.environ.get('ANDROID_HOME',os.environ.get('ANDROID_SDK_ROOT',str(Path.home()/('Library/Android/sdk' if sys.platform=='darwin' else 'Android/Sdk')))));adb=[str(sdk/'platform-tools/adb'),'-s',args.serial]
 assert subprocess.check_output(adb+['shell','getprop','ro.kernel.qemu'],text=True).strip()=='1','Refusing non-emulator device'
 java_home=os.environ.get('JAVA_HOME')
@@ -17,6 +17,6 @@ with tempfile.TemporaryDirectory(prefix='atpd-probe-') as tmp:
  run(tools/'apksigner','sign','--ks',Path(os.environ.get('NICKOS_KEYSTORE',str(root/'app/local-test-signing.p12'))),'--ks-key-alias','leisetv','--ks-pass','env:NICKOS_SIGN_PASSWORD',t/'probe.apk');run(*adb,'install','-r',t/'probe.apk')
  output=run(*adb,'shell','am','instrument','-w','-e','task',args.task,'-e','cameras',str(args.cameras),'fixture.atpd/fixture.FixtureProbe').stdout
  if args.report:
-  match=re.search(r'INSTRUMENTATION_RESULT: checks=(.*)',output);args.report.parent.mkdir(parents=True,exist_ok=True);args.report.write_text(json.dumps({'target':'disposable emulator and loopback UniFi HTTPS fixture','tests':json.loads(match.group(1)) if match else []},indent=2))
+  match=re.search(r'INSTRUMENTATION_RESULT: checks=(.*)',output);args.report.parent.mkdir(parents=True,exist_ok=True);args.report.write_text(json.dumps({'target':'disposable emulator; synthetic fixtures only','tests':json.loads(match.group(1)) if match else []},indent=2))
  assert 'fixture=ready' in output and 'INSTRUMENTATION_CODE: -1' in output,output
 print('Disposable fixture prepared:',args.task,'; no real camera streams.')

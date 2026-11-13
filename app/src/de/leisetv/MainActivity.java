@@ -89,6 +89,27 @@ public final class MainActivity extends Activity {
         else if(systemMenu)showHome();
         else if (!isDefaultHome()) super.onBackPressed();
     }
+    @Override public boolean dispatchKeyEvent(KeyEvent event){
+        int index=RemoteShortcuts.index(event.getKeyCode());
+        if(index<0)return super.dispatchKeyEvent(event);
+        if(event.getAction()==KeyEvent.ACTION_DOWN&&event.getRepeatCount()==0&&!event.isCanceled()){
+            switch(RemoteShortcuts.action(this,index)){
+                case "cameras":
+                    if(AdminServer.preferences(this).getBoolean("show_camera",true))open(new Intent(this,CameraListActivity.class));
+                    else Toast.makeText(this,"Kameras sind auf der Startseite ausgeblendet.",Toast.LENGTH_SHORT).show();
+                    break;
+                case "ambilight":open(new Intent(this,AmbilightActivity.class));break;
+                case "hue":open(new Intent(this,HueActivity.class));break;
+                case "inputs":open(new Intent(this,InputsActivity.class));break;
+                case "network":open(new Intent(this,NetworkActivity.class));break;
+                case "system":showSystem();break;
+                case "apps":page=0;appsFromSystem=true;showApps();break;
+                default:break;
+            }
+        }
+        // Consume key-up and held-key repeats as well; one press opens one page.
+        return true;
+    }
     private void discover() {
         Intent query = new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LEANBACK_LAUNCHER);
         Set<String> seen = new HashSet<>();
@@ -236,6 +257,13 @@ public final class MainActivity extends Activity {
                 p.setColor(0xff243A3E);c.drawRoundRect(96,930,141,961,7,7,p);
                 text(c,p,"OK",107,952,18,INK,true);text(c,p,"Öffnen",155,953,21,MUTED,false);
                 text(c,p,"Pfeiltasten bewegen",324,953,21,MUTED,false);
+                int[] colors={0xffF18489,0xff8DD6A5,0xffF0CE78,0xff89B9F2};
+                for(int i=0;i<4;i++){
+                    String action=RemoteShortcuts.action(MainActivity.this,i);
+                    if("none".equals(action)||("cameras".equals(action)&&!prefs.getBoolean("show_camera",true)))continue;
+                    int x=96+i*300;p.setColor(colors[i]);c.drawRoundRect(x,1000,x+30,1012,6,6,p);
+                    text(c,p,RemoteShortcuts.label(action),x+43,1015,21,MUTED,false);
+                }
             }else if(prefs.getBoolean("show_date",true)){
                 String d=date.format(now);p.setTextSize(21);p.setTypeface(TvStyle.NORMAL);p.setColor(MUTED);c.drawText(d,1824-p.measureText(d),153,p);
             }

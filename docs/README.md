@@ -8,7 +8,7 @@
 | [UI](UI.md) | Screens, focus/remote behavior, screenshots and rendering choices |
 | [Architecture](ARCHITECTURE.md) | Components, local integrations, storage and API boundaries |
 | [Testing](TESTING.md) | Reproducible isolated fixtures and interpretation of test evidence |
-| [Current status](STATUS.md) | Version 0.7.0 validation and outstanding checks |
+| [Current status](STATUS.md) | Current validation and outstanding checks |
 | [Hardware](HARDWARE.md) | Live device properties, provenance and compatibility limits |
 | [Changelog](../CHANGELOG.md) | Changes by version |
 | [Validation history](VALIDATION-HISTORY.md) | Earlier checks, failed attempts and limitations retained through 0.6.1 |
@@ -18,3 +18,5 @@ The repository and documentation are public. Device addresses, account data, cam
 - [Network status](NETWORK.md): passive TV connectivity, Android validation and UniFi boundaries.
 
 - Version 0.8.0 adds editable Home/model names, local Network inventory and TV-info/maintenance with redacted diagnostics and app-only screensaver styling.
+
+- Version 0.9.0 adds configurable app-local remote color keys; see [UI](UI.md#color-key-shortcuts) and [testing](TESTING.md#color-key-shortcuts-090).

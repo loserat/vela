@@ -6,7 +6,7 @@ Eine schlanke Startoberfläche für Philips Android TV: Kameras, Ambilight, Phil
 
 Als Android-App installieren und bei Bedarf als Home-Oberfläche zuordnen.
 
-**0.8.2 · experimentelle Beta.** Die Repository-Dokumentation ist auf Englisch; TV-Oberfläche und lokale Web-Einstellungen bleiben auf Deutsch. Am TV erscheinen kein Projektname und kein Logo. In Android heißt die App **TV-Dashboard**.
+**0.9.0 · experimentelle Beta.** Die Repository-Dokumentation ist auf Englisch; TV-Oberfläche und lokale Web-Einstellungen bleiben auf Deutsch. Am TV erscheinen kein Projektname und kein Logo. In Android heißt die App **TV-Dashboard**.
 
 ## So sieht es aus
 
@@ -29,6 +29,8 @@ Native Ansichten aus einem separaten Simulator mit künstlichen Kameras, Lichtzu
 [Oberfläche und Fernbedienung (Englisch)](docs/UI.md) · [Apps-Screenshot](docs/images/apps.png)
 
 ## Funktionen
+
+- Vier belegbare Farbtasten: Rot → Kameras, Grün → Ambilight, Gelb → Hue, Blau → Geräte. Im IP-Dashboard unter **Startseite → Farbtasten der Fernbedienung** änderbar. Sie öffnen Seiten aus Home/System/Apps.
 
 - Aufgeräumte Startseite mit großen Fokusflächen, TV-Zugriff, Geräten und System.
 - Bis zu 24 eingerichtete Kameras, sechs pro Übersichtsseite und jeweils ein Stream im Vollbild. Die Übersichtsseite bleibt bei der Rückkehr aus Einstellungen erhalten.
@@ -63,7 +65,7 @@ Voraussetzungen: Python 3, `curl`, JDK 21, Android-SDK-Plattform `android-34`, B
 python3 app/fetch_deps.py
 python3 tests/check_palette.py
 python3 app/build.py
-adb -s DEVICE install -r dist/TV-Dashboard-0.8.2.apk
+adb -s DEVICE install -r dist/TV-Dashboard-0.9.0.apk
 adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -85,7 +87,7 @@ adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 
 ## Prüfstand und Grenzen
 
-Für die Korrektur 0.8.2 bestanden **34** Web-Prüfungen: getrenntes Speichern des Verkaufsmodells, unveränderte Android-Kennung nach Umbenennung, leerer Modelleintrag und Erhalt ungespeicherter Bildschirmschoner-Änderungen. Zwölf Installations-/API-Prüfungen bestanden am echten TV. Das Verkaufsmodell ist eine Besitzerangabe, keine neu ausgelesene Hardwarekennung. Für den vorherigen Stand 0.8.0 bestanden **53** Prüfungen der produktiven Farbklassen, **10** UniFi-Adapterprüfungen mit Ersatzdienst, **10** native Inventarprüfungen, **6** Netzwerkseiten-Prüfungen und **11** Bildschirmschoner-Prüfungen. Frühere Hue-/Ambilight-/Navigationsprüfungen bleiben getrennt im Prüfstand und Verlauf dokumentiert. Das ist keine vollständige Gerätefreigabe; die Prüfung am echten UniFi-Controller steht noch aus.
+Für 0.9.0 bestanden **38** Web-Prüfungen, **12** isolierte native Tastenprüfungen und **20** Installations-/API-/Tastensignalprüfungen am echten TV. Die echten Fernbedienungstasten sind noch vom Benutzer zu prüfen; die TV-Firmware kann Tasten abfangen. Frühere Licht-, Video-, Netzwerk- und Modellprüfungen bleiben mit ihrem jeweiligen Umfang im [Prüfstand](docs/STATUS.md) und [Verlauf](docs/VALIDATION-HISTORY.md) dokumentiert. Die Prüfung am echten UniFi-Controller steht noch aus.
 
 Die Hue-Prüfungen enthalten langsame, veraltete und fehlerhafte Antworten sowie den Vergleich der Bildpunkte außerhalb des Helligkeitsreglers. [Tests wiederholen (Englisch)](docs/TESTING.md). [Aktuelle Geräteergebnisse und offene Punkte (Englisch)](docs/STATUS.md).
 

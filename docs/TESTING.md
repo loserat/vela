@@ -15,7 +15,8 @@
 | UniFi local adapter | 10 | Synthetic pinned HTTPS, explicit site, pagination, encrypted configuration, rejected host/site/key, stale/recovery and redaction |
 | Native UniFi inventory | 10 | Compact indicator, bounds, pagination, unknown/stale/recovery, Back and GET-only upstream calls |
 | Passive network UI | 6 | Home shortcut, Android source/caveat, bounds, initial focus, refresh and Back |
-| Web state/payload logic | 34 | Draft/title/name retention, fixed technical model after rename, blank stream payload, explicit room/site, inventory/stale/unknown states, saver styling, TV facts, cancelled remote open, duplicate submits, session expiry and errors |
+| Color-key native events | 12 | Android code mapping, repeat/key-up/cancel suppression, disabled action and custom System/Apps navigation on the isolated emulator |
+| Web state/payload logic | 38 | Draft/title/name retention, fixed technical model after rename, blank stream payload, explicit room/site, inventory/stale/unknown states, saver styling, TV facts, cancelled remote open, duplicate submits, session expiry and errors |
 
 For 0.8.0 the palette, web, UniFi adapter/inventory, network and screensaver suites were repeated. The most recent complete Hue/Ambilight/general navigation suite runs remain the 0.7.0 component evidence.
 
@@ -129,3 +130,13 @@ Use only the root-capable disposable emulator described above. The `unifi` task 
 The 0.8.1 web regression was first run against 0.8.0 and failed at the mixed name/model row. After the fix, all 31 checks passed. The browser preview separately saved a different dashboard name and confirmed that TV-Info retained its synthetic Android model (`TEST`), including at 320 px without horizontal overflow. Other native suites retain their previously documented scope.
 
 The 0.8.2 run passed all 34 web checks, adding separate sales-model persistence, independence from the heading/Android identifier, empty-model fallback and unsaved screensaver draft retention. The synthetic browser pass saved a different sales model, reloaded it and checked the Android identifier and dashboard heading remained independent; 320 px layout had no body overflow. Twelve physical installation/API checks also passed, including retained configuration, real Android metadata, model validation and diagnostic redaction. This does not independently verify the owner-entered marketed model.
+
+## Color-key shortcuts (0.9.0)
+
+```sh
+python3 tests/integration/prepare.py --serial emulator-5580 --task remote --report test-results/remote.json
+```
+
+This task requires only the disposable emulator, no light or network fixture. It restores the prior shortcut map after checking Android color codes and event handling. The source of the event is controlled, so it cannot prove that a physical remote/firmware forwards these keys. The web run passed 38 checks, including independent shortcut payloads, retained shortcut drafts after library reload and retained Home drafts after shortcut saves.
+
+On an authorized physical device, open Dashboard Home and test each color key, returning with Back between checks. For reproducible Android injection use `adb -s DEVICE shell input keyevent KEYCODE_PROG_RED` (and GREEN/YELLOW/BLUE). Separately test the actual remote. The current physical pass contains 20 installation/API/injected-key checks; no camera playback, light command or HDMI selection was performed.

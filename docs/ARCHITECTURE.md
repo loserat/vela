@@ -87,3 +87,9 @@ The single local HTML asset has six accessible tab panels, local CSS/system font
 Upstream UniFi has no mutation endpoint in this app. The local administration POSTs still use existing session/origin/content-type guards. A browser confirmation on the open action is a UI affordance, not a substitute for API authentication.
 
 In 0.8.1, `/api/state.device.displayName` remains the configurable heading for compatibility with stored preferences. `/api/device/state` deliberately omits `displayName`; TV-Info reads `platformModel` from Android. In 0.8.2, a separate `device_product_model` preference supplies `productModel`; its source is `stored` or `unavailable`. This is an explicit owner entry, never inferred from `Build.MODEL`. The diagnostic removes both sales-model fields and remains technical-only. Saving the model changes neither names nor screensaver settings. No stored names or keys are migrated or reset.
+
+## App-local remote navigation (0.9.0)
+
+`MainActivity.dispatchKeyEvent` recognizes only Android `KEYCODE_PROG_RED/GREEN/YELLOW/BLUE`, while that activity owns Home/System/Apps. `RemoteShortcuts` supplies a bounded destination allowlist, default map and German labels. The shared preferences `remote_red/green/yellow/blue` are returned as `/api/state.remote`. Authenticated `POST /api/remote/configure` requires all four string fields (`red`, `green`, `yellow`, `blue`), validates all actions before one preference commit, then advances the Home revision. No arbitrary package, URL or intent can be configured.
+
+The native handler consumes key-up, repeats and cancelled events without launching. Its actions only navigate; hidden cameras stay blocked. No global key listener, accessibility service, extra permission or remote-remapping system setting is installed.

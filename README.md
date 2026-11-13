@@ -6,7 +6,7 @@ A lightweight dashboard for Philips Android TV: cameras, Ambilight, Philips Hue,
 
 Install as an Android app and optionally assign it as Home.
 
-**0.8.2 · experimental beta.** Repository documentation is in English; the TV interface and local web settings are in German. The TV interface has no project name or logo; Android lists the app as **TV-Dashboard**.
+**0.9.0 · experimental beta.** Repository documentation is in English; the TV interface and local web settings are in German. The TV interface has no project name or logo; Android lists the app as **TV-Dashboard**.
 
 ## A look at the interface
 
@@ -29,6 +29,8 @@ Native screens captured in an isolated emulator with synthetic cameras, light st
 [More about the UI and remote navigation](docs/UI.md) · [Apps screenshot](docs/images/apps.png) · [TV info](docs/images/web-tv.jpg) · [Mobile TV info](docs/images/web-tv-mobile.jpg)
 
 ## What it does
+
+- Four configurable remote color keys: red → Cameras, green → Ambilight, yellow → Hue, blue → Devices by default. Change them in web **Startseite → Farbtasten der Fernbedienung**; shortcuts navigate only within Home/System/Apps.
 
 - A clean Home screen with large focus targets, direct TV access, devices, and system settings.
 - Up to 24 configured cameras, six per overview page, with one full-screen stream at a time. The overview retains its page when returning from settings.
@@ -63,7 +65,7 @@ Requirements: Python 3, `curl`, JDK 21, Android SDK platform `android-34`, Build
 python3 app/fetch_deps.py
 python3 tests/check_palette.py
 python3 app/build.py
-adb -s DEVICE install -r dist/TV-Dashboard-0.8.2.apk
+adb -s DEVICE install -r dist/TV-Dashboard-0.9.0.apk
 adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -85,7 +87,7 @@ Replace `DEVICE` with the explicitly selected authorized device. Preserve your s
 
 ## Validation and limits
 
-The 0.8.2 fix passed **34** web state/payload checks, including separate sales-model saves, immutable Android identity after renaming, empty-model handling and retained unsaved screensaver edits. Twelve installation/API checks passed on the physical TV; the sales model is owner-entered metadata, not newly detected hardware identity. The previous 0.8.0 increment passed **53** production palette checks, **10** UniFi adapter fixture checks, **10** native inventory checks, **6** passive network UI checks and **11** screensaver checks. Earlier Hue/Ambilight/navigation coverage is retained separately in the status/history documents. These are scoped results, not a complete device certification. Real UniFi-controller acceptance is pending.
+Version 0.9.0 passed **38** web checks, **12** isolated native key-event checks and **20** physical installation/API/injected-key checks. Physical remote delivery remains a user check; firmware can intercept keys. Earlier lighting, video, network and model-metadata checks retain their documented scope in [current status](docs/STATUS.md) and [validation history](docs/VALIDATION-HISTORY.md). Real UniFi-controller acceptance is pending.
 
 Slow, stale and failing Hue replies are included, as are pixel comparisons outside the brightness slider. [Reproduce the tests](docs/TESTING.md). [Current device results and known limits](docs/STATUS.md).
 

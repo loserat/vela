@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.0 — 2026-11-13
+
+- Added four app-local color-key shortcuts and a compact Home legend. Defaults: red Cameras, green Ambilight, yellow Hue, blue Devices.
+- Added independent web shortcut settings under Startseite, including Network, System, Apps and disabled actions. Complete allowlist validation precedes preference writes; unrelated drafts remain intact.
+- Shortcuts navigate only from Home/System/Apps. They do not issue light commands, start camera playback or switch HDMI. Hidden cameras cannot be opened through their shortcut. Repeats, cancelled events and key-up do not navigate.
+- Updated synthetic Home/web screenshots and documentation. Physical tests use Android-injected key events; real remote delivery remains unverified.
+
 ## 0.8.2 — 2026-11-13
 
 - Restored the TV sales-model row alongside the immutable Android model identifier. The optional sales model is stored separately from both user-defined dashboard/Home names.

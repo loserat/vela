@@ -5,10 +5,11 @@ from pathlib import Path
 import json,time,argparse
 parser=argparse.ArgumentParser();parser.add_argument('--port',type=int,default=9040);args=parser.parse_args()
 page=Path(__file__).resolve().parents[1]/'app/assets/settings/index.html'
-state={'version':'0.8.2','device':{'manufacturer':'Philips','model':'TEST','displayName':'Philips Test TV','productModel':'55TEST/12'},'display':{'camera':True,'clock':True,'date':True,'homeTitle':'Zuhause'},'cameras':[{'id':'fixture-1','name':'Eingang','available':True,'host':'Lokale Quelle','status':'ready'},{'id':'fixture-2','name':'Garten','available':False,'status':'missing'}],'defaultCameraId':'fixture-1'}
+state={'version':'0.9.0','device':{'manufacturer':'Philips','model':'TEST','displayName':'Philips Test TV','productModel':'55TEST/12'},'display':{'camera':True,'clock':True,'date':True,'homeTitle':'Zuhause'},'cameras':[{'id':'fixture-1','name':'Eingang','available':True,'host':'Lokale Quelle','status':'ready'},{'id':'fixture-2','name':'Garten','available':False,'status':'missing'}],'defaultCameraId':'fixture-1'}
 saver={'style':'clock','date':True,'dim':True}
 hue={'configured':True,'connected':True,'host':'10.0.0.2','roomId':'1','roomName':'TV-Zimmer','rooms':[{'id':'1','name':'TV-Zimmer'},{'id':'2','name':'Küche'}]}
-def device_info():return {'productModel':state['device'].get('productModel',''),'productModelSource':'stored' if state['device'].get('productModel') else 'unavailable','manufacturer':'Philips','platformModel':'TEST','androidVersion':'8.0.0','apiLevel':26,'securityPatch':'2019-01-01','hardware':'Test hardware','abis':['armeabi-v7a'],'appVersion':'0.8.2','appVersionCode':14,'width':1920,'height':1080,'densityDpi':320,'uptimeMs':7260000,'storageFreeBytes':3000000000,'storageTotalBytes':8000000000,'checkedAt':int(time.time()*1000)}
+state['remote']={'red':'cameras','green':'ambilight','yellow':'hue','blue':'inputs'}
+def device_info():return {'productModel':state['device'].get('productModel',''),'productModelSource':'stored' if state['device'].get('productModel') else 'unavailable','manufacturer':'Philips','platformModel':'TEST','androidVersion':'8.0.0','apiLevel':26,'securityPatch':'2019-01-01','hardware':'Test hardware','abis':['armeabi-v7a'],'appVersion':'0.9.0','appVersionCode':15,'width':1920,'height':1080,'densityDpi':320,'uptimeMs':7260000,'storageFreeBytes':3000000000,'storageTotalBytes':8000000000,'checkedAt':int(time.time()*1000)}
 class Handler(BaseHTTPRequestHandler):
  def log_message(self,*args):pass
  def send(self,data,status=200):
@@ -18,7 +19,7 @@ class Handler(BaseHTTPRequestHandler):
   if self.path=='/api/state':return self.send(state)
   if self.path=='/api/screensaver/state':return self.send(saver)
   if self.path=='/api/device/state':return self.send(device_info())
-  if self.path=='/api/device/diagnostic':return self.send({'format':'tv-dashboard-diagnostics-v1','device':{'manufacturer':'Philips','platformModel':'TEST','appVersion':'0.8.2'},'network':{'transport':'WLAN','internet':'validated'}})
+  if self.path=='/api/device/diagnostic':return self.send({'format':'tv-dashboard-diagnostics-v1','device':{'manufacturer':'Philips','platformModel':'TEST','appVersion':'0.9.0'},'network':{'transport':'WLAN','internet':'validated'}})
   if self.path=='/api/unifi/state':return self.send({'configured':True,'host':'10.0.0.1','siteId':'fixture-site','ready':True,'checkedAt':int(time.time()*1000),'sites':[{'id':'fixture-site','name':'Zuhause'}],'devices':[{'name':'Wohnzimmer AP','model':'U7 Test','state':'ONLINE'},{'name':'Gateway','model':'Test Gateway','state':'ONLINE'},{'name':'Switch','model':'Test Switch','state':'OFFLINE'}]})
   if self.path=='/api/hue/state':return self.send(hue)
   if self.path=='/api/inputs/state':return self.send({'inputs':[{'name':'Apple TV','port':'HDMI 4','status':'Verbunden'},{'name':'HDMI 1','port':'HDMI 1','status':'Standby'}]})
@@ -28,6 +29,7 @@ class Handler(BaseHTTPRequestHandler):
   data=json.loads(self.rfile.read(int(self.headers.get('Content-Length','0'))) or b'{}')
   if self.path=='/api/display':
    state['display']={key:data[key] for key in ['camera','clock','date','homeTitle']};state['device']['displayName']=data.get('deviceName') or 'Philips Test TV'
+  elif self.path=='/api/remote/configure':state['remote']=data;return self.send(data)
   elif self.path=='/api/device/model':state['device']['productModel']=data['model'];return self.send(device_info())
   elif self.path=='/api/screensaver/configure':saver.update(data);return self.send(saver)
   elif self.path=='/api/hue/room':hue.update(roomId=data['id'],roomName=next(r['name'] for r in hue['rooms'] if r['id']==data['id']));return self.send(hue)

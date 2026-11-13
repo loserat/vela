@@ -2,7 +2,7 @@
 
 [Documentation](README.md) · [Testing](TESTING.md) · [Earlier evidence](VALIDATION-HISTORY.md)
 
-**November 13, 2026 · 0.8.2 · experimental beta.** Installed behavior, fixture checks and real provider acceptance are distinguished below.
+**November 13, 2026 · 0.9.0 · experimental beta.** Installed behavior, fixture checks and real provider acceptance are distinguished below.
 
 ## Implemented and installed
 
@@ -12,7 +12,17 @@
 - Optional local UniFi Network inventory with explicit site choice, encrypted key/pinned certificate, upstream GET-only calls, bounded pagination and stale/unknown states.
 - Existing cameras, Hue, Ambilight, HDMI selection and automatic screensaver activation settings retained.
 
-## 0.8.2 separate sales model
+## 0.9.0 color-key shortcuts
+
+Four configurable navigation shortcuts are installed. Default red/green/yellow/blue opens Cameras/Ambilight/Hue/Devices from Home/System/Apps, with a compact Home legend. Web Startseite offers the four independent selections, including Network/System/Apps/disabled. Hidden cameras stay blocked; unrelated apps and TV viewing retain their own handling.
+
+- 38 web checks passed. The synthetic browser pass verified custom save/reload, retained unsaved Home edits, defaults and a 320 px viewport without overflow; no console warnings/errors were recorded.
+- 12 isolated native event checks passed for Android color-code mapping, unrelated keys, repeat/key-up/cancel suppression, a single initial navigation, disabled action and the Apps destination.
+- Public and retained-key APK builds/signatures passed. 20 physical installation/API/injected-key checks passed, including all four routes and Back, a custom Network action, disabled action, complete-map validation, restored defaults, exact web asset and retained names/model/cameras/Hue/saver/packages.
+- One initial Android `am start -W` verification call timed out while waiting for draw acknowledgement. The app was still resumed without a crash; the final pass checked the resumed activity directly and passed. The exact reason for the missing acknowledgement was not established.
+- Real infrared/Bluetooth remote delivery has not been verified. Firmware may intercept a color key before Android delivers it; the user must check the physical remote on this TV. Earlier broad GUI/light suites were not repeated for this navigation-only change.
+
+## Previous 0.8.2 separate sales model
 
 TV-Info now shows an optional stored sales model beside the immutable Android identifier. The new **TV-Modell ergänzen** form never writes the Home/dashboard names. Unknown sales models remain explicitly blank; there is no platform-to-product guess. User-entered sales metadata is excluded from diagnostic exports.
 

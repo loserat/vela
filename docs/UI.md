@@ -68,3 +68,11 @@ UniFi inventory is reached through the network detail page. Native cards are rea
 The editable field is named **Name im IP-Dashboard**. It affects the page heading/title only. **Modellkennung (Android)** in TV-Info comes from `Build.MODEL`, and changing either user-defined name cannot change it. Android can report a platform code (for example QM163E) rather than a marketed product number; the UI does not guess the latter.
 
 Since 0.8.2, **TV-Modell** is a separate stored sales designation. **TV-Modell ergänzen** accepts up to 80 characters from the type label; an empty entry clears it and shows **Nicht hinterlegt**. Saving it preserves unsaved screensaver edits. It does not change the heading or the Android identifier.
+
+## Color-key shortcuts
+
+On Home, System and Apps, red/green/yellow/blue navigate to Cameras/Ambilight/Hue/Devices by default. A small color-and-text legend appears below the Home navigation hints. The web Startseite section stores all four mappings separately from the Home form; available destinations are Cameras, Ambilight, Hue, Devices, Network, System, Apps and disabled. Saving preserves unrelated unsaved Home edits. Disabled keys have no Home legend entry. Hiding cameras also hides their legend and blocks that shortcut.
+
+Only the first uncancelled key-down navigates; repeats and key-up are consumed. Other Dashboard detail pages, external apps and TV/HDMI viewing retain their own key handling. Shortcuts open pages, never perform lighting/source/playback commands directly. A TV may intercept the hardware keys before delivering Android events; injected-key checks do not certify a physical remote.
+
+[Web shortcut settings on mobile](images/web-settings-mobile.jpg).

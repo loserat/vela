@@ -21,6 +21,35 @@ public final class FixtureProbe extends Instrumentation {
     private void expireUniFiCache()throws Exception{Field f=context.getClassLoader().loadClass("de.leisetv.UniFiController").getDeclaredField("attemptedAt");f.setAccessible(true);f.setLong(null,0);}
     @Override public void onStart(){Bundle result=new Bundle();try{
         if(!android.os.Build.FINGERPRINT.contains("/emu64a:")&&!android.os.Build.FINGERPRINT.contains("generic"))throw new Exception("Disposable emulator only");context=getTargetContext();String task=arguments.getString("task","prepare");
+        if(task.equals("remote")){
+            Class<?>[] withContext={Context.class};JSONObject original=(JSONObject)call("RemoteShortcuts","view",withContext,context);
+            try{
+                for(int i=0;i<4;i++)check("Android color code "+(183+i)+" maps to slot "+i,((Integer)call("RemoteShortcuts","index",new Class[]{int.class},183+i))==i);
+                check("Unrelated key stays outside shortcut mapping",((Integer)call("RemoteShortcuts","index",new Class[]{int.class},android.view.KeyEvent.KEYCODE_DPAD_CENTER))==-1);
+                JSONObject map=new JSONObject().put("red","system").put("green","none").put("yellow","apps").put("blue","inputs");
+                call("RemoteShortcuts","save",new Class[]{Context.class,JSONObject.class},context,map);
+                android.content.Intent intent=new android.content.Intent().setClassName(context,"de.leisetv.MainActivity").addCategory(android.content.Intent.CATEGORY_HOME).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK|android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                android.app.Activity home=startActivitySync(intent);waitForIdleSync();
+                Field system=home.getClass().getDeclaredField("systemMenu"),drawer=home.getClass().getDeclaredField("drawer"),root=home.getClass().getDeclaredField("root");system.setAccessible(true);drawer.setAccessible(true);root.setAccessible(true);
+                runOnMainSync(()->home.dispatchKeyEvent(new android.view.KeyEvent(0,0,android.view.KeyEvent.ACTION_DOWN,183,2)));
+                check("Held-key repeat does not open System",!system.getBoolean(home));
+                runOnMainSync(()->home.dispatchKeyEvent(new android.view.KeyEvent(android.view.KeyEvent.ACTION_UP,183)));
+                check("Key-up does not open System",!system.getBoolean(home));
+                android.view.KeyEvent cancelled=android.view.KeyEvent.changeFlags(new android.view.KeyEvent(0,0,android.view.KeyEvent.ACTION_DOWN,183,0),android.view.KeyEvent.FLAG_CANCELED);
+                runOnMainSync(()->home.dispatchKeyEvent(cancelled));check("Cancelled key does not navigate",!system.getBoolean(home));
+                runOnMainSync(()->home.dispatchKeyEvent(new android.view.KeyEvent(android.view.KeyEvent.ACTION_DOWN,183)));
+                check("First key-down opens configured System",system.getBoolean(home));Object systemRoot=root.get(home);
+                runOnMainSync(()->home.dispatchKeyEvent(new android.view.KeyEvent(0,0,android.view.KeyEvent.ACTION_DOWN,183,1)));
+                check("Further repeat does not rebuild the screen",root.get(home)==systemRoot);
+                runOnMainSync(()->home.dispatchKeyEvent(new android.view.KeyEvent(android.view.KeyEvent.ACTION_DOWN,184)));
+                check("Disabled color leaves screen intact",root.get(home)==systemRoot);
+                runOnMainSync(()->home.dispatchKeyEvent(new android.view.KeyEvent(android.view.KeyEvent.ACTION_DOWN,185)));
+                check("Custom Apps action opens drawer",drawer.getBoolean(home));
+            }finally{
+                call("RemoteShortcuts","save",new Class[]{Context.class,JSONObject.class},context,original);
+            }
+            result.putString("checks",checks.toString());result.putString("fixture","ready");finish(-1,result);return;
+        }
         if(task.equals("unifi")){
             try{
                 new File(context.getFilesDir(),"unifi-network.enc").delete();new File(context.getFilesDir(),"unifi-network.enc.bak").delete();Field cache=context.getClassLoader().loadClass("de.leisetv.UniFiController").getDeclaredField("cached");cache.setAccessible(true);cache.set(null,null);expireUniFiCache();
