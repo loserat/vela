@@ -131,7 +131,7 @@ final class AdminServer implements Closeable {
                 try(InputStream page=context.getAssets().open("settings/index.html")){
                     ByteArrayOutputStream bytes=new ByteArrayOutputStream();byte[] buf=new byte[8192];int n;
                     while((n=page.read(buf))!=-1)bytes.write(buf,0,n);
-                    reply(out,200,"text/html",bytes.toString("UTF-8"),null);
+                    reply(out,200,"text/html",UiSettings.render(context,bytes.toString("UTF-8")),null);
                 }return;
             }
             if(method.equals("POST")&&path.equals("/api/login")){
@@ -179,6 +179,7 @@ final class AdminServer implements Closeable {
             else if(method.equals("GET")&&path.equals("/api/device/state"))result=DeviceInfo.view(context);
             else if(method.equals("POST")&&path.equals("/api/device/model"))result=DeviceInfo.saveModel(context,new JSONObject(body));
             else if(method.equals("POST")&&path.equals("/api/appearance"))result=HomeAppearance.save(context,new JSONObject(body));
+            else if(method.equals("POST")&&path.equals("/api/interface"))result=UiSettings.save(context,new JSONObject(body));
             else if(method.equals("POST")&&path.equals("/api/remote/configure"))result=RemoteShortcuts.save(context,new JSONObject(body));
             else if(method.equals("GET")&&path.equals("/api/hue/automation"))result=HueStandbyAutomation.view(context);
             else if(method.equals("POST")&&path.equals("/api/hue/automation"))result=HueStandbyAutomation.save(context,new JSONObject(body));
@@ -210,14 +211,14 @@ final class AdminServer implements Closeable {
     private JSONObject state()throws Exception{
         SharedPreferences p=preferences(context);
         JSONObject display=new JSONObject().put("camera",p.getBoolean("show_camera",true))
-            .put("clock",p.getBoolean("show_clock",true)).put("date",p.getBoolean("show_date",true)).put("homeTitle",p.getString("home_title","Zuhause"));
+            .put("clock",p.getBoolean("show_clock",true)).put("date",p.getBoolean("show_date",true)).put("homeTitle",p.getString("home_title",UiText.t("Zuhause")));
         JSONObject library=CameraLibrary.publicView(context);
         JSONObject camera=new JSONObject().put("configured",false);
         JSONArray cameras=library.getJSONArray("cameras");
         for(int i=0;i<cameras.length();i++)if(cameras.getJSONObject(i).optString("id").equals(library.optString("defaultCameraId")))camera=cameras.getJSONObject(i);
         return new JSONObject().put("display",display).put("camera",camera).put("cameras",cameras).put("defaultCameraId",library.optString("defaultCameraId"))
             .put("device",new JSONObject().put("manufacturer",android.os.Build.MANUFACTURER).put("model",android.os.Build.MODEL).put("displayName",p.getString("device_display_name",android.os.Build.MANUFACTURER+" "+android.os.Build.MODEL)))
-            .put("appearance",HomeAppearance.view(context)).put("remote",RemoteShortcuts.view(context)).put("version","0.10.0");
+            .put("interface",UiSettings.view(context)).put("appearance",HomeAppearance.view(context)).put("remote",RemoteShortcuts.view(context)).put("version","0.11.0");
     }
     private void saveCamera(JSONObject data)throws Exception{
         String name=data.optString("name").trim();if(name.isEmpty()||name.length()>80)throw new IOException("Kameraname fehlt");

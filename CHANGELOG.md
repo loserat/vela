@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.11.0 — 2026-11-13
+
+- Moved appearance and arrangement into their own **Design** web tab, alongside new language/font settings. Home retains names, visibility and color shortcuts.
+- Added one German/English language for TV and local web settings, with bundled app-owned translations and locale-aware dates. User/provider names remain literal; German stays the default.
+- Added independent clock/text font choices using existing system fonts: default, condensed, serif and monospace. No font downloads or Android language changes.
+- Added complete-map interface validation, draft-preserving browser updates and live native changes. Detail activities recreate only on explicit language/font changes.
+- Expanded web/native tests and documentation, and refreshed the reviewed synthetic Design screenshot.
+
 ## 0.10.0 — 2026-11-13
 
 - Added four static TV designs: Nordlicht, Mitternacht, Abendrot and Wald. Shared screen backgrounds/cards update without changing light colors or rebuilding detail controls.

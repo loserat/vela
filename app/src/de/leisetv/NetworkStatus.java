@@ -25,6 +25,6 @@ final class NetworkStatus {
         }catch(RuntimeException ignored){result.put("internet","unknown");}
         return result;
     }
-    static String internetLabel(String state){switch(state){case "validated":return "Internet bestätigt";case "portal":return "Anmeldung erforderlich";case "offline":return "Offline";case "unconfirmed":return "Internet nicht bestätigt";default:return "Status nicht verfügbar";}}
-    static String summary(Context context){try{JSONObject value=view(context);return value.optString("transport")+" · "+internetLabel(value.optString("internet"));}catch(JSONException e){return "Netzwerk · Status nicht verfügbar";}}
+    static String internetLabel(String state){switch(state){case "validated":return UiText.t("Internet bestätigt");case "portal":return UiText.t("Anmeldung erforderlich");case "offline":return "Offline";case "unconfirmed":return UiText.t("Internet nicht bestätigt");default:return UiText.t("Status nicht verfügbar");}}
+    static String summary(Context context){try{JSONObject value=view(context);return UiText.t(value.optString("transport"))+" · "+internetLabel(value.optString("internet"));}catch(JSONException e){return UiText.t("Netzwerk · Status nicht verfügbar");}}
 }

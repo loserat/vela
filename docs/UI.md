@@ -57,7 +57,7 @@ The app's clock/color styles and preview do not silently enable an automatic scr
 
 The Home footer contains a small focusable status dot/name without an idle card or arrow; Down from the lower shortcut row reaches it and OK opens the native network detail page. Refresh keeps focus. Android capability callbacks update only the visible status card/button. Network settings open only after the user selects that explicit action. No UniFi site-wide assertion or signal-strength estimate is shown.
 
-The local web page carries the same teal/purple background and mint focus accents, with teal cameras, warm Hue and blue device/network areas. Six responsive sections share consistent spacing, keyboard-accessible tabs (Left/Right/Home/End) and explicit save feedback. At 320/390 px cards stack and action headings wrap. Existing camera streamlinks are not returned into a field; deletion names the source in a confirmation dialog. [Web screenshot](images/web-settings.jpg) · [Mobile network screenshot](images/web-network-mobile.jpg).
+The local web page carries the same teal/purple background and mint focus accents, with teal cameras, warm Hue and blue device/network areas. Seven responsive sections share consistent spacing, keyboard-accessible tabs (Left/Right/Home/End) and explicit save feedback. At 320/390 px cards stack and action headings wrap. Existing camera streamlinks are not returned into a field; deletion names the source in a confirmation dialog. [Web screenshot](images/web-settings.jpg) · [Mobile network screenshot](images/web-network-mobile.jpg).
 
 The web Startseite form stores two distinct names: the Home heading on the TV (40 characters, empty restores Zuhause), and the web dashboard name (80 characters, empty restores Android manufacturer/model). Long native headings ellipsize before the clock; long web labels wrap. Changing a friendly label does not change hardware identity.
 
@@ -87,7 +87,7 @@ The panel reports the last recorded attempt as confirmed by the bridge, unconfir
 
 ## Designs and Home arrangement
 
-Web **Startseite → Design & Anordnung** provides four designs: Nordlicht (the original look), Mitternacht (blue), Abendrot (warm brown/rose) and Wald (green). The theme changes shared native backgrounds/card surfaces, preserving light preset colors, text/focus contrast and controls. The web administration itself retains its current style.
+Web **Design → Design & Anordnung** provides four designs: Nordlicht (the original look), Mitternacht (blue), Abendrot (warm brown/rose) and Wald (green). The theme changes shared native backgrounds/card surfaces, preserving light preset colors, text/focus contrast and controls. The web administration itself retains its current style.
 
 Drag any of the six existing Home destinations to a new slot, including across rows, or use its **nach vorne/nach hinten** buttons. The arrow buttons retain keyboard focus after moving. Choose **Groß oben · klein unten** or **Alle Kacheln gleich groß**. The header/clock, network badge and color-key legend retain their fixed TV-safe locations. This is a bounded grid editor, not arbitrary pixel coordinates or a custom-app launcher.
 
@@ -97,4 +97,12 @@ Hiding cameras removes their visible tile and preview, while retaining their cho
 
 ![Design and order editor](images/web-design.jpg)
 
-[Mobile editor](images/web-design-mobile.jpg) · [Four native designs](../README.md#a-look-at-the-interface).
+[Earlier 0.10.0 mobile editor](images/web-design-mobile.jpg) · [Four native designs](../README.md#a-look-at-the-interface).
+
+## Shared language and independent fonts (0.11.0)
+
+The dedicated **Design** tab groups the theme/order editor and **Sprache & Schrift**. **Startseite** retains names, visibility and remote color shortcuts. A complete explicit Save selects German or English for both dashboards and independent default/condensed/serif/monospace fonts for body text and the clock. Clock/date in Home and the screensaver follow the same choices. The web font sample and Home preview show unsaved choices without changing the TV.
+
+Only app-owned labels are translated. User headings, camera names, Hue rooms/scenes, SSIDs, app labels and provider/device names stay literal, even when a name matches a German menu word. A stored Home name such as Zuhause remains a custom name; only an unset default is localized. Android/Philips settings and third-party apps keep their own language.
+
+The saving web session updates immediately. Other browser sessions pick up the shared setting on reload. Native Home preserves its focused destination. An open native detail activity is recreated on a language/font change, so an open dialog or transient player view can close/restart; ordinary theme-only updates still preserve detail controls. This explicit settings action is separate from the stable brightness-slider path. Browser system-font fallbacks can differ from Android glyphs.

@@ -21,14 +21,14 @@ final class RemoteShortcuts {
     }
     static String label(String action){
         switch(action){
-            case "cameras":return "Kameras";
+            case "cameras":return UiText.t("Kameras");
             case "ambilight":return "Ambilight";
             case "hue":return "Hue";
-            case "inputs":return "Geräte";
-            case "network":return "Netzwerk";
+            case "inputs":return UiText.t("Geräte");
+            case "network":return UiText.t("Netzwerk");
             case "system":return "System";
             case "apps":return "Apps";
-            case "none":return "Ohne Aktion";
+            case "none":return UiText.t("Ohne Aktion");
             default:return "";
         }
     }

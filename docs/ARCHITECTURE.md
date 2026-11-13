@@ -61,7 +61,7 @@ The unfinished AC Infinity/climate integration remains absent from current publi
 
 Authenticated read-only `GET /api/network/state` returns `source`, `checkedAt`, `connected`, `transport`, `internet`, `address`, and `ssid`. No network configuration write endpoint exists. [Network semantics](NETWORK.md) explain the distinction from UniFi health.
 
-The single local HTML asset has six accessible tab panels, local CSS/system fonts, scoped pending-form locks and explicit save feedback. Switching sections fetches Hue/HDMI/network data on demand; there is no web polling timer. Camera saves refresh the library while preserving unsaved Home toggles. HDMI inventory is read-only in the browser; actual input selection stays on the TV. Hue setup uses the existing authenticated/pinned adapter; reading the page never pairs or changes room automatically.
+The single local HTML asset has seven accessible tab panels, local CSS/system fonts, scoped pending-form locks and explicit save feedback. Switching sections fetches Hue/HDMI/network data on demand; there is no web polling timer. Camera saves refresh the library while preserving unsaved Home toggles. HDMI inventory is read-only in the browser; actual input selection stays on the TV. Hue setup uses the existing authenticated/pinned adapter; reading the page never pairs or changes room automatically.
 
 ## Added 0.8.0 components and endpoints
 
@@ -113,3 +113,13 @@ Rapid wake/disable/config changes suppress queued work; an already transmitted n
 `TvStyle` retains one active cached 1920×1080 background bitmap; a theme change invalidates that cache. `NickApplication` reads the stored theme at process startup and invalidates the resumed view tree on theme changes. Detail-page controls, focus, scene state and worker lifetimes are preserved. Text/focus colors and functional light-color mappings stay independent of the theme. There is no animation loop or network fetch for design assets.
 
 The web editor keeps a separate appearance draft. It captures stable preview-node references before detaching/reordering them, and blocks conflicting edits while saving. Native drag is supplemented by explicit movement buttons for touch/keyboard browsers. Camera-library refreshes and independent form saves do not reset that draft. Appearance changes do not write names/model, camera/Hue credentials, remote shortcuts, saver styling or standby-automation flags, and do not appear in the diagnostic export.
+
+## Shared interface preferences (0.11.0)
+
+`UiSettings` owns `ui_language`, `ui_text_font` and `ui_clock_font`. `/api/state.interface` returns `{language,textFont,clockFont}`. Authenticated POST `/api/interface` requires the complete map: `de`/`en` and two independent `sans`/`condensed`/`serif`/`mono` IDs. Validation precedes one preference commit and revision advance. No font file, URL or arbitrary family name is accepted, and no Android system locale is changed. These preferences do not alter provider configuration or enter diagnostic exports.
+
+`UiText` translates explicitly marked owned strings through the bundled `assets/i18n/en.json`; German source strings remain the default/fallback. User/provider values bypass translation. The HTML response embeds only the three allowlisted preferences and the static catalog, escaping `<` in catalog JSON. It includes no authenticated state or user values. Existing session/origin/host guards still protect writes.
+
+`TvStyle` caches Android typefaces, with a separate `CLOCK`; Home/screensaver date formatting uses the selected locale. Application preference callbacks coalesce interface changes: Home rebuilds with its focused destination retained, while an active detail activity recreates. No light/input action is triggered. A detail recreation can reset a dialog or transient player view; ongoing real-stream continuity across a language change is not verified. Theme-only changes retain the prior invalidate-only behavior.
+
+Web static source text/attributes are captured before loading user values. Mutable labels regenerate in the selected language without translating names or resetting independent form drafts. Saving updates the current session in place; another browser reads the shared preference on reload. There are no remote translation/font services, new permissions or background polling.

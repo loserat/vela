@@ -5,7 +5,13 @@ import android.graphics.*;
 /** Static drawing helpers shared by the TV screens; no animation loop. */
 final class TvStyle {
     static final int BG=0xff101722, INK=0xffF5F3EF, MUTED=0xffA1AEAE, MINT=0xffCBF0D9;
-    static final Typeface NORMAL=Typeface.create("sans-serif",0), MEDIUM=Typeface.create("sans-serif-medium",0), LIGHT=Typeface.create("sans-serif-light",0);
+    static Typeface NORMAL=Typeface.create("sans-serif",0), MEDIUM=Typeface.create("sans-serif-medium",0), LIGHT=Typeface.create("sans-serif-light",0), CLOCK=LIGHT;
+    private static String textFont="sans",clockFont="sans";
+    private static String family(String id){return "condensed".equals(id)?"sans-serif-condensed":"serif".equals(id)?"serif":"mono".equals(id)?"monospace":"sans-serif";}
+    static void fonts(String text,String clock){
+        if(!textFont.equals(text)){textFont=text;NORMAL=Typeface.create(family(text),Typeface.NORMAL);MEDIUM=Typeface.create("sans".equals(text)?"sans-serif-medium":family(text),"sans".equals(text)?Typeface.NORMAL:Typeface.BOLD);LIGHT=Typeface.create("sans".equals(text)?"sans-serif-light":family(text),Typeface.NORMAL);}
+        if(!clockFont.equals(clock)){clockFont=clock;CLOCK=Typeface.create("sans".equals(clock)?"sans-serif-light":family(clock),Typeface.NORMAL);}
+    }
     private static Bitmap backdrop;
     private static int theme;
     private static final int[][] PALETTES={

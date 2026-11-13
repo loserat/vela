@@ -30,18 +30,18 @@ public final class CameraActivity extends Activity {
     private int generation;
     private String cameraId;
     private boolean active,stopping,pendingStart;
-    private final Runnable timeout=()->{if(status.getVisibility()==View.VISIBLE)status.setText("Bildaufbau dauert länger · OK erneut versuchen");};
+    private final Runnable timeout=()->{if(status.getVisibility()==View.VISIBLE)status.setText(UiText.t("Bildaufbau dauert länger · OK erneut versuchen"));};
     @Override public void onCreate(Bundle state){
         super.onCreate(state);android.util.DisplayMetrics metrics=getResources().getDisplayMetrics();uiScale=Math.min(metrics.widthPixels/1920f,metrics.heightPixels/1080f);
         getWindow().getDecorView().setSystemUiVisibility(5894);
         FrameLayout root=new FrameLayout(this);root.setBackgroundColor(Color.BLACK);
         surface=new SurfaceView(this);root.addView(surface,new FrameLayout.LayoutParams(-1,-1));
-        title=new TextView(this);title.setText("Kameras");title.setTextColor(Color.WHITE);title.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,px(28));title.setTypeface(TvStyle.MEDIUM);
+        title=new TextView(this);title.setText(UiText.t("Kameras"));title.setTextColor(Color.WHITE);title.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,px(28));title.setTypeface(TvStyle.MEDIUM);
         title.setPadding(px(24),px(14),px(24),px(14));title.setBackground(badge());
         FrameLayout.LayoutParams t=new FrameLayout.LayoutParams(-2,-2,Gravity.TOP|Gravity.LEFT);t.setMargins(px(96),px(64),0,0);root.addView(title,t);
-        status=new TextView(this);status.setText("Verbinden …");status.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,px(28));status.setTextColor(TvStyle.MINT);status.setGravity(Gravity.CENTER);
+        status=new TextView(this);status.setTypeface(TvStyle.NORMAL);status.setText(UiText.t("Verbinden …"));status.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,px(28));status.setTextColor(TvStyle.MINT);status.setGravity(Gravity.CENTER);
         root.addView(status,new FrameLayout.LayoutParams(-1,-1));
-        TextView hint=new TextView(this);hint.setText("‹   Wechseln   ›     ·     Zurück");hint.setTextColor(0xffc7d2cd);hint.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,px(22));hint.setPadding(px(24),px(14),px(24),px(14));hint.setBackground(badge());
+        TextView hint=new TextView(this);hint.setTypeface(TvStyle.NORMAL);hint.setText(UiText.t("‹   Wechseln   ›     ·     Zurück"));hint.setTextColor(0xffc7d2cd);hint.setTextSize(android.util.TypedValue.COMPLEX_UNIT_PX,px(22));hint.setPadding(px(24),px(14),px(24),px(14));hint.setBackground(badge());
         FrameLayout.LayoutParams h=new FrameLayout.LayoutParams(-2,-2,Gravity.BOTTOM|Gravity.LEFT);h.setMargins(px(96),0,0,px(48));root.addView(hint,h);
         setContentView(root);
     }
@@ -72,7 +72,7 @@ public final class CameraActivity extends Activity {
             JSONObject config=CameraLibrary.find(this,getIntent().getStringExtra("cameraId"));
             if(!CameraLibrary.ready(config))throw new java.io.IOException("Camera unavailable");
             cameraId=config.getString("id");
-            title.setText(config.getString("name"));status.setText("Verbinden …");status.setVisibility(View.VISIBLE);
+            title.setText(config.getString("name"));status.setText(UiText.t("Verbinden …"));status.setVisibility(View.VISIBLE);
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             proxy=new SecureRtspProxy(config.getString("url"),config.getString("certificatePem"));
             vlc=new LibVLC(this,new ArrayList<>(Arrays.asList("--no-audio","--rtsp-tcp","--network-caching=500","--no-video-title-show","--quiet")));
@@ -96,13 +96,13 @@ public final class CameraActivity extends Activity {
                         status.setVisibility(View.GONE);Log.i("CameraTV","video-ready:"+track.width+"x"+track.height);
                     }
                 }
-                if(event.type==MediaPlayer.Event.EncounteredError){status.setVisibility(View.VISIBLE);status.setText("Keine Verbindung · OK erneut versuchen");Log.w("CameraTV","playback-error");}
+                if(event.type==MediaPlayer.Event.EncounteredError){status.setVisibility(View.VISIBLE);status.setText(UiText.t("Keine Verbindung · OK erneut versuchen"));Log.w("CameraTV","playback-error");}
             });
             Media media=new Media(vlc,Uri.parse(proxy.localUrl()));media.setHWDecoderEnabled(false,false);media.addOption(":rtsp-tcp");media.addOption(":network-caching=500");
             player.setMedia(media);media.release();player.play();handler.postDelayed(timeout,15000);
             Log.i("CameraTV","opening:"+config.getString("name"));
         }catch(Exception|LinkageError e){
-            end(false);status.setVisibility(View.VISIBLE);status.setText("Kamera noch nicht verbunden");
+            end(false);status.setVisibility(View.VISIBLE);status.setText(UiText.t("Kamera noch nicht verbunden"));
             Log.w("CameraTV","setup:"+e.getClass().getSimpleName()+" at "+(e.getStackTrace().length>0?e.getStackTrace()[0].toString():"unknown"));
         }
     }

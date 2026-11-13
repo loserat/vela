@@ -10,7 +10,7 @@ final class TvButton extends View {
     TvButton(Context context,String label,Runnable action){super(context);this.label=label;setFocusable(true);setClickable(true);setDefaultFocusHighlightEnabled(false);setContentDescription(label);setOnFocusChangeListener((v,f)->invalidate());setOnClickListener(v->action.run());}
     void label(String value){if(!label.equals(value)){label=value;invalidate();}describe();}
     void selected(boolean value){if(selected!=value){selected=value;invalidate();}describe();}
-    void describe(){TvStyle.description(this,label+(selected?", ausgewählt":""));}
+    void describe(){TvStyle.description(this,label+(selected?UiText.t(", ausgewählt"):""));}
     @Override protected void onDraw(Canvas c){c.save();c.scale(getWidth()/(float)w,getHeight()/(float)h);int accent=icon.isEmpty()?TvStyle.MINT:TvStyle.accent(icon);TvStyle.card(c,p,4,4,w-4,h-4,isFocused(),h>180?26:18,accent);
         if(selected){p.setStyle(Paint.Style.STROKE);p.setStrokeWidth(2);p.setColor(TvStyle.MINT);c.drawRoundRect(11,11,w-11,h-11,h>180?21:13, h>180?21:13,p);p.setStyle(Paint.Style.FILL);}
         if(!icon.isEmpty())TvStyle.icon(c,p,icon,30,30,h>180?52:32,accent);

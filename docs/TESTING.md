@@ -177,3 +177,17 @@ python3 tests/integration/hue_ui.py --serial emulator-5580 --output test-results
 The appearance probe restores the prior appearance and camera-visibility flag. It records synthetic theme images in the app's fixture files, verifies 19 native cases and checks the mock received no appearance-triggered light commands. The current Hue regression run passed 26 checks against the same application classes. Four native images were visually reviewed before publication.
 
 Fourteen physical installation/API/visual checks separately passed: retained APK hash/version, existing data/settings, complete custom map, an equal-size reordered grid, distinct backgrounds, three atomic invalid-input rejections, authentication, restored prior appearance and exact final web asset. Prior appearance was restored after the visual test; no real light/video/source action was used. Physical remote hardware and long-running performance remain separate from these injected/UI checks.
+
+## Language, fonts and the Design tab (0.11.0)
+
+```sh
+node tests/check_web.cjs
+python3 tests/integration/prepare.py --serial emulator-5580 --task prepare
+python3 tests/integration/prepare.py --serial emulator-5580 --task interface --report test-results/interface.json
+```
+
+Use the disposable emulator and loopback Hue fixture above. The interface probe restores prior language/fonts/Home name. Nineteen native checks cover defaults, four atomic invalid/partial rejections, live English labels, focused destination, literal custom names, independent Android clock/body typefaces, all four font IDs, locale/date, palette/selection labels, detail-page Back, screensaver language, unrelated preference retention and no fixture lighting actions. The first probe constructed the screensaver View off the Android main thread; that harness error was corrected and initial partial evidence retained.
+
+The 68 web checks add independent interface payload/drafts, name preservation, translated mutable camera/device/network/provider/fact labels, independent fonts and return to German. Real-browser synthetic checks verified the separate Design tab, in-place German/English switch, retained names, all seven tabs at 320 px with `scrollWidth <= innerWidth`, and no console warnings/errors. A stale camera label after language Save was found in the browser and fixed with a draft-preserving text-only refresh. The reviewed Design screenshot is synthetic.
+
+The 2,880 layout, 19 native appearance, 53 palette and 26 Hue interaction/brightness checks were rerun against this release. Real TV installation/API verification is separate from emulator typography: the retained-key update keeps the live TV app in front and tests the preference/API round trip, validation/authentication, exact rendered web bootstrap and retained package/configuration set. Native font appearance on the physical panel and player continuity during a language change remain user acceptance work.

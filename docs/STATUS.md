@@ -2,17 +2,27 @@
 
 [Documentation](README.md) · [Testing](TESTING.md) · [Earlier evidence](VALIDATION-HISTORY.md)
 
-**November 13, 2026 · 0.10.0 · experimental beta.** Installed behavior, fixture checks and real provider acceptance are distinguished below.
+**November 13, 2026 · 0.11.0 · experimental beta.** Installed behavior, fixture checks and real provider acceptance are distinguished below.
 
 ## Implemented and installed
 
 - Compact Home connection dot/name, reading the actual active SSID where Android permits it; no location permission or custom internet probe.
 - Editable persisted Home heading and web dashboard name, with separate labels, bounded input, defaults and native text ellipsis.
-- Six web sections including TV information/maintenance, redacted diagnostic export, explicit dashboard-open request and screensaver styling controls.
+- Seven web sections including TV information/maintenance, redacted diagnostic export, explicit dashboard-open request and screensaver styling controls.
 - Optional local UniFi Network inventory with explicit site choice, encrypted key/pinned certificate, upstream GET-only calls, bounded pagination and stale/unknown states.
 - Existing cameras, Hue, Ambilight, HDMI selection and automatic screensaver activation settings retained.
 
-## 0.10.0 designs and Home arrangement
+## 0.11.0 language, fonts and a dedicated Design tab
+
+The Design tab groups theme/order and shared language/fonts. German remains the default; English translates owned labels while custom/provider names stay literal. Clock/body families are independent and use built-in system fonts. No provider or Android system-language setting changes.
+
+- 68 web checks, 19 native interface checks, 19 appearance checks, 2,880 geometry configurations, 53 palette checks and 26 Hue interaction/brightness regressions passed.
+- The synthetic browser pass verified the separate tab, in-place language changes, seven mobile sections without horizontal overflow at 320 px, and no console warnings/errors. The camera-status refresh discovered in-browser was fixed without resetting camera drafts. Reviewed screenshots contain synthetic data only.
+- Native typography was checked in the disposable emulator. Fifteen physical installation/API checks passed: installed hash/version, retained settings and removed-media package set, complete interface round trip, four atomic invalid/partial rejections, authentication, restored German/default fonts, exact rendered web bootstrap and retained TV-app foreground. Native panel typography and real-stream continuity through a language change remain unverified.
+- The first post-update API attempt found the app service stopped after package replacement. The existing DUMP-protected receiver was invoked only after verifying no provisioning file existed, starting the application/service without opening an activity; the receiver rejected the absent import and configuration remained unchanged. The final API pass succeeded. No new receiver or permission was added.
+- A first native probe created a View off the Android main thread; the harness was corrected and the final run passed. Earlier partial evidence is retained.
+
+## Previous 0.10.0 designs and Home arrangement
 
 Four static designs update the shared TV backgrounds/cards. Home has an independent six-destination order and featured/compact or equal-size row geometry. Web Startseite offers theme swatches, live preview, drag-and-drop and keyboard/touch move buttons, plus explicit Save and draft-only Reset.
 

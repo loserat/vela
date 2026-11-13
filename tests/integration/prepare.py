@@ -2,7 +2,7 @@
 """Install a same-key test probe into an explicitly selected disposable AOSP emulator."""
 from pathlib import Path
 import argparse,subprocess,os,shutil,tempfile,zipfile,sys,json,re
-parser=argparse.ArgumentParser();parser.add_argument('--serial',required=True);parser.add_argument('--cameras',type=int,default=8);parser.add_argument('--task',default='prepare',choices=['prepare','cameras','hide-camera','show-camera','devices','unifi','remote','standby','appearance']);parser.add_argument('--report',type=Path);args=parser.parse_args()
+parser=argparse.ArgumentParser();parser.add_argument('--serial',required=True);parser.add_argument('--cameras',type=int,default=8);parser.add_argument('--task',default='prepare',choices=['prepare','cameras','hide-camera','show-camera','devices','unifi','remote','standby','appearance','interface']);parser.add_argument('--report',type=Path);args=parser.parse_args()
 root=Path(__file__).resolve().parents[2];sdk=Path(os.environ.get('ANDROID_HOME',os.environ.get('ANDROID_SDK_ROOT',str(Path.home()/('Library/Android/sdk' if sys.platform=='darwin' else 'Android/Sdk')))));adb=[str(sdk/'platform-tools/adb'),'-s',args.serial]
 assert subprocess.check_output(adb+['shell','getprop','ro.kernel.qemu'],text=True).strip()=='1','Refusing non-emulator device'
 java_home=os.environ.get('JAVA_HOME')

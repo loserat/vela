@@ -39,6 +39,39 @@ public final class FixtureProbe extends Instrumentation {
     }
     @Override public void onStart(){Bundle result=new Bundle();try{
         if(!android.os.Build.FINGERPRINT.contains("/emu64a:")&&!android.os.Build.FINGERPRINT.contains("generic"))throw new Exception("Disposable emulator only");context=getTargetContext();String task=arguments.getString("task","prepare");
+        if(task.equals("interface")){
+            android.content.SharedPreferences prefs=(android.content.SharedPreferences)call("AdminServer","preferences",new Class[]{Context.class},context);
+            JSONObject original=(JSONObject)call("UiSettings","view",new Class[]{Context.class},context);
+            java.util.Map<String,?> before=new java.util.HashMap<>(prefs.getAll());int attempts=fixtureState().getJSONArray("attempts").length();
+            try{
+                check("Existing interface defaults are German and standard fonts",original.toString().equals(new JSONObject().put("language","de").put("textFont","sans").put("clockFont","sans").toString()));
+                for(String invalid:new String[]{"{\"language\":\"fr\",\"textFont\":\"serif\",\"clockFont\":\"mono\"}","{\"language\":\"en\",\"textFont\":\"remote.ttf\",\"clockFont\":\"sans\"}","{\"language\":\"en\",\"textFont\":\"mono\",\"clockFont\":\"unknown\"}","{\"language\":\"en\"}"}){
+                    boolean rejected=false;try{call("UiSettings","save",new Class[]{Context.class,JSONObject.class},context,new JSONObject(invalid));}catch(Exception error){rejected=true;}
+                    check("Invalid or partial interface map rejected atomically "+checks.length(),rejected&&((JSONObject)call("UiSettings","view",new Class[]{Context.class},context)).toString().equals(original.toString()));
+                }
+                prefs.edit().putString("home_title","Geräte").commit();
+                android.app.Activity home=startActivitySync(new android.content.Intent().setClassName(context,"de.leisetv.MainActivity").addCategory(android.content.Intent.CATEGORY_HOME).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK|android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK));waitForIdleSync();
+                Field rootField=home.getClass().getDeclaredField("root");rootField.setAccessible(true);android.view.ViewGroup root=(android.view.ViewGroup)rootField.get(home);android.view.View devices=root.getChildAt(5);runOnMainSync(()->devices.requestFocusFromTouch());
+                JSONObject english=new JSONObject().put("language","en").put("textFont","mono").put("clockFont","serif");call("UiSettings","save",new Class[]{Context.class,JSONObject.class},context,english);waitForIdleSync();Thread.sleep(200);waitForIdleSync();root=(android.view.ViewGroup)rootField.get(home);
+                check("Live Home rebuild translates native tile labels",root.getChildAt(1).getContentDescription().toString().startsWith("Cameras,")&&root.getChildAt(5).getContentDescription().toString().startsWith("Devices,"));
+                check("Language and font save retains focused destination",home.getCurrentFocus()!=null&&home.getCurrentFocus().getContentDescription().toString().startsWith("Devices,"));
+                check("User Home name remains literal",prefs.getString("home_title","").equals("Geräte"));
+                try(FileOutputStream image=new FileOutputStream(new File(context.getFilesDir(),"fixture-home-interface.png"))){getUiAutomation().takeScreenshot().compress(android.graphics.Bitmap.CompressFormat.PNG,100,image);}
+                Class<?> style=context.getClassLoader().loadClass("de.leisetv.TvStyle");Field normal=style.getDeclaredField("NORMAL"),clock=style.getDeclaredField("CLOCK");normal.setAccessible(true);clock.setAccessible(true);
+                check("Clock and body use independent Android font families",normal.get(null).equals(android.graphics.Typeface.create("monospace",0))&&clock.get(null).equals(android.graphics.Typeface.create("serif",0)));
+                check("English date uses the shared locale",call("UiText","locale",new Class[]{}).equals(java.util.Locale.UK)&&call("UiText","datePattern",new Class[]{}).equals("EEEE, d MMMM"));
+                check("Owned palette and selection labels are translated",call("UiText","t",new Class[]{String.class},"Warmweiß").equals("Warm white")&&call("UiText","t",new Class[]{String.class},", ausgewählt").equals(", selected"));
+                for(String font:new String[]{"sans","condensed","serif","mono"}){english.put("textFont",font);call("UiSettings","save",new Class[]{Context.class,JSONObject.class},context,english);waitForIdleSync();Thread.sleep(100);check("Android system font choice loads: "+font,normal.get(null)!=null&&clock.get(null).equals(android.graphics.Typeface.create("serif",0)));}
+                android.app.Activity inputs=startActivitySync(new android.content.Intent().setClassName(context,"de.leisetv.InputsActivity").addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK));waitForIdleSync();Field inputRoot=inputs.getClass().getSuperclass().getDeclaredField("root");inputRoot.setAccessible(true);android.view.ViewGroup detail=(android.view.ViewGroup)inputRoot.get(inputs);
+                check("Native detail header and Back are English",detail.getChildAt(0).getContentDescription().toString().startsWith("Devices,")&&detail.getChildAt(1).getContentDescription().toString().contains("Back"));runOnMainSync(()->inputs.finish());waitForIdleSync();
+                java.lang.reflect.Constructor<?> saver=context.getClassLoader().loadClass("de.leisetv.ScreensaverView").getDeclaredConstructor(Context.class,String.class,boolean.class);saver.setAccessible(true);final android.view.View[] previews=new android.view.View[1];runOnMainSync(()->{try{previews[0]=(android.view.View)saver.newInstance(context,"clock",false);}catch(Exception error){throw new RuntimeException(error);}});android.view.View preview=previews[0];
+                check("Screensaver shares the UI language",preview.getContentDescription().toString().equals("Screensaver preview"));
+                java.util.Map<String,?> after=prefs.getAll();boolean retained=true;for(String key:before.keySet())if(!key.startsWith("ui_")&&!key.equals("revision")&&!key.equals("home_title"))retained&=java.util.Objects.equals(before.get(key),after.get(key));
+                check("Other names layout shortcuts cameras Hue and saver preferences retained",retained);
+                check("Interface edits never actuate fixture lights",fixtureState().getJSONArray("attempts").length()==attempts);
+            }finally{android.content.SharedPreferences.Editor restore=prefs.edit();if(before.containsKey("home_title"))restore.putString("home_title",(String)before.get("home_title"));else restore.remove("home_title");restore.commit();call("UiSettings","save",new Class[]{Context.class,JSONObject.class},context,original);waitForIdleSync();}
+            result.putString("checks",checks.toString());result.putString("fixture","ready");finish(-1,result);return;
+        }
         if(task.equals("appearance")){
             JSONObject original=(JSONObject)call("HomeAppearance","view",new Class[]{Context.class},context);
             android.content.SharedPreferences prefs=(android.content.SharedPreferences)call("AdminServer","preferences",new Class[]{Context.class},context);boolean camera=prefs.getBoolean("show_camera",true);

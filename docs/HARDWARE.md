@@ -24,7 +24,7 @@ The owner-reported marketed model is **55PUS6581/12**. This number was not indep
 ## What was verified on this TV
 
 - Installation of the signed dashboard update with package identity preserved.
-- Runtime version 0.10.0 and installed APK hash.
+- Runtime version 0.11.0 and installed APK hash.
 - Local HTTPS settings, certificate continuity, login, and retained camera IDs.
 - Exact final responsive web asset, authenticated passive network snapshot and native network page/Back. Android reported WLAN with validated internet; no connectivity settings were changed.
 - Real Hue Bridge HTTPS identity, physical-button pairing, explicit selected-room persistence, live state/capability reads, and a controlled brightness adjustment with restoration.
@@ -80,3 +80,7 @@ For 0.9.0 the physical Philips opened all four expected destinations from inject
 Version 0.9.1 adds optional Hue off on Android standby. Its settings are installed with the option disabled; the real Philips power-button/standby-to-Bridge path has not yet been accepted. Only isolated emulator system broadcasts and simulated Hue commands establish the automation flow. A registered foreground service and bounded wake lock cannot guarantee network availability during OEM deep standby.
 
 Version 0.10.0 was installed in place on the physical Philips. The four backgrounds produced distinct rendered colors, and a custom order with equal-size tiles matched the native UI bounds. Existing names/model, camera IDs, Hue room/pairing, shortcut map, standby option, saver/system settings and installed packages were retained. The previous appearance was restored after this visual check. Theme/layout changes did not require light, playback or HDMI commands. No claim is made for other TV sizes/firmware or long-running frame rate.
+
+## Language/font update 0.11.0
+
+Native font-family/locale/translated-control checks use the isolated emulator. Fifteen physical installation/API checks passed through its existing pinned HTTPS identity and retained-key installed hash, without opening the Dashboard over the current TV programme. Physical panel typography and real video continuity across an explicit language change remain outside this acceptance pass.

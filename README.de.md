@@ -2,11 +2,11 @@
 
 [English](README.md) · Deutsch
 
-Eine schlanke Startoberfläche für Philips Android TV: Kameras, Ambilight, Philips Hue HDMI-Geräte und TV-Netzwerkstatus, bedienbar mit der TV-Fernbedienung.
+Eine schlanke Startoberfläche für Philips Android TV: Kameras, Ambilight, Philips Hue, HDMI-Geräte und TV-Netzwerkstatus, bedienbar mit der TV-Fernbedienung.
 
 Als Android-App installieren und bei Bedarf als Home-Oberfläche zuordnen.
 
-**0.10.0 · experimentelle Beta.** Die Repository-Dokumentation ist auf Englisch; TV-Oberfläche und lokale Web-Einstellungen bleiben auf Deutsch. Am TV erscheinen kein Projektname und kein Logo. In Android heißt die App **TV-Dashboard**.
+**0.11.0 · experimentelle Beta.** Die Repository-Dokumentation ist auf Englisch; TV-Oberfläche und lokale Web-Einstellungen starten auf Deutsch und lassen sich gemeinsam auf Englisch umstellen. Am TV erscheinen kein Projektname und kein Logo. In Android heißt die App **TV-Dashboard**.
 
 ## So sieht es aus
 
@@ -44,7 +44,9 @@ Native Emulator-Screenshots mit Testdaten und eigener Reihenfolge. Die Kamera-Ka
 
 ## Funktionen
 
-- Vier TV-Designs (**Nordlicht, Mitternacht, Abendrot, Wald**) und verschiebbare Startseiten-Kacheln. Unter **Startseite → Design & Anordnung** Kacheln zwischen den Reihen ziehen oder per Pfeilen verschieben. Wahlweise groß oben/klein unten oder alle gleich groß. Vorschau und Zurücksetzen ändern den TV erst nach dem Speichern. [Editor](docs/images/web-design.jpg) · [Mobil](docs/images/web-design-mobile.jpg).
+- Eigene Rubrik **Design** für Design, Anordnung, Sprache und Schrift. Deutsch oder Englisch gilt für TV und IP-Dashboard. Uhr und Texte bekommen getrennte Systemschriften: Standard, Schmal, Serif oder Mono. Eigene Namen bleiben erhalten.
+
+- Vier TV-Designs (**Nordlicht, Mitternacht, Abendrot, Wald**) und verschiebbare Startseiten-Kacheln. Unter **Design → Design & Anordnung** Kacheln zwischen den Reihen ziehen oder per Pfeilen verschieben. Wahlweise groß oben/klein unten oder alle gleich groß. Vorschau und Zurücksetzen ändern den TV erst nach dem Speichern. [Editor](docs/images/web-design.jpg).
 
 - Optionale Hue-Automatik unter **Hue → Hue mit dem TV ausschalten**: standardmäßig aus, nur für den ausgewählten Raum, ohne automatisches Wiedereinschalten und mit Anzeige des letzten Versuchs. Der reale Standby-Test am Philips steht noch aus; bei Stromverlust oder fehlender Bridge-Verbindung ist kein zuverlässiger Befehl möglich.
 
@@ -83,7 +85,7 @@ Voraussetzungen: Python 3, `curl`, JDK 21, Android-SDK-Plattform `android-34`, B
 python3 app/fetch_deps.py
 python3 tests/check_palette.py
 python3 app/build.py
-adb -s DEVICE install -r dist/TV-Dashboard-0.10.0.apk
+adb -s DEVICE install -r dist/TV-Dashboard-0.11.0.apk
 adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -105,7 +107,7 @@ adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 
 ## Prüfstand und Grenzen
 
-Für 0.10.0 bestanden **55** Web-Prüfungen, **2.880** Layoutkombinationen, **19** isolierte native Design-Prüfungen und **26** Hue-Bedienungs-/Helligkeitsprüfungen. **14** Installations-/API-/Sichtprüfungen am Philips bestätigten vier unterschiedliche Designs, umsortierte gleich große Kacheln, Validierung, Anmeldung, Wiederherstellung der bisherigen Ansicht und den Erhalt der Einstellungen. Frühere Prüfungen behalten ihren Umfang im [Prüfstand](docs/STATUS.md) und [Verlauf](docs/VALIDATION-HISTORY.md).
+Für 0.11.0 bestanden **68** Web-Prüfungen, **2.880** Layoutkombinationen, **19** native Sprach-/Schriftprüfungen, **19** Designprüfungen und **26** Hue-Bedienungs-/Helligkeitsprüfungen. **15** Installations-/API-Prüfungen am Philips bestanden; dabei blieb das TV-Programm im Vordergrund. Die native Schriftdarstellung wurde im isolierten Emulator geprüft. Einzelheiten und Grenzen stehen im [Prüfstand](docs/STATUS.md).
 
 Die Hue-Prüfungen enthalten langsame, veraltete und fehlerhafte Antworten sowie den Vergleich der Bildpunkte außerhalb des Helligkeitsreglers. [Tests wiederholen (Englisch)](docs/TESTING.md). [Aktuelle Geräteergebnisse und offene Punkte (Englisch)](docs/STATUS.md).
 

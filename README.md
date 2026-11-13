@@ -6,7 +6,7 @@ A lightweight dashboard for Philips Android TV: cameras, Ambilight, Philips Hue,
 
 Install as an Android app and optionally assign it as Home.
 
-**0.10.0 · experimental beta.** Repository documentation is in English; the TV interface and local web settings are in German. The TV interface has no project name or logo; Android lists the app as **TV-Dashboard**.
+**0.11.0 · experimental beta.** Repository documentation is in English; the TV interface and local web settings default to German, with a shared English option. The TV interface has no project name or logo; Android lists the app as **TV-Dashboard**.
 
 ## A look at the interface
 
@@ -44,7 +44,9 @@ These native emulator screenshots use synthetic data and a reordered Home. The c
 
 ## What it does
 
-- Four TV designs (**Nordlicht, Mitternacht, Abendrot, Wald**) and movable Home tiles. In web **Startseite → Design & Anordnung**, drag tiles between rows or use the arrow buttons; choose featured/compact rows or an equal-size grid. Preview/reset stays local until Save. [Editor](docs/images/web-design.jpg) · [Mobile](docs/images/web-design-mobile.jpg).
+- A dedicated web **Design** section for appearance, arrangement, language and fonts. Choose German or English for both dashboards, plus separate clock/text system fonts: default, condensed, serif or monospace. Custom names stay unchanged.
+
+- Four TV designs (**Nordlicht, Mitternacht, Abendrot, Wald**) and movable Home tiles. In web **Design → Design & Anordnung**, drag tiles between rows or use the arrow buttons; choose featured/compact rows or an equal-size grid. Preview/reset stays local until Save. [Editor](docs/images/web-design.jpg).
 
 - Optional Hue standby-off automation in web **Hue → Hue mit dem TV ausschalten**: off by default, targets only the selected room, sends no wake/on command and shows the last attempt result. Actual TV standby acceptance remains pending; power loss or a disconnected bridge cannot be handled reliably.
 
@@ -83,7 +85,7 @@ Requirements: Python 3, `curl`, JDK 21, Android SDK platform `android-34`, Build
 python3 app/fetch_deps.py
 python3 tests/check_palette.py
 python3 app/build.py
-adb -s DEVICE install -r dist/TV-Dashboard-0.10.0.apk
+adb -s DEVICE install -r dist/TV-Dashboard-0.11.0.apk
 adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -98,6 +100,7 @@ Replace `DEVICE` with the explicitly selected authorized device. Preserve your s
 | **Hue → Raum & Bridge** | Enter the bridge address, press its physical button, connect, then choose and confirm the TV room. No whole-home group is selected automatically. |
 | Home network shortcut / Web settings → **Netzwerk** | Read the TV connection type and Android internet validation; no UniFi account is required. |
 | Web → **Startseite** | Save the Home heading and dashboard name; an empty name restores the default. |
+| Web → **Design** | Arrange Home tiles and select a design, separate clock/text fonts, and the shared dashboard language. |
 | Web → **TV-Info** | Read device facts, configure screensaver styling, download a redacted diagnostic, or explicitly request opening the dashboard. |
 | Web → **Netzwerk → UniFi Network** | Enter a local Network API key, validate the connection, then explicitly choose the site. Protect credentials are not reused. |
 | **Geräte** | Select a device/HDMI card. Opening the page only discovers sources; it does not switch them. |
@@ -105,7 +108,7 @@ Replace `DEVICE` with the explicitly selected authorized device. Preserve your s
 
 ## Validation and limits
 
-Version 0.10.0 passed **55** web checks, **2,880** layout configurations, **19** isolated native appearance checks and **26** Hue interaction/brightness regressions. **14** physical installation/API/visual checks passed for four distinct themes, reordered equal-size tiles, validation, authentication, restored prior appearance and retained settings. Earlier component checks retain their scope in [current status](docs/STATUS.md) and [validation history](docs/VALIDATION-HISTORY.md).
+Version 0.11.0 passed **68** web checks, **2,880** layout configurations, **19** native language/font checks, **19** appearance checks and **26** Hue interaction/brightness regressions. **15** physical installation/API checks passed for the retained-key update, settings preservation and language/font round trips while TV playback remained in front; native typography was inspected in the isolated emulator. Earlier component checks retain their scope in [current status](docs/STATUS.md) and [validation history](docs/VALIDATION-HISTORY.md).
 
 Slow, stale and failing Hue replies are included, as are pixel comparisons outside the brightness slider. [Reproduce the tests](docs/TESTING.md). [Current device results and known limits](docs/STATUS.md).
 

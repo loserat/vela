@@ -11,7 +11,7 @@ final class InputCatalog {
     static final class Entry {
         final String id,name,port;final int state;
         Entry(String id,String name,String port,int state){this.id=id;this.name=name;this.port=port;this.state=state;}
-        String status(){return state==TvInputManager.INPUT_STATE_CONNECTED?"Verbunden":state==TvInputManager.INPUT_STATE_CONNECTED_STANDBY?"Standby":"Nicht verbunden";}
+        String status(){return state==TvInputManager.INPUT_STATE_CONNECTED?UiText.t("Verbunden"):state==TvInputManager.INPUT_STATE_CONNECTED_STANDBY?"Standby":UiText.t("Nicht verbunden");}
     }
     private static final class Hdmi {
         final int port;final String name;final boolean cec;
