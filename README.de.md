@@ -6,7 +6,7 @@ Eine schlanke Startoberfläche für Philips Android TV: Kameras, Ambilight, Phil
 
 Als Android-App installieren und bei Bedarf als Home-Oberfläche zuordnen.
 
-**0.8.1 · experimentelle Beta.** Die Repository-Dokumentation ist auf Englisch; TV-Oberfläche und lokale Web-Einstellungen bleiben auf Deutsch. Am TV erscheinen kein Projektname und kein Logo. In Android heißt die App **TV-Dashboard**.
+**0.8.2 · experimentelle Beta.** Die Repository-Dokumentation ist auf Englisch; TV-Oberfläche und lokale Web-Einstellungen bleiben auf Deutsch. Am TV erscheinen kein Projektname und kein Logo. In Android heißt die App **TV-Dashboard**.
 
 ## So sieht es aus
 
@@ -36,7 +36,7 @@ Native Ansichten aus einem separaten Simulator mit künstlichen Kameras, Lichtzu
 - Lokale Hue-Bridge-Kopplung mit bewusster Raumauswahl, Schalten, unterstützten Farben, Helligkeit und Szenen dieses Raums. Home Assistant ist nicht nötig.
 - HDMI-Erkennung über Androids TV-Eingangsdienst. Vorhandene CEC-Namen kennzeichnen Geräte; die Auswahl übergibt den Eingang an die TV-App des Fernsehers.
 - Bildschirmschoner als Uhr oder Farbfläche, Datum, dunkle Darstellung, Vorschau und Zugang zu den Aktivierungseinstellungen des TVs.
-- Eigene Überschrift auf dem TV und separater Name im IP-Dashboard, dauerhaft auf dem TV gespeichert. TV-Info zeigt unabhängig davon die von Android gemeldete Modellkennung.
+- Eigene Überschrift auf dem TV und separater Name im IP-Dashboard, dauerhaft auf dem TV gespeichert. TV-Info zeigt unabhängig davon das separat hinterlegte Verkaufsmodell und die von Android gemeldete Kennung. Unter **TV-Modell ergänzen** lässt sich die Verkaufsbezeichnung eintragen; ohne Eintrag steht dort **Nicht hinterlegt**.
 - Eigener Web-Bereich TV-Info/Wartung mit Android-/App-/Hardwaredaten, Laufzeit, Speicher, Schoneroptionen, Diagnosebericht ohne Zugangsdaten und gezieltem Dashboard-Aufruf.
 - Optionale lokale UniFi-Network-Geräteliste für eingebundene Access Points, Switches und Gateway. Mit bewusster Standortwahl, mehreren Geräteseiten und klar markierten veralteten/unbekannten Zuständen. Die Prüfung am echten Controller steht noch aus. [Einrichtung (Englisch)](docs/NETWORK.md#local-unifi-network-inventory).
 - Responsive lokale HTTPS-Einstellungen für Startseite, Kameras, Hue-Kopplung/Raum, HDMI-Übersicht, Netzwerkstatus und TV-Informationen, mit PIN-Anmeldung und geschützten Sitzungen. Kamera-/Hue-Konfiguration bleibt verschlüsselt auf dem TV.
@@ -63,7 +63,7 @@ Voraussetzungen: Python 3, `curl`, JDK 21, Android-SDK-Plattform `android-34`, B
 python3 app/fetch_deps.py
 python3 tests/check_palette.py
 python3 app/build.py
-adb -s DEVICE install -r dist/TV-Dashboard-0.8.1.apk
+adb -s DEVICE install -r dist/TV-Dashboard-0.8.2.apk
 adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -85,7 +85,7 @@ adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 
 ## Prüfstand und Grenzen
 
-Für die Korrektur 0.8.1 bestanden **31** Web-Prüfungen, darunter die Umbenennung ohne Änderung der technischen Modellkennung. Für den vorherigen Stand 0.8.0 bestanden **53** Prüfungen der produktiven Farbklassen, **10** UniFi-Adapterprüfungen mit Ersatzdienst, **10** native Inventarprüfungen, **6** Netzwerkseiten-Prüfungen und **11** Bildschirmschoner-Prüfungen. Frühere Hue-/Ambilight-/Navigationsprüfungen bleiben getrennt im Prüfstand und Verlauf dokumentiert. Das ist keine vollständige Gerätefreigabe; die Prüfung am echten UniFi-Controller steht noch aus.
+Für die Korrektur 0.8.2 bestanden **34** Web-Prüfungen: getrenntes Speichern des Verkaufsmodells, unveränderte Android-Kennung nach Umbenennung, leerer Modelleintrag und Erhalt ungespeicherter Bildschirmschoner-Änderungen. Zwölf Installations-/API-Prüfungen bestanden am echten TV. Das Verkaufsmodell ist eine Besitzerangabe, keine neu ausgelesene Hardwarekennung. Für den vorherigen Stand 0.8.0 bestanden **53** Prüfungen der produktiven Farbklassen, **10** UniFi-Adapterprüfungen mit Ersatzdienst, **10** native Inventarprüfungen, **6** Netzwerkseiten-Prüfungen und **11** Bildschirmschoner-Prüfungen. Frühere Hue-/Ambilight-/Navigationsprüfungen bleiben getrennt im Prüfstand und Verlauf dokumentiert. Das ist keine vollständige Gerätefreigabe; die Prüfung am echten UniFi-Controller steht noch aus.
 
 Die Hue-Prüfungen enthalten langsame, veraltete und fehlerhafte Antworten sowie den Vergleich der Bildpunkte außerhalb des Helligkeitsreglers. [Tests wiederholen (Englisch)](docs/TESTING.md). [Aktuelle Geräteergebnisse und offene Punkte (Englisch)](docs/STATUS.md).
 

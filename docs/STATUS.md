@@ -2,7 +2,7 @@
 
 [Documentation](README.md) · [Testing](TESTING.md) · [Earlier evidence](VALIDATION-HISTORY.md)
 
-**November 13, 2026 · 0.8.1 · experimental beta.** Installed behavior, fixture checks and real provider acceptance are distinguished below.
+**November 13, 2026 · 0.8.2 · experimental beta.** Installed behavior, fixture checks and real provider acceptance are distinguished below.
 
 ## Implemented and installed
 
@@ -12,9 +12,16 @@
 - Optional local UniFi Network inventory with explicit site choice, encrypted key/pinned certificate, upstream GET-only calls, bounded pagination and stale/unknown states.
 - Existing cameras, Hue, Ambilight, HDMI selection and automatic screensaver activation settings retained.
 
-## 0.8.1 name/model correction
+## 0.8.2 separate sales model
 
-TV-Info now uses only the Android-reported `platformModel`; user-defined Home/dashboard names remain independent and preserved. The technical endpoint omits the configurable name. The edit field is labelled **Name im IP-Dashboard**.
+TV-Info now shows an optional stored sales model beside the immutable Android identifier. The new **TV-Modell ergänzen** form never writes the Home/dashboard names. Unknown sales models remain explicitly blank; there is no platform-to-product guess. User-entered sales metadata is excluded from diagnostic exports.
+
+- 34 production web checks passed, including independent model saves and unsaved screensaver draft retention. Browser preview verified separate heading/sales-model/Android values, persistence and 320 px layout without overflow; no console warnings/errors were recorded. Synthetic TV-info screenshots were refreshed.
+- Public and retained-key APK compilation/signature checks passed. Twelve physical installation/API checks passed: APK hash/runtime, retained names/visibility/cameras/Hue/screensaver/installed package set, Android identity, separate stored model, invalid-input rejection, diagnostic redaction and final web asset. The owner-reported sales model was entered separately on the test TV; it was not independently read from the hardware.
+
+## Previous 0.8.1 name/model correction
+
+That release changed TV-Info to use only the Android-reported `platformModel`; user-defined Home/dashboard names remain independent and preserved. The technical endpoint omits the configurable name. The edit field is labelled **Name im IP-Dashboard**.
 
 - 31 production web-script checks passed, including renamed heading with fixed technical model. The regression failed against the prior mixed row before the fix.
 - Browser preview verified the rename/model distinction, no console errors, and 320 px layout without overflow; relevant synthetic screenshots were refreshed.

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.2 — 2026-11-13
+
+- Restored the TV sales-model row alongside the immutable Android model identifier. The optional sales model is stored separately from both user-defined dashboard/Home names.
+- Added authenticated model entry under TV-Info, bounded to 80 characters; an empty entry clears it. No sales model is guessed from Android platform codes.
+- Model saves preserve unsaved screensaver edits. Diagnostics exclude all manually entered labels, including the sales model.
+- Passed 34 web checks and 12 physical installation/API checks; refreshed synthetic TV-info screenshots.
+
 ## 0.8.1 — 2026-11-13
 
 - Fixed TV-Info using the configurable dashboard name as the device model. Technical facts now show only the Android-reported model identifier; the redundant model row was removed.

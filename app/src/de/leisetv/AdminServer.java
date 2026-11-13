@@ -177,6 +177,7 @@ final class AdminServer implements Closeable {
             else if(method.equals("GET")&&path.equals("/api/screensaver/state"))result=ScreensaverConfig.view(context);
             else if(method.equals("POST")&&path.equals("/api/screensaver/configure"))result=ScreensaverConfig.save(context,new JSONObject(body));
             else if(method.equals("GET")&&path.equals("/api/device/state"))result=DeviceInfo.view(context);
+            else if(method.equals("POST")&&path.equals("/api/device/model"))result=DeviceInfo.saveModel(context,new JSONObject(body));
             else if(method.equals("GET")&&path.equals("/api/device/diagnostic"))result=DeviceInfo.diagnostic(context);
             else if(method.equals("POST")&&path.equals("/api/device/open")){
                 context.startActivity(new android.content.Intent(context,MainActivity.class).setAction(android.content.Intent.ACTION_MAIN).addCategory(android.content.Intent.CATEGORY_HOME).addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK|android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP));result.put("requested",true);
@@ -212,7 +213,7 @@ final class AdminServer implements Closeable {
         for(int i=0;i<cameras.length();i++)if(cameras.getJSONObject(i).optString("id").equals(library.optString("defaultCameraId")))camera=cameras.getJSONObject(i);
         return new JSONObject().put("display",display).put("camera",camera).put("cameras",cameras).put("defaultCameraId",library.optString("defaultCameraId"))
             .put("device",new JSONObject().put("manufacturer",android.os.Build.MANUFACTURER).put("model",android.os.Build.MODEL).put("displayName",p.getString("device_display_name",android.os.Build.MANUFACTURER+" "+android.os.Build.MODEL)))
-            .put("version","0.8.1");
+            .put("version","0.8.2");
     }
     private void saveCamera(JSONObject data)throws Exception{
         String name=data.optString("name").trim();if(name.isEmpty()||name.length()>80)throw new IOException("Kameraname fehlt");

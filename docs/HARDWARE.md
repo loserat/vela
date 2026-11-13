@@ -24,7 +24,7 @@ The owner-reported marketed model is **55PUS6581/12**. This number was not indep
 ## What was verified on this TV
 
 - Installation of the signed dashboard update with package identity preserved.
-- Runtime version 0.8.1 and installed APK hash.
+- Runtime version 0.8.2 and installed APK hash.
 - Local HTTPS settings, certificate continuity, login, and retained camera IDs.
 - Exact final responsive web asset, authenticated passive network snapshot and native network page/Back. Android reported WLAN with validated internet; no connectivity settings were changed.
 - Real Hue Bridge HTTPS identity, physical-button pairing, explicit selected-room persistence, live state/capability reads, and a controlled brightness adjustment with restoration.
@@ -72,3 +72,5 @@ The physical Philips supplies the active WLAN SSID after adding only `ACCESS_WIF
 Real UniFi-controller setup was deferred. The new inventory screenshots and API tests use synthetic data and are not evidence that the owner's Network controller, Protect recorder or NAS were queried.
 
 Version 0.8.1 shows the immutable Android identifier QM163E in the technical TV-info row. The free dashboard name is stored separately and is no longer labelled or presented as a technical model. This does not independently establish the owner-reported marketed model.
+
+Version 0.8.2 restores a separate sales-model row. On this TV it stores the owner-reported **55PUS6581/12**, while Android continues to report **QM163E**. Saving the model and rejecting an overlong value were verified through authenticated API reads/writes. Dashboard/Home names and existing configuration stayed unchanged. No new independent proof of the marketed model is implied.
