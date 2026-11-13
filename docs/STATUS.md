@@ -2,15 +2,23 @@
 
 [Documentation](README.md) · [Testing](TESTING.md) · [Earlier evidence](VALIDATION-HISTORY.md)
 
-**November 13, 2026 · 0.8.0 · experimental beta.** Installed behavior, fixture checks and real provider acceptance are distinguished below.
+**November 13, 2026 · 0.8.1 · experimental beta.** Installed behavior, fixture checks and real provider acceptance are distinguished below.
 
 ## Implemented and installed
 
 - Compact Home connection dot/name, reading the actual active SSID where Android permits it; no location permission or custom internet probe.
-- Editable persisted Home heading and web model label, with separate labels, bounded input, defaults and native text ellipsis.
+- Editable persisted Home heading and web dashboard name, with separate labels, bounded input, defaults and native text ellipsis.
 - Six web sections including TV information/maintenance, redacted diagnostic export, explicit dashboard-open request and screensaver styling controls.
 - Optional local UniFi Network inventory with explicit site choice, encrypted key/pinned certificate, upstream GET-only calls, bounded pagination and stale/unknown states.
 - Existing cameras, Hue, Ambilight, HDMI selection and automatic screensaver activation settings retained.
+
+## 0.8.1 name/model correction
+
+TV-Info now uses only the Android-reported `platformModel`; user-defined Home/dashboard names remain independent and preserved. The technical endpoint omits the configurable name. The edit field is labelled **Name im IP-Dashboard**.
+
+- 31 production web-script checks passed, including renamed heading with fixed technical model. The regression failed against the prior mixed row before the fix.
+- Browser preview verified the rename/model distinction, no console errors, and 320 px layout without overflow; relevant synthetic screenshots were refreshed.
+- Public and retained-key APK compilation/signature verification passed. Eight physical checks passed: installed APK hash, pinned HTTPS/version, saved names/visibility, cameras/Hue, saver/system activation, unchanged installed package set, immutable model metadata and the exact final web asset.
 
 ## Fresh 0.8.0 checks
 

@@ -24,7 +24,7 @@ The owner-reported marketed model is **55PUS6581/12**. This number was not indep
 ## What was verified on this TV
 
 - Installation of the signed dashboard update with package identity preserved.
-- Runtime version 0.8.0 and installed APK hash.
+- Runtime version 0.8.1 and installed APK hash.
 - Local HTTPS settings, certificate continuity, login, and retained camera IDs.
 - Exact final responsive web asset, authenticated passive network snapshot and native network page/Back. Android reported WLAN with validated internet; no connectivity settings were changed.
 - Real Hue Bridge HTTPS identity, physical-button pairing, explicit selected-room persistence, live state/capability reads, and a controlled brightness adjustment with restoration.
@@ -67,6 +67,8 @@ Use the actual device identifier in place of `DEVICE`. Keep raw device dumps pri
 
 ## Added 0.8.0 device facts
 
-The physical Philips supplies the active WLAN SSID after adding only `ACCESS_WIFI_STATE`; no location permission was added or granted. The small Home indicator contains that actual name. The public screenshot does not expose it. The custom web model label uses the owner-reported marketed model; the independently read platform identity remains QM163E. A friendly label is not hardware verification.
+The physical Philips supplies the active WLAN SSID after adding only `ACCESS_WIFI_STATE`; no location permission was added or granted. The small Home indicator contains that actual name. The public screenshot does not expose it. The friendly dashboard name is user-defined; the independently read platform identity remains QM163E. A friendly name is not hardware verification.
 
 Real UniFi-controller setup was deferred. The new inventory screenshots and API tests use synthetic data and are not evidence that the owner's Network controller, Protect recorder or NAS were queried.
+
+Version 0.8.1 shows the immutable Android identifier QM163E in the technical TV-info row. The free dashboard name is stored separately and is no longer labelled or presented as a technical model. This does not independently establish the owner-reported marketed model.

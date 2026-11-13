@@ -15,7 +15,7 @@
 | UniFi local adapter | 10 | Synthetic pinned HTTPS, explicit site, pagination, encrypted configuration, rejected host/site/key, stale/recovery and redaction |
 | Native UniFi inventory | 10 | Compact indicator, bounds, pagination, unknown/stale/recovery, Back and GET-only upstream calls |
 | Passive network UI | 6 | Home shortcut, Android source/caveat, bounds, initial focus, refresh and Back |
-| Web state/payload logic | 29 | Draft/title/model retention, blank stream payload, explicit room/site, inventory/stale/unknown states, saver styling, TV facts, cancelled remote open, duplicate submits, session expiry and errors |
+| Web state/payload logic | 31 | Draft/title/name retention, fixed technical model after rename, blank stream payload, explicit room/site, inventory/stale/unknown states, saver styling, TV facts, cancelled remote open, duplicate submits, session expiry and errors |
 
 For 0.8.0 the palette, web, UniFi adapter/inventory, network and screensaver suites were repeated. The most recent complete Hue/Ambilight/general navigation suite runs remain the 0.7.0 component evidence.
 
@@ -125,3 +125,5 @@ python3 tests/integration/network_ui.py --serial emulator-5580
 ```
 
 Use only the root-capable disposable emulator described above. The `unifi` task resets its synthetic UniFi configuration/cache, then exercises production adapter methods and encrypted storage against the loopback service. It never configures a real controller. The UI suite toggles fixture failures, checks historical states lose green and verifies the fixture received no production writes. Stop or reassign the previous Hue fixture's reverse port before running this suite; use the same fixture certificate on repeated setup runs. These checks are not real-controller acceptance.
+
+The 0.8.1 web regression was first run against 0.8.0 and failed at the mixed name/model row. After the fix, all 31 checks passed. The browser preview separately saved a different dashboard name and confirmed that TV-Info retained its synthetic Android model (`TEST`), including at 320 px without horizontal overflow. Other native suites retain their previously documented scope.

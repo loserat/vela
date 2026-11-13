@@ -6,7 +6,7 @@ A lightweight dashboard for Philips Android TV: cameras, Ambilight, Philips Hue,
 
 Install as an Android app and optionally assign it as Home.
 
-**0.8.0 · experimental beta.** Repository documentation is in English; the TV interface and local web settings are in German. The TV interface has no project name or logo; Android lists the app as **TV-Dashboard**.
+**0.8.1 · experimental beta.** Repository documentation is in English; the TV interface and local web settings are in German. The TV interface has no project name or logo; Android lists the app as **TV-Dashboard**.
 
 ## A look at the interface
 
@@ -36,7 +36,7 @@ Native screens captured in an isolated emulator with synthetic cameras, light st
 - Local Hue Bridge pairing and explicit room selection, with room power, supported colors, brightness, and room-scoped scenes. No Home Assistant is required.
 - HDMI discovery through Android's TV input service. Available CEC names identify devices; selecting a card hands the chosen input to the TV's own app.
 - Clock or color screensavers, date/dim options, preview, and access to the TV's activation settings.
-- Editable TV Home heading and web model label, persisted on the TV.
+- Editable TV Home heading and web dashboard name, persisted on the TV. TV-Info always uses the Android-reported model identifier, independently of those names.
 - A dedicated web TV-info/maintenance section for Android/app/hardware, uptime, storage, screensaver styling, redacted diagnostics and an explicit dashboard-open request.
 - Optional local UniFi Network inventory for adopted Access Points, switches and gateway, with explicit site selection, paginated reads and honest stale/unknown states. Real-controller acceptance is pending. [UniFi setup](docs/NETWORK.md#local-unifi-network-inventory).
 - Responsive local HTTPS settings for Home, cameras, Hue pairing/room selection, HDMI inventory, network status and TV information, with PIN login and protected sessions. Camera/Hue configuration stays encrypted on the TV.
@@ -63,7 +63,7 @@ Requirements: Python 3, `curl`, JDK 21, Android SDK platform `android-34`, Build
 python3 app/fetch_deps.py
 python3 tests/check_palette.py
 python3 app/build.py
-adb -s DEVICE install -r dist/TV-Dashboard-0.8.0.apk
+adb -s DEVICE install -r dist/TV-Dashboard-0.8.1.apk
 adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -77,7 +77,7 @@ Replace `DEVICE` with the explicitly selected authorized device. Preserve your s
 | Web settings → **Kameras** | Add local UniFi Protect RTSPS sources; existing saved links remain unchanged when a link field is left empty. |
 | **Hue → Raum & Bridge** | Enter the bridge address, press its physical button, connect, then choose and confirm the TV room. No whole-home group is selected automatically. |
 | Home network shortcut / Web settings → **Netzwerk** | Read the TV connection type and Android internet validation; no UniFi account is required. |
-| Web → **Startseite** | Save the Home heading and model label; an empty name restores the default. |
+| Web → **Startseite** | Save the Home heading and dashboard name; an empty name restores the default. |
 | Web → **TV-Info** | Read device facts, configure screensaver styling, download a redacted diagnostic, or explicitly request opening the dashboard. |
 | Web → **Netzwerk → UniFi Network** | Enter a local Network API key, validate the connection, then explicitly choose the site. Protect credentials are not reused. |
 | **Geräte** | Select a device/HDMI card. Opening the page only discovers sources; it does not switch them. |
@@ -85,7 +85,7 @@ Replace `DEVICE` with the explicitly selected authorized device. Preserve your s
 
 ## Validation and limits
 
-The 0.8.0 increment passed **53** production palette checks, **29** web state/payload checks, **10** UniFi adapter fixture checks, **10** native inventory checks, **6** passive network UI checks and **11** screensaver checks. Earlier Hue/Ambilight/navigation coverage is retained separately in the status/history documents. These are scoped results, not a complete device certification. Real UniFi-controller acceptance is pending.
+The 0.8.1 fix passed **31** web state/payload checks, including renaming without changing technical model information. The previous 0.8.0 increment passed **53** production palette checks, **10** UniFi adapter fixture checks, **10** native inventory checks, **6** passive network UI checks and **11** screensaver checks. Earlier Hue/Ambilight/navigation coverage is retained separately in the status/history documents. These are scoped results, not a complete device certification. Real UniFi-controller acceptance is pending.
 
 Slow, stale and failing Hue replies are included, as are pixel comparisons outside the brightness slider. [Reproduce the tests](docs/TESTING.md). [Current device results and known limits](docs/STATUS.md).
 

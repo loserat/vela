@@ -72,7 +72,7 @@ The single local HTML asset has six accessible tab panels, local CSS/system font
 
 | Authenticated local route | Behavior |
 | --- | --- |
-| GET `/api/device/state` | Technical TV facts plus friendly model label |
+| GET `/api/device/state` | Technical TV facts with Android model identifier; no friendly name |
 | GET `/api/device/diagnostic` | Redacted technical/network whitelist; excludes display label, IP, SSID, provider/camera data and credentials |
 | POST `/api/device/open` | Requests Main/Home through a standard Android intent; does not reboot the TV or restart its process |
 | GET `/api/screensaver/state` | Current app style/date/dim |
@@ -84,3 +84,5 @@ The single local HTML asset has six accessible tab panels, local CSS/system font
 | POST `/api/display` | Existing visibility flags plus optional bounded `homeTitle`/`deviceName`; validation completes before a single preference commit |
 
 Upstream UniFi has no mutation endpoint in this app. The local administration POSTs still use existing session/origin/content-type guards. A browser confirmation on the open action is a UI affordance, not a substitute for API authentication.
+
+In 0.8.1, `/api/state.device.displayName` remains the configurable heading for compatibility with stored preferences. `/api/device/state` deliberately omits `displayName`; TV-Info reads `platformModel` from Android. The diagnostic shares this technical-only metadata. No stored names or keys are migrated or reset.

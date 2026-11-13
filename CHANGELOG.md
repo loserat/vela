@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.1 — 2026-11-13
+
+- Fixed TV-Info using the configurable dashboard name as the device model. Technical facts now show only the Android-reported model identifier; the redundant model row was removed.
+- Removed the friendly name from the technical device endpoint and renamed the editable field to “Name im IP-Dashboard”. Stored names are preserved.
+- Added rename regressions, reviewed browser/mobile behavior and refreshed the relevant screenshots.
+
 ## 0.8.0 — 2026-11-13
 
 - Replaced the large Home network card with a quiet dot and active WLAN name when available; no location permission was added.
