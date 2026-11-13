@@ -24,7 +24,7 @@ The owner-reported marketed model is **55PUS6581/12**. This number was not indep
 ## What was verified on this TV
 
 - Installation of the signed dashboard update with package identity preserved.
-- Runtime version 0.6.0 and installed APK hash.
+- Runtime version 0.6.1 and installed APK hash.
 - Local HTTPS settings, certificate continuity, login, and retained camera IDs.
 - Real Hue Bridge HTTPS identity, physical-button pairing, explicit selected-room persistence, and live state/capability reads; lamp actions are still pending.
 - Android registration of the screensaver service, native settings page, Philips fallback explanation, and unchanged activation settings; automatic idle activation is not yet verified.

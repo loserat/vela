@@ -4,7 +4,7 @@
 
 **ATPD** steht für *Ambilight TV Private Dashboard*. Eine schlanke, fernbedienbare Startoberfläche für Android TV mit lokalen Web-Einstellungen und Kameraübersicht.
 
-**Stand: 0.6.0 · experimentelle Beta. Die letzte Geräteprüfung des direkten Kamerawechsels ist noch offen.** Das Dashboard ist eine Android-App und kann als Home-Oberfläche eingestellt werden.
+**Stand: 0.6.1 · experimentelle Beta. Die letzte Geräteprüfung des direkten Kamerawechsels ist noch offen.** Das Dashboard ist eine Android-App und kann als Home-Oberfläche eingestellt werden.
 
 Diese Version enthält Startoberfläche, Kameras, lokale Ambilight-Bedienung, Hue-Raumsteuerung und Bildschirmschoner-Einstellungen. Die unfertige Klima-Anbindung ist nicht enthalten.
 
@@ -19,6 +19,8 @@ Echte native Android-Ansichten aus dem separaten Simulator. Der angezeigte Licht
 ![Startseite mit Kameras, Ambilight, Hue, Fernsehen und System](docs/images/home.png)
 
 ![Ambilight mit 16 Farben, aktiver Auswahl und Helligkeitsregler](docs/images/ambilight.png)
+
+![Hue-Raumsteuerung mit Farbauswahl, Lichtvorschau und Helligkeit](docs/images/hue.png)
 
 ![Bildschirmschoner-Einstellungen mit Uhr, Farbfläche und Vorschau](docs/images/screensaver.png)
 
@@ -66,7 +68,7 @@ python3 app/fetch_deps.py
 python3 app/build.py
 ```
 
-Der erste Schritt lädt das versionsgebundene VLC-SDK 3.7.7 vom Maven-Central-Repository und prüft dessen SHA256-Prüfsumme. Der zweite baut und signiert die APK lokal. Das Ergebnis liegt unter `dist/TV-Dashboard-0.6.0.apk`.
+Der erste Schritt lädt das versionsgebundene VLC-SDK 3.7.7 vom Maven-Central-Repository und prüft dessen SHA256-Prüfsumme. Der zweite baut und signiert die APK lokal. Das Ergebnis liegt unter `dist/TV-Dashboard-0.6.1.apk`.
 
 Beim ersten Build wird ein eigener lokaler Test-Signierschlüssel erzeugt. Er bleibt lokal und wird durch `.gitignore` ausgeschlossen. Eine mit einem anderen Schlüssel signierte Installation lässt sich damit nicht überschreiben. Einen vorhandenen eigenen Schlüssel kann man über `NICKOS_KEYSTORE` und dessen Kennwort über `NICKOS_SIGN_PASSWORD` verwenden. Der erwartete Schlüsselalias ist aktuell `leisetv`.
 
@@ -75,7 +77,7 @@ Beim ersten Build wird ein eigener lokaler Test-Signierschlüssel erzeugt. Er bl
 Für ein bereits autorisiertes Android-Gerät:
 
 ```sh
-adb install -r dist/TV-Dashboard-0.6.0.apk
+adb install -r dist/TV-Dashboard-0.6.1.apk
 adb shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -103,7 +105,9 @@ Die Anbindung unterstützt derzeit einen Philips-JointSpace-v6-Dienst ohne Anmel
 
 ## Philips Hue
 
-Auf der Startseite **Hue** öffnen, die lokale IPv4-Adresse der Hue Bridge eingeben, den Knopf auf der Bridge drücken und **Bridge verbinden** wählen. Danach den TV-Raum auswählen und **Diesen Raum verwenden** bestätigen. Es wird kein Raum und keine Gruppe für das gesamte Zuhause automatisch gewählt.
+Auf der Startseite **Hue → Raum & Bridge** öffnen, die lokale IPv4-Adresse der Hue Bridge eingeben, den Knopf auf der Bridge drücken und **Bridge verbinden** wählen. Danach den TV-Raum auswählen und **Diesen Raum verwenden** bestätigen. Es wird kein Raum und keine Gruppe für das gesamte Zuhause automatisch gewählt.
+
+Die tägliche Bedienung passt auf einen Bildschirm: 16 Farbkacheln mit bestätigter Auswahl, schematische Lichtvorschau, Schalter und Helligkeitsregler für Fernbedienung und Berührung. Die Bridge-Einrichtung liegt in einem eigenen Dialog; Szenen erscheinen nur, wenn der gewählte Raum sie liefert. Beim Dimmen bleibt die übrige Seite ruhig.
 
 Schalten, Helligkeit, unterstützte Farben und Szenen werden lokal über HTTPS gesteuert. Das Bridge-Zertifikat wird nach der Einrichtung fest zugeordnet; der Zugangsschlüssel liegt verschlüsselt auf dem TV und erscheint nicht in API-Antworten. Die verfügbaren Farben hängen von den Lampen ab. Das ist eine manuelle Raumsteuerung; Hue-Entertainment-/Videosynchronisierung ist nicht enthalten. Home Assistant wird nicht benötigt.
 
@@ -117,9 +121,11 @@ Schalten, Helligkeit, unterstützte Farben und Szenen werden lokal über HTTPS g
 
 Die neue Ambilight-Seite hat 14 Bedienungsprüfungen im Android-Simulator bestanden; 53 Prüfungen laufen gegen die produktiven Klassen für Farbpalette und Hue-Wertumrechnung. Nach der Korrektur der Farbskala wurden die vom TV gemeldeten LED-RGB-Werte für Rot, Grün, Blau und Rosa am Gerät geprüft. Das ist keine kalibrierte Messung der tatsächlichen Raumbeleuchtung.
 
-Version 0.6.0 ist auf dem echten Philips installiert. Geprüft wurden APK-Prüfsumme, HTTPS-/PIN-Anmeldung, Kamera-IDs, unveränderte Bildschirmschoner-Aktivierung, Hue-Bridge-Identität und die Android-Dienstregistrierung. Anschließend wurden die echte Hue-Kopplung per Knopf, die vom Nutzer gewählte und gespeicherte Raumauswahl sowie Zustands- und Funktionsabrufe geprüft. Tatsächliche Lampenänderungen und automatische Bildschirmschoner-Aktivierung am TV stehen noch aus. Im separaten Simulator mit lokalen Ersatzdiensten bestanden 15 Hue-Controller-Prüfungen und elf Bildschirmschoner-Prüfungen.
+Version 0.6.1 ist auf dem echten Philips installiert. Geprüft wurden APK-Prüfsumme, HTTPS-/PIN-Anmeldung, Kamera-IDs, unveränderte Bildschirmschoner-Aktivierung, Hue-Bridge-Identität und die Android-Dienstregistrierung. Anschließend wurden die echte Hue-Kopplung per Knopf, die vom Nutzer gewählte und gespeicherte Raumauswahl sowie Zustands- und Funktionsabrufe geprüft. Tatsächliche Lampenänderungen und automatische Bildschirmschoner-Aktivierung am TV stehen noch aus. Im separaten Simulator mit lokalen Ersatzdiensten bestanden 15 Hue-Controller-Prüfungen und elf Bildschirmschoner-Prüfungen.
 
-Der Quellstand wurde lokal gebaut und die APK-Signatur geprüft. Die bisherigen Prüfungen von Version 0.4 umfassen 15 ursprüngliche Web-/Zugriffsprüfungen und 14 Prüfungen der erweiterten Kameraverwaltung; diese Zahlen stehen nicht für einen neuen vollständigen Geräteprüflauf von Version 0.6.0. Einzelne echte Kamerabilder wurden am Zielgerät angesehen.
+Die neue Hue-Ansicht hat 21 Oberflächen-/Bedienungsprüfungen im Simulator bestanden: normale Home-Navigation, Fokus bei Berührung und Fernbedienung, getrennte Einrichtung, raumbezogene Szenen, CT-/XY-Auswahl, unveränderte Bildpunkte außerhalb des Helligkeitsreglers, Fehler und Wiederherstellung.
+
+Der Quellstand wurde lokal gebaut und die APK-Signatur geprüft. Die bisherigen Prüfungen von Version 0.4 umfassen 15 ursprüngliche Web-/Zugriffsprüfungen und 14 Prüfungen der erweiterten Kameraverwaltung; diese Zahlen stehen nicht für einen neuen vollständigen Geräteprüflauf von Version 0.6.1. Einzelne echte Kamerabilder wurden am Zielgerät angesehen.
 
 Die letzte automatische Geräteprüfung nach der Kamerawechselkorrektur wurde nicht erfolgreich abgeschlossen. Daher sind Kamerawechsel, Rückkehr, längerer Betrieb, Bildlatenz, Verhalten nach Neustart und Standby weiterhin zu prüfen. Siehe [Prüfstand (Englisch)](docs/STATUS.md).
 

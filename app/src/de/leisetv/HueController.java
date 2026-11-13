@@ -55,6 +55,7 @@ final class HueController {
         JSONObject state=group.optJSONObject("state"),action=group.optJSONObject("action");if(action==null)action=new JSONObject();
         result.put("roomName",group.optString("name")).put("on",state!=null?state.optBoolean("any_on"):action.optBoolean("on")).put("allOn",state!=null&&state.optBoolean("all_on"))
             .put("brightness",Math.max(1,Math.round(action.optInt("bri",1)*100f/254))).put("colorSupported",color).put("temperatureSupported",temperature).put("dimmingSupported",dimming)
+            .put("colorMode",action.optString("colormode","hs")).put("colorTemperature",action.optInt("ct",0))
             .put("hue8",Math.round(action.optInt("hue",0)*255f/65535)).put("saturation8",Math.round(action.optInt("sat",0)*255f/254));
         JSONObject allScenes=(JSONObject)api(cfg,"/scenes","GET",null);JSONArray scenes=new JSONArray();Iterator<String> keys=allScenes.keys();
         while(keys.hasNext()){String sceneId=keys.next();JSONObject scene=allScenes.optJSONObject(sceneId);if(scene!=null&&id.equals(scene.optString("group")))scenes.put(new JSONObject().put("id",sceneId).put("name",scene.optString("name")));}

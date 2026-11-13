@@ -81,6 +81,14 @@ The Philips resolves `android.settings.DREAM_SETTINGS` to its `IgnoreIntents` ac
 
 A Python HTTPS client could not negotiate the emulator administration server's TLS connection on Android 14. Hue integration was therefore tested directly using signed Android instrumentation; emulator API-over-HTTPS compatibility is unresolved. Physical Android 8 HTTPS access was verified successfully. This is not a claim of compatibility with other TV hardware.
 
+## Hue interface update (0.6.1)
+
+The everyday Hue page now matches the Ambilight layout: one fixed screen, 16 color cards, visible acknowledged selection, schematic light preview, power, and a remote/touch brightness slider. Bridge/room setup is in a separate dialog and empty scene controls are hidden. Initial UI checks identified a touch-mode focus restoration issue; explicit focus restoration fixed it.
+
+The final emulator run passed 21 interaction checks covering read-only page entry through normal Home navigation, the complete non-scrolling layout, separate setup, selected-color focus, 16-bit color commands, stable pixels outside the brightness slider, retained focus/enabled controls, one final touch-drag command, CT/XY selection behavior, room-scoped scenes, and connection failure/recovery. These use a local TLS fixture, not real room lamp changes. The production Java palette/conversion suite still passes 53 checks. Both TV builds compile and pass signature verification.
+
+Version 0.6.1 was installed on the physical Philips. Six installation checks passed for the exact APK hash, HTTPS/PIN/runtime version, retained camera IDs, retained Hue pairing/selected room, unchanged screensaver activation, and safe color-mode metadata. Five native-page checks passed for the saved room, all 16 visible color cards, enabled brightness, no scrolling/setup fields, and controls fitting the real Android display. The actual page was visually inspected; no real lamp-changing commands were part of these checks.
+
 ## Not yet fully verified
 
 The subsequent automated check of opening a camera did not complete successfully. No successful complete device test run was recorded for the latest camera-switching fix. TV testing was then paused at the user's request.

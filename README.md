@@ -4,7 +4,7 @@ English · [Deutsch](README.de.md)
 
 **ATPD** stands for *Ambilight TV Private Dashboard*. A lightweight, remote-controlled home screen for Android TV with local web settings and a camera overview.
 
-**Version: 0.6.0 · experimental beta. The final device check for switching directly between cameras is still pending.** The dashboard is an Android app that can be assigned as the Home app.
+**Version: 0.6.1 · experimental beta. The final device check for switching directly between cameras is still pending.** The dashboard is an Android app that can be assigned as the Home app.
 
 This version includes the launcher, cameras, local Ambilight controls, room-scoped Hue controls, and screensaver settings. The unfinished climate integration is excluded.
 
@@ -19,6 +19,8 @@ Actual native Android screens rendered in the isolated emulator. The displayed l
 ![Home screen: cameras, Ambilight, Hue, TV and system settings](docs/images/home.png)
 
 ![Ambilight controls with 16 colors, current selection and brightness slider](docs/images/ambilight.png)
+
+![Hue room controls with color selection, light preview and brightness](docs/images/hue.png)
 
 ![Screensaver settings with clock, color style and preview](docs/images/screensaver.png)
 
@@ -68,7 +70,7 @@ python3 app/fetch_deps.py
 python3 app/build.py
 ```
 
-The first step downloads the pinned VLC SDK 3.7.7 from Maven Central and verifies its SHA256 checksum. The second builds and signs the APK locally. The output is `dist/TV-Dashboard-0.6.0.apk`.
+The first step downloads the pinned VLC SDK 3.7.7 from Maven Central and verifies its SHA256 checksum. The second builds and signs the APK locally. The output is `dist/TV-Dashboard-0.6.1.apk`.
 
 The first build generates a local test signing key. It stays on your machine and is excluded by `.gitignore`. An APK signed with this key cannot update an installation signed with a different key. To use your own existing key, set `NICKOS_KEYSTORE` and provide its password through `NICKOS_SIGN_PASSWORD`. The currently expected key alias is `leisetv`.
 
@@ -77,7 +79,7 @@ The first build generates a local test signing key. It stays on your machine and
 For an Android device that has already authorized your development machine:
 
 ```sh
-adb install -r dist/TV-Dashboard-0.6.0.apk
+adb install -r dist/TV-Dashboard-0.6.1.apk
 adb shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -105,7 +107,9 @@ The adapter currently targets an unauthenticated Philips JointSpace v6 service o
 
 ## Philips Hue
 
-Open **Hue** on the home screen, enter the local IPv4 address of a Hue Bridge, press its physical link button, and choose **Bridge verbinden**. Select the TV room and confirm **Diesen Raum verwenden**. No room or whole-home group is selected automatically.
+Open **Hue → Raum & Bridge** on the home screen, enter the local IPv4 address of a Hue Bridge, press its physical link button, and choose **Bridge verbinden**. Select the TV room and confirm **Diesen Raum verwenden**. No room or whole-home group is selected automatically.
+
+The daily controls fit on one screen: 16 color tiles with an acknowledged selection, a schematic light preview, power, and a remote/touch brightness slider. Bridge setup lives in a separate dialog; scenes appear only when the selected room provides them. Brightness input keeps the rest of the page stable.
 
 Room power, brightness, supported colors, and scenes are controlled locally over HTTPS. The bridge certificate is pinned after setup; the application key is stored encrypted on the TV and excluded from API replies. Color-only controls depend on the bulbs in the selected room. This is manual room control, not Hue Entertainment/video synchronization. Home Assistant is not required.
 
@@ -119,9 +123,11 @@ Open **System → Bildschirmschoner**. Choose **Uhr** (clock) or **Farbfläche**
 
 The redesigned Ambilight page passed 14 interaction checks in an Android emulator, and 53 production-class regression checks cover the palette and Hue value conversion. Hardware probes verified the processed LED RGB values for red, green, blue, and pink after correcting the protocol scaling. These are device-reported values, not a calibrated measurement of the room lighting.
 
-Version 0.6.0 was installed on the physical Philips; APK hash, HTTPS/PIN login, camera IDs, unchanged screensaver activation, Hue Bridge identity, and Android dream-service registration were checked. Physical-button Hue pairing, user-selected room persistence, and live state/capability reads were subsequently verified. Actual lamp changes and automatic screensaver activation on the TV remain pending. Fifteen Hue controller checks and eleven screensaver checks passed using an isolated emulator and local fixtures.
+Version 0.6.1 was installed on the physical Philips; APK hash, HTTPS/PIN login, camera IDs, unchanged screensaver activation, Hue Bridge identity, and Android dream-service registration were checked. Physical-button Hue pairing, user-selected room persistence, and live state/capability reads were subsequently verified. Actual lamp changes and automatic screensaver activation on the TV remain pending. Fifteen Hue controller checks and eleven screensaver checks passed using an isolated emulator and local fixtures.
 
-The source has been built locally and the APK signature verified. Earlier checks of version 0.4 included 15 original web/access checks and 14 checks of the expanded camera management; these counts do not represent a new complete device test run of version 0.6.0. Individual live camera images have been viewed on the target device.
+The Hue redesign passed 21 UI/interaction checks in the emulator, including normal Home navigation, touch/remote focus, setup separation, room-scoped scenes, CT/XY selection handling, stable pixels outside the brightness slider, errors, and recovery.
+
+The source has been built locally and the APK signature verified. Earlier checks of version 0.4 included 15 original web/access checks and 14 checks of the expanded camera management; these counts do not represent a new complete device test run of version 0.6.1. Individual live camera images have been viewed on the target device.
 
 The last automated device check after the camera-switching fix did not complete successfully. Camera switching, return navigation, extended operation, image latency, restart behavior, and standby still need verification. See [Validation status](docs/STATUS.md).
 
