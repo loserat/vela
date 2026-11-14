@@ -11,7 +11,7 @@
 | [Network](NETWORK.md) | Passive TV connectivity, Android validation and local UniFi boundaries |
 | [Testing](TESTING.md) | Reproducible isolated fixtures and interpretation of test evidence |
 | [Current status](STATUS.md) | Current validation and outstanding checks |
-| [Hardware](HARDWARE.md) | Live device properties, provenance and compatibility limits |
+| [Hardware](HARDWARE.md) | Deployment snapshot for both TVs, device properties, provenance and compatibility limits |
 | [Proposed extensions](ROADMAP.md) | Future ideas, dependencies, suggested order and acceptance criteria; not implemented features |
 | [Changelog](../CHANGELOG.md) | Changes by version |
 | [Validation history](VALIDATION-HISTORY.md) | Earlier checks, failed attempts and limitations retained through 0.6.1 |

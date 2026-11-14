@@ -4,6 +4,28 @@
 
 First TV checked on November 13, 2026; a second TV was checked on November 14, 2026. These are live device observations, not a general compatibility certification.
 
+## Deployment snapshot after the second-TV work
+
+This summarizes the last verified installations; it is not a new live reading or an automatic update record.
+
+| Area | First TV | Second TV |
+| --- | --- | --- |
+| Platform | QM163E, Android 8 / API 26 | TPM191E, Android 12 / API 31 |
+| Last verified installed dashboard | 0.11.2 / version code 20 | 0.11.6 / version code 24 |
+| Scope of the second-TV work | Not contacted or updated during the 0.11.3–0.11.6 work | Installed and checked in place with its retained signing identity |
+| Home button | Earlier results retain their recorded scope | Physical remote confirmed; dashboard is Home, stock Google launcher disabled only for user 0 and retained for recovery |
+| Ambilight | Earlier fixed-color/device checks below | Manual colors and brightness technically checked and confirmed by the owner |
+| Optional integrations | Existing setup was not copied or changed | Hue and UniFi disabled; cameras remain hidden |
+| ARD / ZDF shortcuts | New opt-in tiles not installed or verified here | Both enabled; existing apps opened to catalogue/start pages |
+
+The second TV's last observed Home has **Ambilight, ARD Mediathek and ZDF Mediathek** in the upper row, with **Fernsehen, Geräte and System** below. Its theme, names, fonts and original relative tile order were retained. No additional media app was installed. No sign-in was completed or programme started by the agent.
+
+The work covered installation/debugging access, Android-12 HTTPS repair, owner-approved Home assignment, the manual Ambilight adapter, per-TV integration switches and Mediathek shortcuts. Detailed test results and limitations follow below and in [Current status](STATUS.md). Setup and the recorded Home recovery commands are in [Installation](INSTALLATION.md#home-assignment).
+
+The current repository is **0.11.6**. Publishing it does not update the first TV. Before a later update there, recheck the selected device, installed package/signature and retained configuration; then validate the updated features on that actual TV. Do not treat second-TV results as acceptance of the first TV's new version. Standby/reboot persistence, actual Mediathek playback and the other outstanding checks remain open.
+
+GitHub preserves the public source, guides, test helpers and reviewed synthetic images. Device settings, signing keys, provider credentials and raw evidence stay private; the repository is not a portable backup of either TV's app data.
+
 ## Second physical TV: partial Android 12 coverage
 
 The second TV was checked directly through its authorized ADB connection on **November 14, 2026**. The following fields come from the saved device baseline and installation/API reports, rather than an editable dashboard name.

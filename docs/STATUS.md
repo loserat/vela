@@ -6,6 +6,10 @@
 
 The [roadmap](ROADMAP.md) separately records proposed extensions. Version 0.11.6 is built and installed on the second TV. The source/documentation publication does not update either TV or extend the recorded device acceptance.
 
+## Continuing after the second-TV validation
+
+The [deployment snapshot](HARDWARE.md#deployment-snapshot-after-the-second-tv-work) records the final second-TV arrangement, settings and the different installed versions: first TV 0.11.2, second TV 0.11.6. Source and documentation were saved on GitHub in commit `cc37c11`; the subsequent documentation handoff adds no application change or device test. Neither TV was updated, contacted or reconfigured for that handoff. Recheck the actual target before continuing device work.
+
 ## November 14 publication checks
 
 The public 0.11.6 APK build/signature, 104 web checks, 53 palette checks, 29 loopback Ambilight protocol checks and 1,290,240 layout configurations were repeated successfully. The staged repository passed 73 ignore/publication cases with 27 exact reviewed image exceptions; 117 index entries contained no ignored artifacts or private-key blocks. Gitleaks 8.30.1 found no secrets in the staged source/documentation snapshot. Local Markdown links were checked. These checks do not constitute a guarantee against every possible private value.
