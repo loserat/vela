@@ -151,7 +151,7 @@ public final class HueActivity extends Activity {
             String label=selectedRoom()?state.optString("roomName")+" · "+(state.optBoolean("on")?UiText.t("Eingeschaltet"):UiText.t("Ausgeschaltet")):loaded?UiText.t("Raum & Bridge einrichten"):UiText.t("Verbindung wird geprüft");TvStyle.text(c,paint,label,99,165,25,TvStyle.MUTED,false);TvStyle.text(c,paint,UiText.t("Farbe wählen"),98,319,26,TvStyle.INK,true);
             if(!error.isEmpty())TvStyle.text(c,paint,error,98,868,23,0xffF1B9A8,false);paint.setColor(0xff293D40);c.drawRect(96,892,1824,893,paint);TvStyle.text(c,paint,busy?UiText.t("Wird übernommen …"):UiText.t("OK auswählen   ·   Pfeiltasten bewegen"),308,955,21,TvStyle.MUTED,false);c.restore();}
     }
-    @Override protected void onResume(){super.onResume();active=true;busy=false;perform(null,null);}
+    @Override protected void onResume(){super.onResume();if(!IntegrationSettings.hue(this)){finish();return;}active=true;busy=false;perform(null,null);}
     @Override protected void onPause(){active=false;generation++;cancelBrightness();if(setupDialog!=null)setupDialog.dismiss();super.onPause();}
     @Override protected void onDestroy(){worker.shutdownNow();super.onDestroy();}
 }

@@ -16,13 +16,13 @@
 | [Changelog](../CHANGELOG.md) | Changes by version |
 | [Validation history](VALIDATION-HISTORY.md) | Earlier checks, failed attempts and limitations retained through 0.6.1 |
 
-## Current application: 0.11.2
+## Current application: 0.11.6
 
 The TV provides native Home, cameras, Ambilight, Hue, HDMI selection and System screens. The local web dashboard has eight sections:
 
 | Web section | Settings and information |
 | --- | --- |
-| Startseite | TV heading, dashboard name and camera/clock/date visibility |
+| Startseite | TV heading/name, camera/clock/date visibility, ARD/ZDF app shortcuts and per-TV Hue/UniFi switches |
 | Design | Themes, tile order/layout, shared language and separate clock/text fonts |
 | Shortcuts | Four colour-key assignments, draft preview and draft-only default reset |
 | Kameras | Camera names, protected stream setup and default camera |
@@ -35,9 +35,9 @@ The default interface language is German, with a shared English option. Reposito
 
 ## Reading the evidence
 
-Implemented behavior, local fixture/browser testing and physical verification are separate claims. Version 0.11.2 has recorded 78 web checks and nine physical installation/API checks; earlier native/provider results retain their release-specific scope. [Current status](STATUS.md) lists the remaining acceptance work. A documentation-only change does not rerun those checks or update a TV.
+Implemented behavior, local fixture/browser testing and physical verification are separate claims. Version 0.11.6 passed 104 web checks, 1,290,240 geometry configurations and 20 second-TV API/native assertions for app shortcuts. The 0.11.5 integration switches separately passed 23 final second-TV assertions. The earlier 0.11.4 pass covered 29 Ambilight protocol checks, 53 palette checks, 24 GUI and six installation/API assertions. Version 0.11.3 separately fixed Android-12 HTTPS. Earlier native/provider/browser results retain their release-specific scope. [Current status](STATUS.md) lists remaining acceptance work. A documentation-only change does not rerun those checks or update a TV.
 
-The [roadmap](ROADMAP.md) records eleven discussed extensions, including direct favourites, lighting presets and combined actions. It is a planning document with no promised delivery dates. Completed changes remain in the [changelog](../CHANGELOG.md).
+The [roadmap](ROADMAP.md) records eleven discussed extensions, including general direct favourites, lighting presets and combined actions. The bounded ARD/ZDF app tiles and per-TV integration switches have since been delivered; the remaining proposals have no promised delivery dates. Completed changes remain in the [changelog](../CHANGELOG.md).
 
 ## Publication boundary
 

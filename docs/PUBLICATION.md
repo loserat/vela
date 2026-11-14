@@ -23,7 +23,7 @@ The legacy camera-configuration filename remains intentional because the existin
 
 Each published image has one exact `!/docs/images/...` entry. Do not replace this list with an exception allowing every image in the directory. Review new screenshots for camera content, network details, credentials and other personal data before adding a new exception and staging that image.
 
-The audit preserved all 26 existing image exceptions. Uppercase or mixed-case image extensions do not bypass the default exclusion. Native XML drawable resources are unaffected.
+The November 13 audit preserved all 26 existing image exceptions. The November 14 publication adds one reviewed synthetic Mediathek settings capture, bringing the exact allowlist to 27 images. No photograph or screenshot from the second physical TV is published. Uppercase or mixed-case image extensions do not bypass the default exclusion. Native XML drawable resources are unaffected.
 
 ## Reproduce the checks
 
@@ -37,6 +37,10 @@ git diff --cached --check
 The Python check uses Git's real pattern matching with `--no-index`, case-sensitive matching and no global ignore file, so a machine-wide rule cannot hide a missing repository rule. It uses synthetic paths; it creates no credential or package files. It checks excluded artifacts, important source/template paths, exact image exceptions, tracked files matching ignore rules and private-key blocks in index content. It never reads the ignored local signing key or raw setup files.
 
 At the November 13, 2026 audit, 165 existing ignored files were build/dependency/package output, Python caches or the local signing file. No tracked file matched the sensitive/generated categories or ignore rules examined. These are checkout/index observations, not a new TV test or a certification of the entire Git history.
+
+## November 14 source publication
+
+The 0.11.6 staged tree passed 73 synthetic ignore-rule cases, with 27 reviewed images and 117 index entries checked. Gitleaks 8.30.1 scanned the exact staged file contents with full redaction enabled and found no secrets. The reviewed addition is a synthetic ARD/ZDF settings card; actual TV screenshots, login pages and raw device reports remain outside the repository. Build output and the private installation variant are excluded. This scan is separate from the earlier reachable-history audit and does not rewrite or remove any history.
 
 ## Scope and limits
 

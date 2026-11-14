@@ -33,6 +33,7 @@ final class UniFiController {
         for(int i=0;i<raw.length();i++){JSONObject item=raw.getJSONObject(i);String id=item.getString("id");if(!id.matches("[A-Za-z0-9_-]{1,80}"))throw new Failure("site");result.put(new JSONObject().put("id",id).put("name",text(item.optString("name","Standort"),80)));}return result;
     }
     static synchronized JSONObject configure(Context context,JSONObject input)throws Exception{
+        IntegrationSettings.requireUniFi(context);
         String address=host(input.optString("host").trim()),key=input.optString("key").trim();JSONObject old=config(context);
         if(key.isEmpty()&&address.equals(old.optString("host")))key=old.optString("key");
         if(key.length()<16||key.length()>512||!key.matches("[!-~]+"))throw new Failure("key");
@@ -46,9 +47,11 @@ final class UniFiController {
         CameraConfig.saveNamed(context,STORE,cfg);cached=setup(cfg).put("sites",available).put("checkedAt",System.currentTimeMillis());attemptedAt=0;return view(context,false);
     }
     static synchronized JSONObject select(Context context,String id)throws Exception{
+        IntegrationSettings.requireUniFi(context);
         JSONObject cfg=config(context);if(!cfg.has("key"))throw new Failure("key");JSONArray available=sites(cfg,null);boolean found=false;for(int i=0;i<available.length();i++)found|=id.equals(available.getJSONObject(i).getString("id"));if(!found)throw new Failure("site");cfg.put("siteId",id);CameraConfig.saveNamed(context,STORE,cfg);cached=null;attemptedAt=0;return view(context,true);
     }
     static synchronized JSONObject view(Context context,boolean force)throws Exception{
+        IntegrationSettings.requireUniFi(context);
         JSONObject cfg=config(context);if(!cfg.has("key"))return setup(cfg);
         long now=System.currentTimeMillis();if(cached!=null&&now-attemptedAt<(force?2000:30000))return new JSONObject(cached.toString());attemptedAt=now;
         try{

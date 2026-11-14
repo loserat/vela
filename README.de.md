@@ -6,7 +6,7 @@ Eine schlanke Startoberfläche für Philips Android TV: Kameras, Ambilight, Phil
 
 Als Android-App installieren und bei Bedarf als Home-Oberfläche zuordnen.
 
-**0.11.2 · experimentelle Beta.** Die Repository-Dokumentation ist auf Englisch; TV-Oberfläche und lokale Web-Einstellungen starten auf Deutsch und lassen sich gemeinsam auf Englisch umstellen. Am TV erscheinen kein Projektname und kein Logo. In Android heißt die App **TV-Dashboard**.
+**0.11.6 · experimentelle Beta.** Die Repository-Dokumentation ist auf Englisch; TV-Oberfläche und lokale Web-Einstellungen starten auf Deutsch und lassen sich gemeinsam auf Englisch umstellen. Am TV erscheinen kein Projektname und kein Logo. In Android heißt die App **TV-Dashboard**.
 
 ## So sieht es aus
 
@@ -42,6 +42,15 @@ Native Emulator-Screenshots mit Testdaten und eigener Reihenfolge. Die Kamera-Ka
 
 </details>
 
+<details>
+<summary>Optionale ARD-/ZDF-Schnellzugriffe</summary>
+
+![ARD- und ZDF-Schalter in den lokalen Einstellungen](docs/images/web-media-shortcuts.png)
+
+Geprüfte Web-Vorschau mit Testdaten. Unter **Startseite** vorhandene Mediathek-Apps aktivieren und unter **Design** anordnen. Hue und UniFi lassen sich für jeden TV separat ausblenden. Die App-Erkennung bestätigt keine Anmeldung oder Wiedergabe.
+
+</details>
+
 ## Funktionen
 
 - Kompakte Handy-/Tablet-Einstellungen: beim Scrollen erreichbare Rubrikenleiste zum seitlichen Wischen, große Bedienflächen, kompakte Sichtbarkeitsschalter und aufklappbare Hilfetexte. [Startseite am Handy](docs/images/web-settings-mobile.jpg) · [Design am Handy](docs/images/web-design-mobile.jpg).
@@ -58,6 +67,8 @@ Native Emulator-Screenshots mit Testdaten und eigener Reihenfolge. Die Kamera-Ka
 
 - Aufgeräumte Startseite mit großen Fokusflächen, TV-Zugriff, Geräten und System.
 - Bis zu 24 eingerichtete Kameras, sechs pro Übersichtsseite und jeweils ein Stream im Vollbild. Die Übersichtsseite bleibt bei der Rückkehr aus Einstellungen erhalten.
+- Hue und UniFi pro TV im IP-Dashboard ausschalten; deaktivierte Anbindungen werden ausgeblendet, Verbindungen und Belegungen bleiben gespeichert.
+- Optionale ARD-/ZDF-Kacheln öffnen die installierten TV-Apps. Unter **Startseite → Mediathek-Schnellzugriffe** aktivieren und unter Design anordnen.
 - Ambilight-Modi, 16 benannte Farben, Lichtvorschau und Helligkeit per Fernbedienung oder Berührung.
 - Lokale Hue-Bridge-Kopplung mit bewusster Raumauswahl, Schalten, unterstützten Farben, Helligkeit und Szenen dieses Raums. Home Assistant ist nicht nötig.
 - HDMI-Erkennung über Androids TV-Eingangsdienst. Vorhandene CEC-Namen kennzeichnen Geräte; die Auswahl übergibt den Eingang an die TV-App des Fernsehers.
@@ -75,21 +86,22 @@ Der Hue-Regler bündelt schnelle Eingaben und sendet für eine zusammengefasste 
 | Ziel | Aussagekraft |
 | --- | --- |
 | Echter Philips `QM163E`, `mt5890`, Android 8.0.0 / API 26, ARMv7 | Installation, lokale Einstellungen, Konfigurationserhalt und native Oberfläche; aktueller Geräteprüfstand unten verlinkt |
+| Echter Philips `TPM191E`, Android 12 / API 31, ARMv7 | Teilprüfung: Installation/Start, HTTPS-Anmeldung, echte Home-Taste und Ambilight-Farben/Helligkeit; bisherige Startseiten-App nach Freigabe deaktiviert, für Rückkehr erhalten; Bild-/Preset-Modi separat offen |
 | Philips Hue Bridge `BSB002` | HTTPS-Identität, Kopplung, Raum, Zustandsabrufe und kontrollierter Helligkeitsschritt mit Wiederherstellung |
 | Apple TV, per HDMI-CEC erkannt | Auswahl und aktive Route auf HDMI 4 am Test-Philips geprüft; Generation und Firmware wurden nicht abgefragt |
 | Separater Android-14-/API-34-Simulator mit ARM64 | Oberflächen-, Navigations- und Ersatzdienstprüfungen; kein weiterer unterstützter physischer TV |
 
-Der Besitzer nennt als Verkaufsmodell **55PUS6581/12**; diese Nummer wurde nicht unabhängig aus Android ausgelesen. Das 4K-Panel ist von der aktuellen **Android-Zeichenfläche mit 1920 × 1080** zu unterscheiden. [Hardware-Prüfung und Grenzen (Englisch)](docs/HARDWARE.md).
+Für den ersten TV nennt der Besitzer als Verkaufsmodell **55PUS6581/12**; diese Nummer wurde nicht unabhängig aus Android ausgelesen. Das 4K-Panel ist von der aktuellen **Android-Zeichenfläche mit 1920 × 1080** zu unterscheiden. [Hardware-Prüfung und Grenzen (Englisch)](docs/HARDWARE.md).
 
 ## Bauen und installieren
 
-Voraussetzungen: Python 3, `curl`, JDK 21, Android-SDK-Plattform `android-34`, Build Tools `36.1.0` und Platform Tools. Das reguläre APK enthält **armeabi-v7a** und benötigt mindestens Android 8 / API 26. Andere physische Modelle sind noch nicht verifiziert.
+Voraussetzungen: Python 3, `curl`, JDK 21, Android-SDK-Plattform `android-34`, Build Tools `36.1.0` und Platform Tools. Das reguläre APK enthält **armeabi-v7a** und benötigt mindestens Android 8 / API 26. Die gerätespezifischen Prüfgrenzen stehen in der Tabelle oben.
 
 ```sh
 python3 app/fetch_deps.py
 python3 tests/check_palette.py
 python3 app/build.py
-adb -s DEVICE install -r dist/TV-Dashboard-0.11.2.apk
+adb -s DEVICE install -r dist/TV-Dashboard-0.11.6.apk
 adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -110,6 +122,12 @@ adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 | **System → Bildschirmschoner** | Stil, Datum und dunkle Darstellung wählen oder die Vollbildvorschau öffnen. Die automatische Aktivierung bleibt eine TV-/Systemeinstellung. |
 
 ## Prüfstand und Grenzen
+
+Version 0.11.6 ergänzt optionale ARD-/ZDF-Schnellzugriffe. Gespeicherte Sechser-Anordnungen behalten ihre relative Reihenfolge und bekommen zwei zusätzliche Positionen. Beide signierten Builds, 104 Web-Prüfungen und 1.290.240 Layoutkombinationen bestanden. Zwanzig API-/TV-Prüfungen bestätigten Erkennung, Speichern, sichtbare Kacheln, App-Aufruf, Home-Rückkehr und erhaltene Einstellungen. ARD zeigte zunächst seine Anmeldeseite und ZDF einen Ladebildschirm; anschließend waren beide normalen Mediathek-Startseiten sichtbar. Anmeldung und Wiedergabe sind separat zu prüfen.
+
+Version 0.11.5 ergänzt **Startseite → Funktionen an diesem TV** mit Schaltern für Hue und UniFi pro Fernseher. Deaktivierte Anbindungen verschwinden aus der TV-/Web-Navigation und führen keine neuen Anbieteraktionen aus; Verbindungen und Belegungen bleiben gespeichert. Beide signierten Builds, 94 Web-Prüfungen, 5.760 Layoutkombinationen und 23 abschließende API-/TV-Prüfungen bestanden. Die Browser-Vorschau wurde bei 320–1280 Pixeln ohne seitlichen Seitenüberlauf geprüft. [Prüfstand (Englisch)](docs/STATUS.md#0115-per-tv-hue--unifi-switches).
+
+Version 0.11.4 ermöglicht manuelle Ambilight-Farben und Helligkeit auf TPM191E / Android 12, nach der HTTPS-Korrektur in 0.11.3. Beide signierten Builds sowie 29 Protokoll-, 53 Farbpaletten- und 78 Web-Prüfungen bestanden. Der zweite echte TV bestand 24 GUI-Prüfungen für RGB-Farben, Helligkeit, Fokus und unveränderte Bildpunkte außerhalb des Reglers sowie sechs Installations-/API-Prüfungen. Bildanpassung und Hersteller-Presets bleiben separat offen; die gemeldeten LED-Farben sind keine kalibrierte Messung der Wandfarbe. [Geräteergebnisse (Englisch)](docs/STATUS.md#0114-tpm191e-manual-ambilight-colors-and-brightness).
 
 Für 0.11.2 bestanden **78** Web-Prüfungen, einschließlich separater Shortcut-Entwürfe, Vorschau, Standardbelegung, gesperrter Auswahl beim Speichern und Fehlerbehandlung. Die Browserprüfung umfasst 320–1280 Pixel, Englisch/Monospace, Speichern/Neuladen und alle acht Reiter bei 320 Pixeln ohne seitlichen Seitenüberlauf. Neun Installations-/API-Prüfungen am Philips bestanden mit erhaltener Belegung und laufender Ansicht; frühere native Prüfungen bleiben im [Prüfstand](docs/STATUS.md) getrennt dokumentiert.
 

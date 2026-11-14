@@ -6,7 +6,7 @@ A lightweight dashboard for Philips Android TV: cameras, Ambilight, Philips Hue,
 
 Install as an Android app and optionally assign it as Home.
 
-**0.11.2 · experimental beta.** Repository documentation is in English; the TV interface and local web settings default to German, with a shared English option. The TV interface has no project name or logo; Android lists the app as **TV-Dashboard**.
+**0.11.6 · experimental beta.** Repository documentation is in English; the TV interface and local web settings default to German, with a shared English option. The TV interface has no project name or logo; Android lists the app as **TV-Dashboard**.
 
 ## A look at the interface
 
@@ -42,6 +42,15 @@ These native emulator screenshots use synthetic data and a reordered Home. The c
 
 </details>
 
+<details>
+<summary>Optional ARD / ZDF app shortcuts</summary>
+
+![ARD and ZDF switches in local settings](docs/images/web-media-shortcuts.png)
+
+Reviewed web preview with synthetic data. Enable installed media apps under **Startseite**, then arrange them under **Design**. Hue and UniFi can be disabled separately for each TV. App discovery does not establish account or playback readiness.
+
+</details>
+
 ## What it does
 
 - Compact phone/tablet settings: a sticky, horizontally scrollable section strip, full-size touch controls, compact Home visibility tiles and expandable setup guidance. [Phone Home](docs/images/web-settings-mobile.jpg) · [Phone Design](docs/images/web-design-mobile.jpg).
@@ -58,6 +67,8 @@ These native emulator screenshots use synthetic data and a reordered Home. The c
 
 - A clean Home screen with large focus targets, direct TV access, devices, and system settings.
 - Up to 24 configured cameras, six per overview page, with one full-screen stream at a time. The overview retains its page when returning from settings.
+- Per-TV Hue/UniFi switches in web Startseite; disabled integrations are hidden and their stored connections/assignments are retained.
+- Optional ARD/ZDF Home shortcuts launch the installed TV apps; enable them in web **Startseite → Mediathek-Schnellzugriffe** and arrange them under Design.
 - Ambilight modes, 16 named colors, a light preview, and remote/touch brightness control.
 - Local Hue Bridge pairing and explicit room selection, with room power, supported colors, brightness, and room-scoped scenes. No Home Assistant is required.
 - HDMI discovery through Android's TV input service. Available CEC names identify devices; selecting a card hands the chosen input to the TV's own app.
@@ -75,21 +86,22 @@ The Hue brightness slider batches input and sends one write for a coalesced gest
 | Target | Verified scope |
 | --- | --- |
 | Physical Philips `QM163E`, `mt5890`, Android 8.0.0 / API 26, ARMv7 | Installed application, local settings, retained configuration and native interface; see current device evidence below |
+| Physical Philips `TPM191E`, Android 12 / API 31, ARMv7 | Partial second-device validation: installation/start, HTTPS/login, physical Home and Ambilight fixed colors/brightness; stock launcher disabled with owner approval, retained for recovery; video/preset modes remain separate work |
 | Philips Hue Bridge `BSB002` | HTTPS identity, pairing, selected room, state reads and a controlled brightness step with restoration |
 | Apple TV, identified by HDMI-CEC | Selection and active routing to HDMI 4 verified on the test Philips; generation/firmware were not queried |
 | Isolated Android 14 / API 34 ARM64 emulator | UI, navigation and simulated-service checks; not another supported physical TV |
 
-The owner identifies the TV as **55PUS6581/12**; that marketed number was not independently read from Android. Its 4K panel is distinct from the current **1920 × 1080 Android rendering surface**. [Hardware methods and limits](docs/HARDWARE.md).
+The owner identifies the first TV as **55PUS6581/12**; that marketed number was not independently read from Android. Its 4K panel is distinct from the current **1920 × 1080 Android rendering surface**. [Hardware methods and limits](docs/HARDWARE.md).
 
 ## Build and install
 
-Requirements: Python 3, `curl`, JDK 21, Android SDK platform `android-34`, Build Tools `36.1.0`, and Platform Tools. The production APK packages **armeabi-v7a** libraries and requires Android 8 / API 26 or later; other physical models remain unverified.
+Requirements: Python 3, `curl`, JDK 21, Android SDK platform `android-34`, Build Tools `36.1.0`, and Platform Tools. The production APK packages **armeabi-v7a** libraries and requires Android 8 / API 26 or later. Device-specific validation boundaries are listed in the table above.
 
 ```sh
 python3 app/fetch_deps.py
 python3 tests/check_palette.py
 python3 app/build.py
-adb -s DEVICE install -r dist/TV-Dashboard-0.11.2.apk
+adb -s DEVICE install -r dist/TV-Dashboard-0.11.6.apk
 adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -103,7 +115,7 @@ Replace `DEVICE` with the explicitly selected authorized device. Preserve your s
 | Web settings → **Kameras** | Add local UniFi Protect RTSPS sources; existing saved links remain unchanged when a link field is left empty. |
 | **Hue → Raum & Bridge** | Enter the bridge address, press its physical button, connect, then choose and confirm the TV room. No whole-home group is selected automatically. |
 | Home network shortcut / Web settings → **Netzwerk** | Read the TV connection type and Android internet validation; no UniFi account is required. |
-| Web → **Startseite** | Save the Home heading and dashboard name; an empty name restores the default. |
+| Web → **Startseite** | Save names/visibility, enable installed ARD/ZDF shortcuts, or disable Hue/UniFi for this TV. Empty names restore defaults. |
 | Web → **Design** | Arrange Home tiles and select a design, separate clock/text fonts, and the shared dashboard language. |
 | Web → **TV-Info** | Read device facts, configure screensaver styling, download a redacted diagnostic, or explicitly request opening the dashboard. |
 | Web → **Netzwerk → UniFi Network** | Enter a local Network API key, validate the connection, then explicitly choose the site. Protect credentials are not reused. |
@@ -111,6 +123,12 @@ Replace `DEVICE` with the explicitly selected authorized device. Preserve your s
 | **System → Bildschirmschoner** | Choose a style, date and dim level, or open the full-screen preview. Automatic activation remains a TV/system setting. |
 
 ## Validation and limits
+
+Version 0.11.6 adds opt-in ARD/ZDF app shortcuts and upgrades saved six-item orders by retaining their relative order and adding two reserved positions. Both signed builds, 104 web checks and 1,290,240 layout combinations passed. Twenty second-TV API/native assertions verified discovery, save validation, visible tiles, launching both installed apps, Home return and retained settings. ARD initially showed sign-in and ZDF a splash screen; both catalogue/start pages were subsequently observed. Account setup and playback are separate from shortcut launch validation.
+
+Version 0.11.5 adds per-TV Hue/UniFi switches under **Startseite → Funktionen an diesem TV**. Disabled integrations disappear from TV/web navigation and cannot dispatch provider actions; connections and assignments are kept. Both signed builds, 94 web checks, 5,760 layout configurations and 23 final second-TV API/native assertions passed. The synthetic browser passed 320–1280 px without horizontal page overflow. [Feature-switch evidence](docs/STATUS.md#0115-per-tv-hue--unifi-switches).
+
+Version 0.11.4 enables manual Ambilight colors and brightness on TPM191E / Android 12, following the 0.11.3 HTTPS fix. Both signed builds, 29 controller checks, 53 palette checks and 78 web checks passed. The second TV passed 24 GUI checks for RGB colors, brightness, focus and pixel stability, plus six installation/API checks. Native video/preset modes remain separate work; device-reported LED colors are not calibrated wall-color evidence. [Device results](docs/STATUS.md#0114-tpm191e-manual-ambilight-colors-and-brightness).
 
 Version 0.11.2 passed **78** web state/payload checks, including independent shortcut drafts, preview, default reset, in-flight locking and failed-save recovery. Browser checks covered the new editor at 320–1280 px, English/monospace, custom save/reload and all eight tabs at 320 px without horizontal body overflow. Nine physical installation/API checks passed with existing assignments and foreground retained; earlier native/provider results keep their separate scope in [current status](docs/STATUS.md).
 

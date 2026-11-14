@@ -2,6 +2,10 @@
 
 [Documentation](README.md) · [Current device results](STATUS.md)
 
+## Android 12 HTTPS regression (0.11.3)
+
+On the second physical Philips, 0.11.2 accepted TCP connections but closed TLS before sending a certificate. Android logs showed Conscrypt raw RSA callbacks failing with `Incompatible padding mode`. After authorizing `ENCRYPTION_PADDING_NONE` in addition to PKCS#1 and using a fresh API-31+ HTTPS key alias, the same TV completed HTTPS, unauthenticated rejection, PIN login, version/device state reads and logout. The test pins the TV certificate obtained through authenticated ADB before contacting the LAN HTTPS endpoint; it does not disable certificate validation. Local browser certificate confirmation is separate user work. The 78 web state/payload checks and both signed builds were repeated; earlier native/provider suites retain their original scope.
+
 ## Publication rules
 
 Run `python3 tests/check_gitignore.py` to check Git's actual ignore behavior and the current index without creating secret files or contacting a TV. [Publication rules](PUBLICATION.md) document the exact exclusions, reviewed image exceptions and audit limits. This repository check is separate from application/device tests.
@@ -10,6 +14,7 @@ Run `python3 tests/check_gitignore.py` to check Git's actual ignore behavior and
 
 | Suite | Checks | What it establishes |
 | --- | ---: | --- |
+| Production Ambilight controller | 29 | Loopback HTTP: advertised manual styles, palette requests, byte validation and brightness readback |
 | Production palette/conversion classes | 53 | Protocol ranges, golden values, preset matching and Hue conversion |
 | Hue UI with HTTPS fixture | 26 | Remote/touch navigation, coalescing, no extra catalog reads, stale/slow/error replies, stable pixels outside the slider and scoped scenes |
 | Overall native GUI | 27 | Home/System/Apps navigation, camera pagination/return, source empty state, screensaver UI, preview/Back and layout bounds |
@@ -19,11 +24,11 @@ Run `python3 tests/check_gitignore.py` to check Git's actual ignore behavior and
 | UniFi local adapter | 10 | Synthetic pinned HTTPS, explicit site, pagination, encrypted configuration, rejected host/site/key, stale/recovery and redaction |
 | Native UniFi inventory | 10 | Compact indicator, bounds, pagination, unknown/stale/recovery, Back and GET-only upstream calls |
 | Passive network UI | 6 | Home shortcut, Android source/caveat, bounds, initial focus, refresh and Back |
-| Home layout geometry | 2,880 configurations | Every tile permutation × two visibility states × two geometries: bounds, overlap, order and D-pad reachability |
+| Home layout geometry | 1,290,240 configurations | Every eight-item order × 16 camera/Hue/ARD/ZDF visibility states × two geometries: bounds, overlap, order and D-pad reachability |
 | Native appearance | 19 | Complete validation, rendered order, compact camera, actual D-pad traversal, four themes, focus/detail-control retention and no light commands |
 | Hue standby automation | 18 | Actual emulator screen-state broadcasts with loopback Hue, default/disabled behavior, validation, scoped off, no wake-on/retry and stale target suppression |
 | Color-key native events | 12 | Android code mapping, repeat/key-up/cancel suppression, disabled action and custom System/Apps navigation on the isolated emulator |
-| Web state/payload logic | 55 | Draft/title/name retention, fixed technical model after rename, blank stream payload, explicit room/site, inventory/stale/unknown states, saver styling, TV facts, cancelled remote open, duplicate submits, session expiry and errors |
+| Web state/payload logic | 104 | Independent drafts, names/models, presentation/shortcuts, per-TV integrations, ARD/ZDF visibility/availability/order, disabled requests/navigation and save/error/session handling |
 
 For 0.8.0 the palette, web, UniFi adapter/inventory, network and screensaver suites were repeated. The most recent complete Ambilight/general navigation suite runs remain the 0.7.0 component evidence; the 26-check Hue suite was rerun for 0.10.0.
 
@@ -35,10 +40,15 @@ With a JDK installed:
 
 ```sh
 python3 tests/check_palette.py
+python3 tests/check_ambilight.py
 node tests/check_web.cjs
 ```
 
 This compiles and executes the actual `AmbilightPalette` and `HueColorValues` classes. No TV, provider account or Android SDK is needed for these checks. The web suite executes the production inline script with a small DOM adapter; it is not visual browser evidence. Node.js is required for that suite.
+
+`check_ambilight.py` compiles the production `AmbilightController` with a checksum-pinned JSON-java 20240303 test dependency downloaded from Maven Central into ignored `test-results/`. It runs 29 checks against a server bound only to `127.0.0.1:1925`; an occupied port fails before any controller request. Both raw style names, incomplete descriptors, all 16 palette entries, byte boundaries, unsupported-write rejection and configuration-only slider reads are covered. The app continues using Android's JSON classes; JSON-java is not packaged in the APK. A sandbox that blocks loopback sockets needs permission for this local test server. Initial socket/dependency-store failures were environmental, not passing test evidence.
+
+The 0.11.4 real-device pass separately exercised 24 GUI assertions and six installation/API checks on TPM191E / API 31. Red/green/blue were compared with reported processed LED channels; brightness tests compare exact HSB readback and screen pixels outside the slider. The final manual Warmweiß/75% state was confirmed. The original nonexpert preset could not be restored through the same API, so it is not an exact restoration claim. The owner subsequently confirmed colors and brightness using the physical remote. That functional confirmation is separate from calibrated wall-color measurement or longer operation.
 
 ## Disposable emulator setup
 
@@ -215,3 +225,17 @@ Synthetic browser checks covered Shortcuts at 320/390/768/900/901/1280 px, Engli
 This is a web editor change. Earlier native color-key event/hardware boundaries remain unchanged; no real light, HDMI or camera action is needed to check this page. Physical phone/Safari input remains separate from viewport testing.
 
 Nine physical installation/API checks passed: final installed hash/runtime, all retained settings/package set and foreground activity, exact new HTML/catalog, separate Shortcuts panel, compact navigation/guidance and unauthenticated rejection. The existing background service was initialized through the DUMP-protected receiver only after checking that its import file was absent; no Dashboard activity was opened.
+
+## Per-TV optional integrations (0.11.5)
+
+The web suite now passes 94 cases, including draft-only feature switches, a two-boolean payload, retained unrelated drafts/raw key assignments, disabled provider loaders, hidden-tab keyboard traversal, inactive Hue preview, reload, save locking/failure and re-enabling without provider actions. Geometry checks cover all 720 stored orders × camera visibility × Hue availability × two layouts (5,760 configurations).
+
+The synthetic browser saved/reloaded/re-enabled features, verified hidden navigation and checked `scrollWidth <= innerWidth` at 320/390/768/1280 px with no console warnings/errors. The initial mobile three-column toggle style left an unused column; the integration card uses an explicit two-column modifier. This is viewport evidence, not real phone/Safari acceptance.
+
+On the second TV, 23 final API/native assertions passed for disabling/re-enabling, authentication, atomic invalid-map rejection, page closure, effective remote shortcuts, Network entries, retained user preferences and unchanged Ambilight. An initial test expected a camera tile despite the owner having hidden it before the update. Its partial report remains private; the corrected pass used saved visibility. No provider or standby command was sent, and populated provider retention/standby races were not physically retested here.
+
+## ARD / ZDF app shortcuts (0.11.6)
+
+The 104 web checks cover default-off app flags, explicit two-boolean saving, retained independent drafts/settings, availability messages, reload, movable optional entries, eight visible cards in four columns, failed-save retention and honest missing-app status. Earlier assertions expecting six stored IDs were adjusted to the intended eight-slot migration. Geometry checks cover all 40,320 eight-item orders × 16 visibility states × two layouts (1,290,240 configurations), plus legacy normalization assertions. Both signed builds passed.
+
+The synthetic browser verified enabled save/reload, an order change, eight preview cards and no horizontal body overflow at 320 px; desktop controls were reviewed. Twenty second-TV API/native assertions separately verified installed hash/version, retained settings and relative legacy order, local app discovery, atomic validation/authentication, enabling/placement, both app launches and Home return. Initial provider login/splash views were retained privately; later captures showed the actual provider start/catalogue pages. Playback, account setup and other devices remain outside this pass. Private provider screenshots, including any login codes, are never publication assets.

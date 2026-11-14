@@ -2,7 +2,7 @@
 
 [Documentation](README.md) · [Current validation](STATUS.md) · [Architecture](ARCHITECTURE.md)
 
-Discussion baseline: **0.11.2, November 13, 2026**. This document records ideas for future work. The extensions below are **not implemented or verified**, and have no assigned release date. Suggested ordering is a recommendation, not an agreed implementation schedule.
+Discussion baseline: **0.11.2, November 13, 2026**. This document records ideas for future work. The broader extensions below have no assigned release date. Since that baseline, 0.11.5 added per-TV Hue/UniFi switches and 0.11.6 added two bounded ARD/ZDF app tiles; these completed increments are documented in [current status](STATUS.md). General favourites, arbitrary app selection and the remaining proposals are **not implemented or verified**. Suggested ordering is a recommendation, not an agreed implementation schedule.
 
 ## Product direction
 

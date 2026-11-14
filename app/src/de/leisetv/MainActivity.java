@@ -93,7 +93,7 @@ public final class MainActivity extends Activity {
         int index=RemoteShortcuts.index(event.getKeyCode());
         if(index<0)return super.dispatchKeyEvent(event);
         if(event.getAction()==KeyEvent.ACTION_DOWN&&event.getRepeatCount()==0&&!event.isCanceled()){
-            switch(RemoteShortcuts.action(this,index)){
+            switch(RemoteShortcuts.effectiveAction(this,index)){
                 case "cameras":
                     if(AdminServer.preferences(this).getBoolean("show_camera",true))open(new Intent(this,CameraListActivity.class));
                     else Toast.makeText(this,UiText.t("Kameras sind auf der Startseite ausgeblendet."),Toast.LENGTH_SHORT).show();
@@ -162,6 +162,8 @@ public final class MainActivity extends Activity {
             case "tv":return new HomeActionTile(UiText.t("Fernsehen"),UiText.t("TV-Programm"),"tv",()->openTV());
             case "inputs":return new HomeActionTile(UiText.t("Geräte"),UiText.t("HDMI & Zuspieler"),"devices",()->open(new Intent(this,InputsActivity.class)));
             case "system":return new HomeActionTile("System",UiText.t("Einstellungen"),"settings",()->showSystem());
+            case "ard":return new HomeActionTile("ARD Mediathek",UiText.t("Mediathek öffnen"),"apps",()->AppShortcuts.open(this,"ard"));
+            case "zdf":return new HomeActionTile("ZDF Mediathek",UiText.t("Mediathek öffnen"),"apps",()->AppShortcuts.open(this,"zdf"));
             default:throw new IllegalArgumentException("Unknown Home tile");
         }
     }
@@ -172,8 +174,8 @@ public final class MainActivity extends Activity {
         stage(false);homeDirty=false;appsFromSystem=false;
         List<HomeLayout.Slot> slots;
         boolean camera=AdminServer.preferences(this).getBoolean("show_camera",true);
-        try{org.json.JSONObject appearance=HomeAppearance.view(this);slots=HomeLayout.positions(HomeAppearance.order(appearance),camera,appearance.getString("layout"));}
-        catch(Exception error){slots=HomeLayout.positions(Arrays.asList(HomeLayout.DEFAULT_ORDER),camera,"focus");}
+        try{org.json.JSONObject appearance=HomeAppearance.view(this);slots=HomeLayout.positions(HomeAppearance.order(appearance),camera,IntegrationSettings.hue(this),AppShortcuts.enabled(this,"ard"),AppShortcuts.enabled(this,"zdf"),appearance.getString("layout"));}
+        catch(Exception error){slots=HomeLayout.positions(Arrays.asList(HomeLayout.DEFAULT_ORDER),camera,IntegrationSettings.hue(this),AppShortcuts.enabled(this,"ard"),AppShortcuts.enabled(this,"zdf"),"focus");}
         List<Tile> home=new ArrayList<>();
         for(HomeLayout.Slot slot:slots){Tile tile=homeTile(slot.id,slot.h>180);tile.homeId=slot.id;place(tile,slot.x,slot.y,slot.w,slot.h);home.add(tile);}
         for(int i=0;i<home.size();i++){
@@ -280,7 +282,7 @@ public final class MainActivity extends Activity {
                 text(c,p,UiText.t("Pfeiltasten bewegen"),324,953,21,MUTED,false);
                 int[] colors={0xffF18489,0xff8DD6A5,0xffF0CE78,0xff89B9F2};
                 for(int i=0;i<4;i++){
-                    String action=RemoteShortcuts.action(MainActivity.this,i);
+                    String action=RemoteShortcuts.effectiveAction(MainActivity.this,i);
                     if("none".equals(action)||("cameras".equals(action)&&!prefs.getBoolean("show_camera",true)))continue;
                     int x=96+i*300;p.setColor(colors[i]);c.drawRoundRect(x,1000,x+30,1012,6,6,p);
                     text(c,p,RemoteShortcuts.label(action),x+43,1015,21,MUTED,false);
@@ -374,7 +376,7 @@ public final class MainActivity extends Activity {
                 for(int i=0;i<4;i++){p.setColor(colors[i]);c.drawCircle(virtualW-172+i*30,55,6,p);}
             }
             TvStyle.arrow(c,p,virtualW-43,compact?66:53,focus);
-            text(c,p,title,compact?88:38,compact?64:virtualH-87,compact?31:44,INK,false);
+            p.setTextSize(compact?31:44);p.setTypeface(TvStyle.NORMAL);text(c,p,TvStyle.fit(p,title,virtualW-(compact?144:80)),compact?88:38,compact?64:virtualH-87,compact?31:44,INK,false);
             text(c,p,subtitle,compact?90:40,compact?99:virtualH-44,compact?18:23,MUTED,false);c.restore();
         }
     }

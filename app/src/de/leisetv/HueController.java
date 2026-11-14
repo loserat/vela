@@ -17,6 +17,7 @@ final class HueController {
     private static JSONObject config(Context c){try{return CameraConfig.readNamed(c,STORE);}catch(Exception e){return new JSONObject();}}
     static JSONObject setup(Context c)throws Exception{JSONObject cfg=config(c);return new JSONObject().put("configured",cfg.has("host")).put("connected",cfg.has("key")).put("host",cfg.optString("host")).put("bridgeName",cfg.optString("name","Hue Bridge")).put("roomId",cfg.optString("group"));}
     static synchronized JSONObject configure(Context c,String host)throws Exception{
+        IntegrationSettings.requireHue(c);
         if(!host.matches("[0-9]{1,3}([.][0-9]{1,3}){3}"))throw new IOException("Local IPv4 required");
         InetAddress address=InetAddress.getByName(host);if(!address.isSiteLocalAddress()||address.isLoopbackAddress())throw new IOException("Local bridge required");
         final X509Certificate[] captured=new X509Certificate[1];JSONObject info=(JSONObject)request(host,null,"/api/config","GET",null,captured);
@@ -27,6 +28,7 @@ final class HueController {
         JSONObject cfg=new JSONObject().put("host",host).put("cert",cert).put("bridgeid",id).put("name",info.optString("name","Hue Bridge"));CameraConfig.saveNamed(c,STORE,cfg);return setup(c);
     }
     static synchronized JSONObject pair(Context c)throws Exception{
+        IntegrationSettings.requireHue(c);
         JSONObject cfg=config(c);if(!cfg.has("host"))throw new IOException("Bridge configuration required");
         if(cfg.has("key"))return view(c);
         JSONArray reply=(JSONArray)request(cfg.getString("host"),cfg.getString("cert"),"/api","POST",new JSONObject().put("devicetype","atpd#TV-Dashboard"),null);
@@ -41,11 +43,13 @@ final class HueController {
         if(value instanceof JSONArray)for(int i=0;i<((JSONArray)value).length();i++)if(((JSONArray)value).getJSONObject(i).has("error"))throw new IOException("Hue command not confirmed");return value;
     }
     static synchronized JSONObject select(Context c,String id)throws Exception{
+        IntegrationSettings.requireHue(c);
         if(!id.matches("[1-9][0-9]{0,4}"))throw new IOException("Room required");JSONObject cfg=config(c);JSONObject groups=(JSONObject)api(cfg,"/groups","GET",null);JSONObject group=groups.optJSONObject(id);
         if(group==null||!("Room".equals(group.optString("type"))||"Zone".equals(group.optString("type"))))throw new IOException("Unknown room");
         cfg.put("group",id);CameraConfig.saveNamed(c,STORE,cfg);return view(c);
     }
     static synchronized JSONObject view(Context c)throws Exception{
+        IntegrationSettings.requireHue(c);
         JSONObject cfg=config(c),result=setup(c);if(!cfg.has("key"))return result;
         JSONObject groups=(JSONObject)api(cfg,"/groups","GET",null);JSONArray rooms=new JSONArray();Iterator<String> iterator=groups.keys();
         while(iterator.hasNext()){String id=iterator.next();JSONObject group=groups.optJSONObject(id);if(group!=null&&("Room".equals(group.optString("type"))||"Zone".equals(group.optString("type"))))rooms.put(new JSONObject().put("id",id).put("name",group.optString("name")).put("type",group.optString("type")));}
@@ -62,6 +66,7 @@ final class HueController {
         return result.put("scenes",scenes);
     }
     static synchronized void action(Context c,String expectedRoom,String kind,int value,String scene)throws Exception{
+        IntegrationSettings.requireHue(c);
         JSONObject cfg=config(c);String room=cfg.optString("group");if(room.isEmpty()||!room.equals(expectedRoom))throw new IOException("Room changed; reload first");
         JSONObject command=new JSONObject();
         if("power".equals(kind)){if(value!=0&&value!=1)throw new IOException("Invalid power");command.put("on",value==1);}
@@ -79,6 +84,7 @@ final class HueController {
     }
     static JSONObject standbyTarget(Context c){return config(c);}
     static synchronized boolean standbyOff(Context c,JSONObject expected,long deadline,java.util.function.BooleanSupplier active)throws Exception{
+        if(!IntegrationSettings.hue(c))return false;
         JSONObject cfg=config(c);String room=cfg.optString("group");
         if(!cfg.has("key")||!room.matches("[1-9][0-9]{0,4}"))return false;
         for(String field:new String[]{"host","cert","key","group"})if(!cfg.optString(field).equals(expected.optString(field)))return false;

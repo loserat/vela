@@ -1,12 +1,42 @@
 # Changelog
 
-## Unreleased — repository maintenance
+## Repository maintenance — 2026-11-14
 
 - Audited ignore rules and the current index; excluded raw signing keys, known unencrypted setup files and mixed-case image extensions while preserving all 26 exact reviewed screenshot exceptions. Added reproducible Git-based publication checks and scope documentation.
 
 - Recorded eleven proposed extensions with dependencies, a suggested first-increment order and acceptance boundaries in the roadmap. These are not implemented features or scheduled releases.
 - Linked the roadmap from both READMEs and reorganised the documentation index around setup, current behavior, evidence and future work.
 - Consolidated outstanding remote, standby, phone and typography checks without changing the 0.11.2 application or its recorded test scope.
+
+## 0.11.6 — 2026-11-14
+
+- Consolidated English/German project documentation, separated the two physical TVs and added a provenance table for TPM191E / Android 12. The commercial model remains unknown. Added a reviewed synthetic screenshot of the Mediathek settings; raw device evidence remains private.
+
+- Added opt-in ARD/ZDF Home tiles and independent web Startseite switches with local app-availability feedback. Known Android TV packages are preferred; exact TV app labels also resolve Philips NetTV wrappers. No app installation, account handling or streaming was added.
+- Extended saved Home order to eight destinations, retaining the relative order of legacy six-item settings and appending two optional slots. Both tiles can move between rows; layouts cover four to eight visible destinations and long titles fit their cards.
+- Passed both signed builds, 104 web checks and all 1,290,240 eight-item order/visibility/layout combinations. Synthetic browser checks covered 320 px without body overflow, eight-tile preview, shortcut save/reload and an order change; the desktop settings card was reviewed.
+- Installed on the second TV and passed 20 API/native assertions for app discovery, default-off behavior, strict/authenticated saving, preserved settings, both visible tiles, external app launches and Home return. Both provider catalogs were subsequently observed; no sign-in was completed or programme started by the agent. The two shortcuts are enabled beside Ambilight on this TV; other installations default off.
+
+## 0.11.5 — 2026-11-14 (local device validation)
+
+- Added independent per-TV Hue and UniFi switches in web Startseite. Saved connections, tile positions, shortcut mappings and the Hue standby preference are retained. Existing installations default to enabled.
+- Disabled Hue disappears from Home/web navigation and its shortcuts become inactive; disabled UniFi disappears from Network while passive TV connectivity remains available. Provider APIs/actions and Hue standby work are gated, and active disabled detail pages close. Re-enabling restores their saved destinations.
+- Expanded web checks to 94 and Home geometry checks to 5,760 combinations, including four visible destinations. Both signed builds passed. The synthetic browser verified save/reload/re-enable, hidden navigation and no horizontal page overflow at 320/390/768/1280 px.
+- Installed on the second TV and passed 23 final API/native checks for disable/re-enable, authentication, strict atomic validation, active-page closure, effective shortcuts, retained settings and unchanged Ambilight. Hue and UniFi are left disabled for this location. An initial probe wrongly expected a camera tile despite the owner's existing hidden-camera setting; it was corrected without changing that setting.
+
+## 0.11.4 — 2026-11-14 (local device validation)
+
+- Discover the TV's manual-color style through its explicit `MANUAL_HUE` capability. Preserve `Lounge light` or `FOLLOW_COLOR` in requests while using the same fixed-color UI, palette and brightness controls.
+- Keep capability discovery out of the slider update path and reject a brightness readback that does not confirm the requested hue/saturation/level. Empty style descriptors do not invent video support.
+- Added 29 loopback HTTP tests against the production controller, covering both styles, all 16 palette entries, byte boundaries, invalid/unsupported requests and cached-capability readback. Repeated 53 palette checks, 78 web checks and both signed builds.
+- Installed on TPM191E / Android 12. All 24 physical GUI checks passed: enabled color cards, red/green/blue commands and reported LED channels, touch/Android-arrow brightness, retained focus/color and stable pixels outside the slider. Six installation/API checks passed separately. Finished on manual Warmweiß at 75%; restoring the original manufacturer's preset through `currentconfiguration` is not supported by this firmware and was not claimed.
+
+## 0.11.3 — 2026-11-14 (local device validation)
+
+- Verified direct physical Home-button access on the second TV after owner-approved user-level Google launcher deactivation; retained the stock app/data and documented recovery. The standard Home-role assignment alone was ineffective on this firmware. Reboot/standby persistence is separate validation work.
+- Fixed local HTTPS handshakes on a physical Philips TPM191E running Android 12 / API 31. Conscrypt requires raw RSA private-key operations authorized in Android Keystore in addition to PKCS#1 padding.
+- Android 12 and later use a new HTTPS key alias; older Android installations retain their existing certificate. An existing Android-12 installation receives a new local certificate on update. HTTPS and PIN authentication remain enabled.
+- Built and signature-verified both public and local variants; repeated all 78 web state/payload checks and verified installation/hash, startup, local HTTPS/login/state/logout and retained stock Home/screensaver on the second TV. This is partial device coverage: its Ambilight API exposes different style names, so fixed colors/video modes are not yet verified or fully enabled. No provider configuration was copied from another TV.
 
 ## 0.11.2 — 2026-11-13
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify every six-tile permutation without an Android SDK or a TV."""
+"""Verify every eight-destination permutation and visibility combination without an Android SDK or a TV."""
 from pathlib import Path
 import os,shutil,subprocess,tempfile,sys
 root=Path(__file__).resolve().parent.parent

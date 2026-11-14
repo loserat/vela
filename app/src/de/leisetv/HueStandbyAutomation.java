@@ -40,7 +40,7 @@ final class HueStandbyAutomation implements AutoCloseable {
         if(enabled&&!view(c).optBoolean("ready"))throw new IOException("Select a paired Hue room first");
         AdminServer.preferences(c).edit().putBoolean("hue_standby_off",enabled).commit();return view(c);
     }
-    private boolean enabled(){return AdminServer.preferences(context).getBoolean("hue_standby_off",false);}
+    private boolean enabled(){return IntegrationSettings.hue(context)&&AdminServer.preferences(context).getBoolean("hue_standby_off",false);}
     private void sleep(long token){
         if(!enabled()||power==null||closed)return;
         final JSONObject target=HueController.standbyTarget(context);

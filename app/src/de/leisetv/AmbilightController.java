@@ -10,19 +10,26 @@ final class AmbilightController {
     private static final String BASE="http://127.0.0.1:1925/6/";
     static final class State {
         final boolean on,video,audio,color;
-        final String style,preset;
+        final String style,preset,colorStyle;
         final int hue,saturation,brightness;private final JSONObject supported;
         State(JSONObject power,JSONObject config,JSONObject supported)throws JSONException{
             this.supported=supported;
             if(!("On".equals(power.optString("power"))||"Off".equals(power.optString("power")))||!config.has("styleName"))throw new JSONException("Missing state");
-            on="On".equals(power.optString("power"));style=config.getString("styleName");preset=config.optString("menuSetting");
-            boolean v=false,a=false,c=false;JSONArray styles=supported.optJSONArray("supportedStyles");
+            on="On".equals(power.optString("power"));String currentStyle=config.getString("styleName");preset=config.optString("menuSetting");
+            boolean v=false,a=false;String manualStyle="";int manualScore=-1;JSONArray styles=supported.optJSONArray("supportedStyles");
             if(styles!=null)for(int i=0;i<styles.length();i++){
                 JSONObject item=styles.optJSONObject(i);if(item==null)continue;String name=item.optString("styleName");
                 v|="FOLLOW_VIDEO".equals(name);a|="FOLLOW_AUDIO".equals(name);
-                if("FOLLOW_COLOR".equals(name)){JSONArray algorithms=item.optJSONArray("algorithms");if(algorithms!=null)for(int j=0;j<algorithms.length();j++)c|="MANUAL_HUE".equals(algorithms.optString(j));}
+                JSONArray algorithms=item.optJSONArray("algorithms");boolean manual=false;
+                if(algorithms!=null)for(int j=0;j<algorithms.length();j++)manual|="MANUAL_HUE".equals(algorithms.optString(j));
+                if(manual&&!name.isEmpty()){
+                    int score=name.equals(currentStyle)?2:"FOLLOW_COLOR".equals(name)?1:0;
+                    if(score>manualScore){manualStyle=name;manualScore=score;}
+                }
             }
-            video=v;audio=a;color=c;
+            video=v;audio=a;colorStyle=manualStyle;color=!manualStyle.isEmpty();
+            // Keep the TV's advertised name for writes; use the canonical UI mode for both variants.
+            style=color&&currentStyle.equals(colorStyle)?"FOLLOW_COLOR":currentStyle;
             JSONObject settings=config.optJSONObject("colorSettings");JSONObject rgb=settings==null?null:settings.optJSONObject("color");
             hue=rgb==null?-1:rgb.optInt("hue",-1);saturation=rgb==null?-1:rgb.optInt("saturation",-1);brightness=rgb==null?-1:rgb.optInt("brightness",-1);
         }
@@ -35,11 +42,12 @@ final class AmbilightController {
     static void mode(boolean audio)throws Exception{
         request("ambilight/currentconfiguration",new JSONObject().put("styleName",audio?"FOLLOW_AUDIO":"FOLLOW_VIDEO").put("isExpert",false).put("menuSetting",audio?"ENERGY_ADAPTIVE_BRIGHTNESS":"STANDARD"));
     }
-    static void color(int hue,int saturation,int brightness)throws Exception{
+    static void color(State previous,int hue,int saturation,int brightness)throws Exception{
         if(hue<0||hue>255||saturation<0||saturation>255||brightness<0||brightness>255)throw new IllegalArgumentException("Color outside range");
+        if(previous==null||!previous.color)throw new IllegalStateException("Manual color unsupported");
         JSONObject settings=new JSONObject().put("color",new JSONObject().put("hue",hue).put("saturation",saturation).put("brightness",brightness))
             .put("colorDelta",new JSONObject().put("hue",0).put("saturation",0).put("brightness",0)).put("speed",255).put("algorithm","MANUAL_HUE");
-        request("ambilight/currentconfiguration",new JSONObject().put("styleName","FOLLOW_COLOR").put("isExpert",true).put("algorithm","MANUAL_HUE").put("colorSettings",settings));
+        request("ambilight/currentconfiguration",new JSONObject().put("styleName",previous.colorStyle).put("isExpert",true).put("algorithm","MANUAL_HUE").put("colorSettings",settings));
     }
     private static JSONObject request(String path,JSONObject body)throws Exception{
         HttpURLConnection connection=(HttpURLConnection)new URL(BASE+path).openConnection();

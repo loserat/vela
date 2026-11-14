@@ -2,9 +2,50 @@
 
 [Documentation](README.md) · [Testing](TESTING.md) · [Earlier evidence](VALIDATION-HISTORY.md)
 
-**November 13, 2026 · 0.11.2 · experimental beta.** Installed behavior, fixture checks and real provider acceptance are distinguished below.
+**November 14, 2026 · 0.11.6 · experimental beta.** Installed behavior, fixture checks and real provider acceptance are distinguished below.
 
-The [roadmap](ROADMAP.md) separately records proposed extensions. The documentation update adds no runtime feature and does not rerun or expand the physical acceptance results below.
+The [roadmap](ROADMAP.md) separately records proposed extensions. Version 0.11.6 is built and installed on the second TV. The source/documentation publication does not update either TV or extend the recorded device acceptance.
+
+## November 14 publication checks
+
+The public 0.11.6 APK build/signature, 104 web checks, 53 palette checks, 29 loopback Ambilight protocol checks and 1,290,240 layout configurations were repeated successfully. The staged repository passed 73 ignore/publication cases with 27 exact reviewed image exceptions; 117 index entries contained no ignored artifacts or private-key blocks. Gitleaks 8.30.1 found no secrets in the staged source/documentation snapshot. Local Markdown links were checked. These checks do not constitute a guarantee against every possible private value.
+
+Both READMEs and the hardware, setup, architecture, UI, testing and roadmap documents were reconciled. The second TV's technical identity and recorded physical acceptance are listed in [Hardware](HARDWARE.md). A final read-only reconnection attempt found the TV offline/unreachable; publication therefore relies on the successful device reports from earlier the same day, not a fresh live check. No TV configuration, installed app, light or Home assignment was changed for publication.
+
+## 0.11.6 ARD / ZDF app shortcuts
+
+- Optional tiles launch already-installed TV apps. Web Startseite independently saves ARD/ZDF visibility and reports local availability; Design includes their reserved positions. Existing installations default both off. Old six-item orders gain two slots while preserving every original relative position. No account state or media catalogue is stored in the dashboard.
+- Both signed builds, 104 web checks and 1,290,240 geometry configurations passed (40,320 eight-item permutations × 16 visibility combinations × two layouts). Existing six-visible-tile geometry is retained when the optional apps are off. Initial web assertions still expected six stored positions and were updated to the intended eight-slot migration; these were test-contract changes, not layout failures.
+- The synthetic browser saved/reloaded both switches and saved a reordered tile. Eight preview tiles fit at 320 px with `scrollWidth == innerWidth`; desktop controls were visually reviewed. Earlier wider mobile/browser evidence remains release-specific.
+- Twenty actual second-TV API/native assertions passed: installed version/hash, preserved names/cameras/fonts/keys/disabled integrations, legacy order migration, discovery of both apps, default-off behavior, atomic invalid-map rejection and authentication, enabling and placement next to Ambilight, both launches and Home return, and retained final settings/default Home.
+- ARD was found as a Philips NetTV launcher and opened the Philips browser; ZDF used its installed Android app. The initial ARD capture showed sign-in, and ZDF initially showed splash. Subsequent launches reached both normal catalogue/start pages. The agent completed no login, accepted no app terms and started no programme. Actual playback, provider updates, other models and long-running app behavior remain separate acceptance work.
+- Both shortcuts are enabled on this TV, with cameras/Hue/UniFi still disabled. The prior relative order, theme and layout were retained while the two new tiles were inserted after Ambilight.
+
+## 0.11.5 per-TV Hue / UniFi switches
+
+- Web Startseite saves two independent flags without resetting connections, Home order, names, fonts, camera visibility, shortcuts or the stored Hue standby option. Disabled Hue loses its TV tile/web tab/effective shortcuts; disabled UniFi loses its Network inventory/entry. Passive TV network status and Ambilight remain available. Existing installs default to enabled.
+- Both signed builds, 94 web state/payload checks and 5,760 geometry configurations passed. The synthetic browser confirmed save/reload/re-enable and hidden Hue navigation; `scrollWidth` did not exceed `innerWidth` at 320, 390, 768 and 1280 px. No console warnings/errors were recorded. Physical phone/Safari behavior remains separate.
+- The final second-TV pass passed 23 API/native checks: atomic disable/re-enable, active Hue closure, effective key suppression/restoration, hidden/restored UniFi entry, authenticated routes, four invalid-map rejections without partial saving, retained names/order/fonts/raw keys/cameras, unchanged Ambilight and Home assignment. Initial version/hash/default-on/update-retention checks passed separately. The first Home assertion assumed cameras were visible; the corrected probe respected the owner's already-hidden cameras and confirmed the resulting four-tile Home.
+- Hue and UniFi are left disabled on this TV. No lamp or router command was sent. This location has no paired providers, so preserving a populated bridge/controller setup and real standby race behavior are not new physical-provider acceptance claims. Existing backend guards and prior fixture evidence retain their own scope.
+
+## 0.11.4 TPM191E manual Ambilight colors and brightness
+
+- The controller chooses an explicitly advertised `MANUAL_HUE` style, including `Lounge light` on this TV. The current style is retained when multiple manual styles are advertised; otherwise canonical `FOLLOW_COLOR` is preferred. Raw request names and normalized UI mode are separate.
+- The same 16 colors and byte-scaled HSB values now work with both styles. Brightness reuses the saved capabilities, reads only the current configuration and requires exact hue/saturation/brightness confirmation before updating its acknowledged state.
+- Both signed builds, 29 production-controller loopback checks, 53 palette checks and 78 web checks passed. The loopback suite covers old/new styles and incomplete descriptors; the older physical TV was not updated or contacted in this pass.
+- On the second physical TV, 24 GUI checks passed: every palette card enabled, actual GUI red/green/blue writes matched readback and dominant processed LED channels, touch brightness and injected Left/Right steps worked, hue/saturation and focus stayed fixed, and captured pixels outside the slider were identical. Six separate installed-hash, pinned-HTTPS/login/version and retained Home/screensaver checks passed. Visual review confirmed the native Warmweiß/75% UI. These are technical checks, not calibrated wall-color or long-duration frame-rate measurements.
+- The owner subsequently confirmed that colors and brightness also work when operated personally on the TV. This is functional user acceptance, not calibrated color measurement or an extended-operation test.
+- An initial red protocol probe succeeded, but reposting the original nonexpert `ISF` / Warm White preset returned HTTP 200 without restoring it. The owner reported a manual restore; subsequent configuration and LED reads still showed red, so exact restoration was not credited. Final GUI tests explicitly selected the dashboard's manual Warmweiß at 75% with power On, confirmed by readback. Native preset switching through the Philips menu API remains outside this change.
+- Empty video-style descriptors still leave **Bild folgen** disabled. Music modes, native preset switching, other physical hardware, long-running behavior and restart/standby color persistence remain separate validation work. No Hue/camera configuration was copied or modified.
+
+## 0.11.3 second Philips / Android 12
+
+- Device properties confirm Philips TPM191E, Android 12 / API 31, ARMv7 and an Android rendering surface of 1920 × 1080 over a reported physical 3840 × 2160 size. The commercial model and panel size remain unknown.
+- The initial 0.11.2 install was rejected after an accidentally dismissed TV verification prompt; the user confirmed that cause, and a normal retry succeeded. No verifier settings were changed. The first HTTPS connection then failed with `Incompatible padding mode` in Android Keystore/Conscrypt.
+- Version 0.11.3 authorizes the required RSA operation and creates a new HTTPS alias on API 31+. Both signed builds and 78 web state/payload checks passed. Direct LAN HTTPS with a certificate pinned through authenticated ADB, PIN login, unauthenticated rejection, version/device state, empty new camera configuration and logout all passed on the second TV.
+- Installed version/hash, successful cold activity start, running process and retained default Home/screensaver were checked separately. The initial 0.11.2 Home-label snapshot captured an Ambilight page instead; the 0.11.3 snapshot captured the stock launcher after intervening dashboard navigation. Both are retained as partial observations; neither is counted as a complete Home/navigation pass. No Dashboard fatal exception was found in the checked runtime log.
+- Under 0.11.3 the second TV's different style names/incomplete descriptors left fixed-color/video controls disabled where not recognized. Version 0.11.4 adds the fixed-color/brightness evidence above; video modes, Hue/cameras, HDMI selection, physical color keys, standby and automatic screensaver behavior remain separate work. Its settings were initialized separately from the first TV.
+- Subsequent owner-requested Home assignment: the Android Home role alone was insufficient because the Google Home activity had higher priority. Android rejected changing the single component. After explicit owner approval, its package was disabled for user 0, retaining the app/data and recording recovery commands. Seven technical checks passed: dashboard resolution, retained stock package, user-level disabled state, test origin outside the dashboard, Home-event navigation, stable foreground observations and visible native Home destinations. The owner then confirmed that the physical Home button opens the dashboard. Reboot/standby persistence, broad navigation and actually executing recovery remain unverified. [Setup and recovery](INSTALLATION.md#home-assignment).
 
 ## Implemented and installed
 

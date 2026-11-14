@@ -36,6 +36,7 @@ final class RemoteShortcuts {
         String value=AdminServer.preferences(context).getString("remote_"+COLORS[index],DEFAULTS[index]);
         return label(value).isEmpty()?DEFAULTS[index]:value;
     }
+    static String effectiveAction(Context context,int index){String action=action(context,index);return "hue".equals(action)&&!IntegrationSettings.hue(context)?"none":action;}
     static JSONObject view(Context context)throws Exception{
         JSONObject result=new JSONObject();for(int i=0;i<COLORS.length;i++)result.put(COLORS[i],action(context,i));return result;
     }

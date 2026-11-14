@@ -12,7 +12,7 @@ import java.util.*;
 public final class UniFiActivity extends TvScreen {
     private final Handler handler=new Handler();private boolean active,loading;private int page;private JSONObject state=new JSONObject();private TvButton refreshButton;
     @Override public void onCreate(Bundle saved){super.onCreate(saved);render();}
-    @Override protected void onResume(){super.onResume();active=true;load(false);}
+    @Override protected void onResume(){super.onResume();if(!IntegrationSettings.unifi(this)){finish();return;}active=true;load(false);}
     @Override protected void onPause(){active=false;super.onPause();}
     private void load(boolean force){if(loading)return;loading=true;subtitle(UiText.t("Status wird abgerufen …"));new Thread(()->{JSONObject value;try{value=UniFiController.view(getApplicationContext(),force);}catch(Exception error){value=new JSONObject();try{value.put("stale",true).put("message",UniFiController.error(error));}catch(JSONException ignored){}}final JSONObject result=value;handler.post(()->{loading=false;if(!active)return;state=result;render();});},"unifi-inventory").start();}
     private void render(){

@@ -52,8 +52,8 @@ public final class AmbilightActivity extends Activity {
         back.setNextFocusUpId(colors[12].getId());back.setNextFocusDownId(back.getId());back.setNextFocusRightId(refresh.getId());
     }
     private void choose(int index,View source){
-        final AmbilightPalette.Entry color=AmbilightPalette.COLORS[index];final int level=state!=null&&state.manual()?state.brightness:192;
-        perform(()->{AmbilightController.color(color.hue,color.saturation,level);AmbilightController.power(true);},source);
+        final AmbilightPalette.Entry color=AmbilightPalette.COLORS[index];final AmbilightController.State previous=state;final int level=previous!=null&&previous.manual()?previous.brightness:192;
+        perform(()->{AmbilightController.color(previous,color.hue,color.saturation,level);AmbilightController.power(true);},source);
     }
     private final android.os.Handler brightnessHandler=new android.os.Handler();
     private int brightnessWanted=-1;private boolean brightnessWriting,brightnessEditing;
@@ -71,7 +71,9 @@ public final class AmbilightActivity extends Activity {
         final int request=generation;final AmbilightController.State previous=state;
         worker.execute(()->{
             AmbilightController.State next=null;
-            try{AmbilightController.color(previous.hue,previous.saturation,level);next=AmbilightController.readAfterColor(previous);}catch(Exception ignored){}
+            try{AmbilightController.color(previous,previous.hue,previous.saturation,level);next=AmbilightController.readAfterColor(previous);
+                if(!next.manual()||next.hue!=previous.hue||next.saturation!=previous.saturation||next.brightness!=level)next=null;
+            }catch(Exception ignored){}
             final AmbilightController.State result=next;
             runOnUiThread(()->{
                 if(!active||request!=generation)return;brightnessWriting=false;

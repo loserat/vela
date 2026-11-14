@@ -39,6 +39,8 @@ The background remains a single static cached image. Semantic accents distinguis
 
 ## Stable rendering
 
+Ambilight fixed colors are enabled only for an explicitly advertised `MANUAL_HUE` capability. Both `FOLLOW_COLOR` and the TPM191E's `Lounge light` use the same palette/preview. Select a color with OK, then focus **Helligkeit** and use Left/Right; Up/Down leave the slider. Brightness becomes available after a manual color is confirmed. Updates preserve the raw TV style name, exact hue/saturation bytes and slider focus; a mismatched level readback is reported as unconfirmed. An incomplete video descriptor leaves **Bild folgen** unavailable. Native Philips preset switching is separate from these manual colors.
+
 The screens share a 1920 × 1080 virtual canvas, spacing, typography, rounded cards and static icons. The canvas scales uniformly to the Android display. `TvStyle` retains one ARGB background bitmap (approximately 8 MiB) and cached typefaces per process. Cards use solid fills and explicit focus strokes rather than allocating gradients or playing default button state animations on every update.
 
 Home's clock updates once per minute. Screensaver clock work is stopped when its settings page is paused. Hue has no background polling. Its brightness path sends a coalesced write, retains the confirmed target, and redraws the slider; it does not reload the room/light/scene catalog or disable the page on each step. Failures show an inline unconfirmed-change message while retaining the last confirmed controls.
@@ -46,6 +48,10 @@ Home's clock updates once per minute. Screensaver clock work is stopped when its
 These measures reduce unnecessary drawing and network work. They are not a frame-rate guarantee for every Android TV driver or firmware. [Test methods and limits](TESTING.md).
 
 ## Device behavior
+
+Web **Startseite → Mediathek-Schnellzugriffe** offers independent **ARD Mediathek** and **ZDF Mediathek** switches with installed-app status. Save adds/removes their TV tiles; it does not open, install or authenticate the provider apps. Position both under **Design & Anordnung**, including across rows. Optional tiles default off on other installations. The TV's OK action launches the local app, and Home returns through the configured dashboard assignment. Provider onboarding and playback stay in the provider app.
+
+Web **Startseite → Funktionen an diesem TV** provides separate **Philips Hue** and **UniFi Network** switches and an explicit Save. Changes remain drafts until saved. Disabling Hue removes its TV tile and web tab, suppresses its shortcut actions/legend and pauses its standby automation. Disabling UniFi removes the native entry/web inventory without hiding the TV's own network status. Connections, tile positions and raw key assignments remain saved; re-enabling does not pair or send provider actions. With both cameras and Hue hidden, Home uses two destinations per row. A disabled saved Hue shortcut is shown as inactive in the editor with a separate explanation.
 
 Opening Devices only discovers inputs. A click revalidates the selected input and starts the native TV app with Android's passthrough channel URI and channel MIME type. CEC/custom labels and connection state come from the TV service. State labels are reported framework values, not a fresh electrical or calibrated device-power measurement. A retained selection means **last chosen**, not a continuous proof of the currently active physical source. Unchanged callbacks do not rebuild the page.
 
@@ -89,7 +95,7 @@ The panel reports the last recorded attempt as confirmed by the bridge, unconfir
 
 Web **Design → Design & Anordnung** provides four designs: Nordlicht (the original look), Mitternacht (blue), Abendrot (warm brown/rose) and Wald (green). The theme changes shared native backgrounds/card surfaces, preserving light preset colors, text/focus contrast and controls. The web administration itself retains its current style.
 
-Drag any of the six existing Home destinations to a new slot, including across rows, or use its **nach vorne/nach hinten** buttons. The arrow buttons retain keyboard focus after moving. Choose **Groß oben · klein unten** or **Alle Kacheln gleich groß**. The header/clock, network badge and color-key legend retain their fixed TV-safe locations. This is a bounded grid editor, not arbitrary pixel coordinates or a custom-app launcher.
+Drag any of the eight reserved Home destinations to a new slot, including across rows, or use its **nach vorne/nach hinten** buttons. The arrow buttons retain keyboard focus after moving. Choose **Groß oben · klein unten** or **Alle Kacheln gleich groß**. The header/clock, network badge and color-key legend retain their fixed TV-safe locations. This is a bounded grid editor, not arbitrary pixel coordinates or a custom-app launcher.
 
 The preview reflects the current draft, including unsaved Home names/visibility; those fields still use their own Save button. Appearance saves preserve other drafts. **Zurücksetzen** restores the appearance draft to Nordlicht/default order/featured layout; the TV changes only after explicit Save. Pending saves reject conflicting reorder/theme/layout edits.
 

@@ -4,8 +4,8 @@ public final class HomeLayoutChecks {
     private static int configurations;
     private static void require(boolean value,String message){if(!value)throw new AssertionError(message);}
     private static void verify(List<String> order){
-        for(boolean camera:new boolean[]{true,false})for(String mode:new String[]{"focus","grid"}){
-            List<HomeLayout.Slot> slots=HomeLayout.positions(order,camera,mode);List<String> expected=new ArrayList<>(order);if(!camera)expected.remove("cameras");
+        for(boolean camera:new boolean[]{true,false})for(boolean hue:new boolean[]{true,false})for(boolean ard:new boolean[]{true,false})for(boolean zdf:new boolean[]{true,false})for(String mode:new String[]{"focus","grid"}){
+            List<HomeLayout.Slot> slots=HomeLayout.positions(order,camera,hue,ard,zdf,mode);List<String> expected=HomeLayout.normalizedOrder(order);if(!camera)expected.remove("cameras");if(!hue)expected.remove("hue");if(!ard)expected.remove("ard");if(!zdf)expected.remove("zdf");
             require(slots.size()==expected.size(),"Visible tile count");
             for(int i=0;i<slots.size();i++){
                 HomeLayout.Slot slot=slots.get(i);require(slot.id.equals(expected.get(i)),"Stored order is respected");
@@ -28,7 +28,8 @@ public final class HomeLayoutChecks {
         List<HomeLayout.Slot> hidden=HomeLayout.positions(defaults,false,"focus");require(hidden.get(0).w==852&&hidden.get(2).id.equals("tv")&&hidden.get(2).h==132,"Hidden camera leaves two large and three small tiles");
         List<String> moved=new ArrayList<>(defaults);Collections.swap(moved,0,5);require(HomeLayout.positions(moved,true,"focus").get(5).id.equals("cameras")&&HomeLayout.positions(moved,true,"focus").get(5).h==132,"Camera can move to small row");
         boolean invalid=false;try{HomeLayout.positions(defaults,true,"unknown");}catch(IllegalArgumentException e){invalid=true;}require(invalid,"Unknown geometry rejected");
-        permutations(new ArrayList<>(defaults),0);require(configurations==2880,"All permutations, visibility states and modes tested");
-        System.out.println("Home layout checks passed: 2880 configurations; bounds, overlap, order and D-pad reachability verified.");
+        List<String> legacy=new ArrayList<>(Arrays.asList(HomeLayout.LEGACY_ORDER));Collections.reverse(legacy);require(HomeLayout.validOrder(legacy)&&HomeLayout.normalizedOrder(legacy).subList(0,6).equals(legacy),"Legacy custom order is preserved before appending shortcuts");
+        permutations(new ArrayList<>(defaults),0);require(configurations==1290240,"All eight-item permutations, visibility states and modes tested");
+        System.out.println("Home layout checks passed: 1290240 configurations; bounds, overlap, order and D-pad reachability verified.");
     }
 }

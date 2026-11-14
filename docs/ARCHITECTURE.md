@@ -8,9 +8,21 @@ The app uses native Android views and Canvas drawing rather than a browser-rende
 
 The package `de.leisetv`, legacy internal preference/key names, `NickApplication` and signing environment variables remain unchanged for update compatibility. None of these identifiers is displayed as project branding in the TV interface.
 
+## Optional app shortcuts and integrations
+
+`AppShortcuts` is a bounded local launcher catalogue for ARD/ZDF. Separate boolean preferences default off and are changed through authenticated `POST /api/app-shortcuts`; the complete two-boolean map is validated before one commit. Its view reports availability from Android's installed leanback activities, preferring known TV package IDs and falling back to exact matching TV labels for opaque Philips NetTV wrapper packages. It never fetches provider catalogues, handles accounts or installs apps. If the saved app is later unavailable, clicking the tile reports that locally.
+
+`HomeLayout` accepts legacy six-item orders and current eight-item orders. Normalization appends missing optional IDs without changing existing relative order; visibility flags filter the rendered set. Seven/eight visible destinations use at most four per row. The web uses the same eight reserved IDs and an equivalent row split; hidden optional entries remain reorderable. Long native Home labels are fitted to the actual card width.
+
+`IntegrationSettings` stores only `integration_hue` and `integration_unifi` in the TV's ordinary app preferences, defaulting to true for backward compatibility. Authenticated `POST /api/integrations` requires exactly two booleans and validates both before one commit; `GET /api/integrations` and `/api/state.integrations` expose those flags. No provider configuration is erased or copied. Save increments the existing revision for live Home updates.
+
+Disabling gates all corresponding authenticated provider routes with HTTP 409 before dispatch, guards native provider entry points, suppresses Hue standby jobs/queued-off eligibility and closes the disabled detail activity. Already-dispatched network operations cannot be recalled. The stored Hue standby flag stays intact for later re-enabling. The web skips disabled provider loaders and ignores late results; hidden tabs are omitted from keyboard traversal. Home keeps the normalized saved order but removes disabled Hue from its visible geometry and effective color-key actions; raw shortcut assignments are unchanged. Network hides its UniFi entry while retaining the passive Android status.
+
 ## Light commands
 
 `AmbilightController` addresses only the TV's own JointSpace v6 service on `127.0.0.1:1925/6`. It supports the unauthenticated HTTP adapter used by the test Philips; authenticated HTTPS-only models remain unsupported. `AmbilightPalette` converts hue degrees/saturation percentages to 0–255 wire bytes. Brightness retains exact hue/saturation bytes.
+
+`State.colorStyle` retains the explicitly advertised `MANUAL_HUE` style name, including `Lounge light` on TPM191E. `State.style` normalizes the active manual style to `FOLLOW_COLOR` for UI selection. A color command takes the already-read state, so it neither guesses the style from the model nor reloads capabilities for every brightness step. Empty descriptors grant no capability. The slider reads only `currentconfiguration` and requires matching hue/saturation/brightness before acknowledging the level. Native manufacturer presets may ignore an HTTP-200 configuration write and are not a supported restore path on this firmware.
 
 `HueController` restricts setup to local IPv4 addresses, validates Bridge metadata/certificate identity, pins the certificate and stores the application key encrypted. Pairing requires the physical button. Room selection is explicit, scene IDs are checked against that room, and configuration/read/action operations are serialized to avoid a room-selection race. Hue uses 16-bit hue and a 0–254 brightness/saturation scale.
 
@@ -104,11 +116,11 @@ An observed interactive-to-sleep transition snapshots the stored Hue target, sch
 
 Rapid wake/disable/config changes suppress queued work; an already transmitted network request cannot be recalled. There are no persistent retries, polling, automatic wake/on commands or shutdown guarantees. The service unregisters its receiver on destruction. Network/device availability after standby is best effort and has not been verified on the physical Philips for this feature.
 
-## Appearance and deterministic Home layout (0.10.0)
+## Appearance and deterministic Home layout
 
-`HomeAppearance` owns `home_theme`, `home_layout` and the six-ID `home_order` JSON preference. `/api/state.appearance` returns `{theme, layout, order}`. Authenticated POST `/api/appearance` requires the complete map: a four-theme allowlist, `focus`/`grid`, and a unique permutation of `cameras`, `ambilight`, `hue`, `tv`, `inputs`, `system`. Validation precedes one preference commit and an advancing Home revision. There are no arbitrary coordinates, packages, URLs or intents in this configuration. Unknown retained theme/layout IDs and malformed order JSON fall back to the original defaults.
+`HomeAppearance` owns `home_theme`, `home_layout` and the eight-ID `home_order` JSON preference (six-ID legacy orders are accepted and normalized). `/api/state.appearance` returns `{theme, layout, order}`. Authenticated POST `/api/appearance` requires the complete map: a four-theme allowlist, `focus`/`grid`, and a unique permutation of `cameras`, `ambilight`, `hue`, `tv`, `inputs`, `system`, `ard`, `zdf`; a complete legacy six-ID permutation is also accepted and gains the two optional IDs. Validation precedes one preference commit and an advancing Home revision. There are no arbitrary coordinates, packages, URLs or intents in this configuration. Unknown retained theme/layout IDs and malformed order JSON fall back to the original defaults.
 
-`HomeLayout` is pure Java geometry, separately tested over all 2,880 configurations. It filters the camera only for rendering, computes two bounded rows and deterministic nearest-column D-pad neighbors. Main connects the lower row to the existing network badge. Native tiles choose the appropriate compact/featured rendering by their slot, with live updates preserving a still-visible focused destination.
+`HomeLayout` is pure Java geometry, separately tested over all 1,290,240 current order/visibility/layout configurations. It filters cameras, Hue and optional app tiles only for rendering, computes two bounded rows and deterministic nearest-column D-pad neighbors. Main connects the lower row to the existing network badge. Native tiles choose the appropriate compact/featured rendering by their slot, with live updates preserving a still-visible focused destination.
 
 `TvStyle` retains one active cached 1920×1080 background bitmap; a theme change invalidates that cache. `NickApplication` reads the stored theme at process startup and invalidates the resumed view tree on theme changes. Detail-page controls, focus, scene state and worker lifetimes are preserved. Text/focus colors and functional light-color mappings stay independent of the theme. There is no animation loop or network fetch for design assets.
 

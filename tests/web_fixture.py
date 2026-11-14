@@ -5,13 +5,15 @@ from pathlib import Path
 import json,time,argparse
 parser=argparse.ArgumentParser();parser.add_argument('--port',type=int,default=9040);args=parser.parse_args()
 page=Path(__file__).resolve().parents[1]/'app/assets/settings/index.html'
-state={'version':'0.11.2','device':{'manufacturer':'Philips','model':'TEST','displayName':'Philips Test TV','productModel':'55TEST/12'},'display':{'camera':True,'clock':True,'date':True,'homeTitle':'Zuhause'},'cameras':[{'id':'fixture-1','name':'Eingang','available':True,'host':'Lokale Quelle','status':'ready'},{'id':'fixture-2','name':'Garten','available':False,'status':'missing'}],'defaultCameraId':'fixture-1'}
+state={'version':'0.11.6','device':{'manufacturer':'Philips','model':'TEST','displayName':'Philips Test TV','productModel':'55TEST/12'},'display':{'camera':True,'clock':True,'date':True,'homeTitle':'Zuhause'},'cameras':[{'id':'fixture-1','name':'Eingang','available':True,'host':'Lokale Quelle','status':'ready'},{'id':'fixture-2','name':'Garten','available':False,'status':'missing'}],'defaultCameraId':'fixture-1'}
 saver={'style':'clock','date':True,'dim':True}
 hue={'configured':True,'connected':True,'host':'10.0.0.2','roomId':'1','roomName':'TV-Zimmer','rooms':[{'id':'1','name':'TV-Zimmer'},{'id':'2','name':'Küche'}]}
 state['interface']={'language':'de','textFont':'sans','clockFont':'sans'}
 state['appearance']={'theme':'nordlicht','layout':'focus','order':['cameras','ambilight','hue','tv','inputs','system']}
+state['integrations']={'hue':True,'unifi':True}
+state['appShortcuts']={'ard':False,'zdf':False,'ardAvailable':True,'zdfAvailable':True}
 state['remote']={'red':'cameras','green':'ambilight','yellow':'hue','blue':'inputs'}
-def device_info():return {'productModel':state['device'].get('productModel',''),'productModelSource':'stored' if state['device'].get('productModel') else 'unavailable','manufacturer':'Philips','platformModel':'TEST','androidVersion':'8.0.0','apiLevel':26,'securityPatch':'2019-01-01','hardware':'Test hardware','abis':['armeabi-v7a'],'appVersion':'0.11.2','appVersionCode':20,'width':1920,'height':1080,'densityDpi':320,'uptimeMs':7260000,'storageFreeBytes':3000000000,'storageTotalBytes':8000000000,'checkedAt':int(time.time()*1000)}
+def device_info():return {'productModel':state['device'].get('productModel',''),'productModelSource':'stored' if state['device'].get('productModel') else 'unavailable','manufacturer':'Philips','platformModel':'TEST','androidVersion':'8.0.0','apiLevel':26,'securityPatch':'2019-01-01','hardware':'Test hardware','abis':['armeabi-v7a'],'appVersion':'0.11.6','appVersionCode':24,'width':1920,'height':1080,'densityDpi':320,'uptimeMs':7260000,'storageFreeBytes':3000000000,'storageTotalBytes':8000000000,'checkedAt':int(time.time()*1000)}
 automation={'enabled':False,'ready':True,'lastAttemptAt':0,'lastResult':'none'}
 class Handler(BaseHTTPRequestHandler):
  def log_message(self,*args):pass
@@ -20,9 +22,11 @@ class Handler(BaseHTTPRequestHandler):
  def do_GET(self):
   if self.path=='/':return self.send(page.read_text().replace('__ATPD_UI_CONFIG__',json.dumps(state['interface'],ensure_ascii=False,separators=(',',':'))).replace('__ATPD_UI_EN__',(page.parents[1]/'i18n/en.json').read_text()).encode())
   if self.path=='/api/state':return self.send(state)
+  if self.path.startswith('/api/hue/') and not state['integrations']['hue']:return self.send({'message':'Hue ist auf diesem TV deaktiviert.'},409)
+  if self.path.startswith('/api/unifi/') and not state['integrations']['unifi']:return self.send({'message':'UniFi ist auf diesem TV deaktiviert.'},409)
   if self.path=='/api/screensaver/state':return self.send(saver)
   if self.path=='/api/device/state':return self.send(device_info())
-  if self.path=='/api/device/diagnostic':return self.send({'format':'tv-dashboard-diagnostics-v1','device':{'manufacturer':'Philips','platformModel':'TEST','appVersion':'0.11.2'},'network':{'transport':'WLAN','internet':'validated'}})
+  if self.path=='/api/device/diagnostic':return self.send({'format':'tv-dashboard-diagnostics-v1','device':{'manufacturer':'Philips','platformModel':'TEST','appVersion':'0.11.6'},'network':{'transport':'WLAN','internet':'validated'}})
   if self.path=='/api/unifi/state':return self.send({'configured':True,'host':'10.0.0.1','siteId':'fixture-site','ready':True,'checkedAt':int(time.time()*1000),'sites':[{'id':'fixture-site','name':'Zuhause'}],'devices':[{'name':'Wohnzimmer AP','model':'U7 Test','state':'ONLINE'},{'name':'Gateway','model':'Test Gateway','state':'ONLINE'},{'name':'Switch','model':'Test Switch','state':'OFFLINE'}]})
   if self.path=='/api/hue/automation':return self.send(automation)
   if self.path=='/api/hue/state':return self.send(hue)
@@ -31,6 +35,12 @@ class Handler(BaseHTTPRequestHandler):
   self.send({'message':'Not found'},404)
  def do_POST(self):
   data=json.loads(self.rfile.read(int(self.headers.get('Content-Length','0'))) or b'{}')
+  if self.path=='/api/app-shortcuts':
+   if set(data)!={'ard','zdf'} or any(type(v) is not bool for v in data.values()):return self.send({'message':'Invalid app shortcuts'},400)
+   state['appShortcuts']={**data,'ardAvailable':True,'zdfAvailable':True};return self.send(state['appShortcuts'])
+  if self.path=='/api/integrations':
+   if set(data)!={'hue','unifi'} or any(type(v) is not bool for v in data.values()):return self.send({'message':'Invalid integration settings'},400)
+   state['integrations']=data;return self.send(data)
   if self.path=='/api/display':
    state['display']={key:data[key] for key in ['camera','clock','date','homeTitle']};state['device']['displayName']=data.get('deviceName') or 'Philips Test TV'
   elif self.path=='/api/interface':state['interface']=data;return self.send(data)

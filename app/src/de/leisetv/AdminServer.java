@@ -53,13 +53,16 @@ final class AdminServer implements Closeable {
         this.context=context.getApplicationContext();pin(context);
         try{
             KeyStore keys=KeyStore.getInstance("AndroidKeyStore");keys.load(null);
-            String alias="nickos-local-https-v3";
+            // Android 12's Conscrypt RSA callbacks require raw private-key operations.
+            // Use a fresh alias there: permissions on an existing Keystore key cannot be expanded.
+            // Older TVs keep their existing certificate and browser trust.
+            String alias=android.os.Build.VERSION.SDK_INT>=31?"nickos-local-https-v4":"nickos-local-https-v3";
             if(!keys.containsAlias(alias)){
                 KeyPairGenerator generator=KeyPairGenerator.getInstance("RSA","AndroidKeyStore");
                 generator.initialize(new KeyGenParameterSpec.Builder(alias,KeyProperties.PURPOSE_SIGN|KeyProperties.PURPOSE_DECRYPT)
                     .setKeySize(2048).setDigests(KeyProperties.DIGEST_NONE,KeyProperties.DIGEST_SHA256,KeyProperties.DIGEST_SHA384,KeyProperties.DIGEST_SHA512)
                     .setSignaturePaddings(KeyProperties.SIGNATURE_PADDING_RSA_PKCS1,KeyProperties.SIGNATURE_PADDING_RSA_PSS)
-                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
+                    .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE,KeyProperties.ENCRYPTION_PADDING_RSA_PKCS1)
                     .setCertificateSubject(new X500Principal("CN=TV-Dashboard"))
                     .setCertificateSerialNumber(BigInteger.ONE)
                     .setCertificateNotBefore(new Date(System.currentTimeMillis()-86400000))
@@ -157,6 +160,9 @@ final class AdminServer implements Closeable {
             if(expires==null||expires<System.currentTimeMillis()){
                 sessions.remove(token);reply(out,401,"application/json","{\"message\":\"Bitte anmelden\"}",null);return;
             }
+            if((path.startsWith("/api/hue/")&&!IntegrationSettings.hue(context))||(path.startsWith("/api/unifi/")&&!IntegrationSettings.unifi(context))){
+                reply(out,409,"application/json",new JSONObject().put("message",path.startsWith("/api/hue/")?"Hue ist auf diesem TV deaktiviert.":"UniFi ist auf diesem TV deaktiviert.").toString(),null);return;
+            }
             JSONObject result=new JSONObject();
             if(method.equals("GET")&&path.equals("/api/state"))result=state();
             else if(method.equals("POST")&&path.equals("/api/logout")){
@@ -179,6 +185,10 @@ final class AdminServer implements Closeable {
             else if(method.equals("GET")&&path.equals("/api/device/state"))result=DeviceInfo.view(context);
             else if(method.equals("POST")&&path.equals("/api/device/model"))result=DeviceInfo.saveModel(context,new JSONObject(body));
             else if(method.equals("POST")&&path.equals("/api/appearance"))result=HomeAppearance.save(context,new JSONObject(body));
+            else if(method.equals("GET")&&path.equals("/api/integrations"))result=IntegrationSettings.view(context);
+            else if(method.equals("POST")&&path.equals("/api/integrations"))result=IntegrationSettings.save(context,new JSONObject(body));
+            else if(method.equals("GET")&&path.equals("/api/app-shortcuts"))result=AppShortcuts.view(context);
+            else if(method.equals("POST")&&path.equals("/api/app-shortcuts"))result=AppShortcuts.save(context,new JSONObject(body));
             else if(method.equals("POST")&&path.equals("/api/interface"))result=UiSettings.save(context,new JSONObject(body));
             else if(method.equals("POST")&&path.equals("/api/remote/configure"))result=RemoteShortcuts.save(context,new JSONObject(body));
             else if(method.equals("GET")&&path.equals("/api/hue/automation"))result=HueStandbyAutomation.view(context);
@@ -218,7 +228,7 @@ final class AdminServer implements Closeable {
         for(int i=0;i<cameras.length();i++)if(cameras.getJSONObject(i).optString("id").equals(library.optString("defaultCameraId")))camera=cameras.getJSONObject(i);
         return new JSONObject().put("display",display).put("camera",camera).put("cameras",cameras).put("defaultCameraId",library.optString("defaultCameraId"))
             .put("device",new JSONObject().put("manufacturer",android.os.Build.MANUFACTURER).put("model",android.os.Build.MODEL).put("displayName",p.getString("device_display_name",android.os.Build.MANUFACTURER+" "+android.os.Build.MODEL)))
-            .put("interface",UiSettings.view(context)).put("appearance",HomeAppearance.view(context)).put("remote",RemoteShortcuts.view(context)).put("version","0.11.2");
+            .put("interface",UiSettings.view(context)).put("appearance",HomeAppearance.view(context)).put("remote",RemoteShortcuts.view(context)).put("integrations",IntegrationSettings.view(context)).put("appShortcuts",AppShortcuts.view(context)).put("version","0.11.6");
     }
     private void saveCamera(JSONObject data)throws Exception{
         String name=data.optString("name").trim();if(name.isEmpty()||name.length()>80)throw new IOException("Kameraname fehlt");

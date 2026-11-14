@@ -2,9 +2,41 @@
 
 [README](../README.md) · [Deutsche Projektbeschreibung](../README.de.md)
 
-Checked on November 13, 2026. These are live device observations, not a general compatibility certification.
+First TV checked on November 13, 2026; a second TV was checked on November 14, 2026. These are live device observations, not a general compatibility certification.
 
-## Physical TV
+## Second physical TV: partial Android 12 coverage
+
+The second TV was checked directly through its authorized ADB connection on **November 14, 2026**. The following fields come from the saved device baseline and installation/API reports, rather than an editable dashboard name.
+
+| Property | Observed value | Source |
+| --- | --- | --- |
+| Manufacturer | Philips | Android `ro.product.manufacturer` |
+| Android platform/model identifier | TPM191E | `ro.product.model` |
+| Android product identifier | PH9M_EA_5599 | `ro.product.name` |
+| Android version / API | 12 / 31 | `ro.build.version.release`, `ro.build.version.sdk` |
+| Supported application ABIs | armeabi-v7a, armeabi | `ro.product.cpu.abilist` |
+| Build display ID | STT2.230526.001 release-keys | `ro.build.display.id` |
+| Physical display size reported by Android | 3840 × 2160 | `wm size` |
+| Current Android rendering override | 1920 × 1080 | `wm size` |
+| Local Philips API | JointSpace 6.4.0 | Read-only local `system` response |
+| Latest verified dashboard package | 0.11.6 / version code 24 | Installed package/hash and authenticated API checks |
+| Commercial model / diagonal | Not established | Not inferred from TPM191E or the product code |
+
+**TPM191E is a platform identifier, not a verified retail model.** No screen size, security-patch date or broad model-family compatibility is inferred from it. The final documentation-only recheck could not reconnect to the TV (ADB offline / host down); it adds no new live acceptance result. The successful earlier checks from the same day remain the evidence below. No restart, standby test or lighting command was performed for publication.
+
+The signed 0.11.3 local variant was installed and its version/hash, successful activity start, running process and authenticated local HTTPS API checked. An Ambilight screenshot under 0.11.2 established the initial native rendering; full navigation/visual acceptance on 0.11.3 remains separate. The original launcher and screensaver selection were retained. The initial HTTPS failure under 0.11.2 was reproduced as a Keystore/Conscrypt padding error; the Android-12-specific identity and padding correction passed the real-device handshake/login regression. See [current status](STATUS.md#0113-second-philips--android-12).
+
+Under 0.11.3, Ambilight reads worked but its style names prevented fixed-color/video controls from being enabled. The later 0.11.4 pass recognizes `Lounge light` through `MANUAL_HUE`. All 24 physical GUI checks and six installed-package/API checks passed: GUI red/green/blue commands matched configuration and dominant processed LED channels; touch/Android-arrow brightness retained hue/saturation, focus and all pixels outside the slider. The final manual Warmweiß at 75% was confirmed. The native nonexpert preset could not be restored through `currentconfiguration`; final state is the dashboard's manual color, not an exact preset restore. The older TV was not updated during this pass.
+
+This is partial compatibility evidence. Video-follow/music/preset modes, camera playback, Hue, HDMI switching, physical color-key delivery, standby and automatic screensaver activation remain unverified on this second TV. No private provider configuration was transferred from the first TV. Device-reported RGB is separate from calibrated wall-color or long-running performance evidence.
+
+The owner subsequently requested direct dashboard access from Home. The default-role assignment alone did not defeat the bundled launcher's higher priority. Following explicit approval, the Google launcher package was disabled only for user 0, with its files/data retained and restoration commands recorded. Seven technical Home-assignment checks and a private visual review passed; the owner confirmed the physical Home button opens the dashboard. This establishes that button on the current firmware, not physical color-key delivery, startup/standby persistence or a tested recovery. [Home setup/recovery](INSTALLATION.md#home-assignment).
+
+Version 0.11.5 was subsequently installed on the second TV. The 23 final API/native assertions confirmed per-device Hue/UniFi disable/re-enable, inactive/restored Hue shortcuts, a hidden/restored UniFi entry, unchanged Ambilight and retained Home settings. Both integrations are left disabled at this location; already-hidden cameras and disabled Hue yield a four-destination Home. No provider commands were sent in that pass, and it does not establish preservation of a populated provider setup on this device. The owner separately confirmed functional colors/brightness after 0.11.4.
+
+Version 0.11.6 added opt-in ARD/ZDF app tiles on the second TV. Both existing launchers were discovered: ARD through a Philips NetTV wrapper/browser, ZDF through its Android TV app. Twenty API/native assertions passed for settings/migration, enabling, placement, app launches and Home return. Subsequent captures showed both provider start/catalogue pages. No app was installed, no login completed by the agent and no programme played. The two shortcuts are enabled; cameras, Hue and UniFi remain disabled.
+
+## First physical TV: Android 8 coverage
 
 | Property | Observed value | Source |
 | --- | --- | --- |
@@ -21,7 +53,7 @@ Checked on November 13, 2026. These are live device observations, not a general 
 
 The owner-reported marketed model is **55PUS6581/12**. This number was not independently read from the live device: Android identifies the platform as QM163E, while the local API does not expose a plaintext marketed model in the queried fields. The manufacturer's [data sheet](https://www.documents.philips.com/assets/20230307/fe892bffbb3a4e078c21afbe012b73a3.pdf) lists a 3840 × 2160 panel and three-sided Ambilight. Panel resolution is distinct from the Android app's current 1920 × 1080 rendering surface. The data sheet's original Android version is not the currently installed version; the table above uses live readings.
 
-## What was verified on this TV
+## What was verified on the first TV
 
 - Installation of the signed dashboard update with package identity preserved.
 - Runtime version 0.11.2 and installed APK hash.
