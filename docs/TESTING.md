@@ -28,7 +28,7 @@ Run `python3 tests/check_gitignore.py` to check Git's actual ignore behavior and
 | Native appearance | 19 | Complete validation, rendered order, compact camera, actual D-pad traversal, four themes, focus/detail-control retention and no light commands |
 | Hue standby automation | 18 | Actual emulator screen-state broadcasts with loopback Hue, default/disabled behavior, validation, scoped off, no wake-on/retry and stale target suppression |
 | Color-key native events | 12 | Android code mapping, repeat/key-up/cancel suppression, disabled action and custom System/Apps navigation on the isolated emulator |
-| Web state/payload logic | 104 | Independent drafts, names/models, presentation/shortcuts, per-TV integrations, ARD/ZDF visibility/availability/order, disabled requests/navigation and save/error/session handling |
+| Web state/payload logic | 107 | Independent drafts, names/models, presentation/shortcuts, per-TV integrations, ARD/ZDF visibility/availability/order, disabled requests/navigation and save/error/session handling |
 
 For 0.8.0 the palette, web, UniFi adapter/inventory, network and screensaver suites were repeated. The most recent complete Ambilight/general navigation suite runs remain the 0.7.0 component evidence; the 26-check Hue suite was rerun for 0.10.0.
 
@@ -239,3 +239,9 @@ On the second TV, 23 final API/native assertions passed for disabling/re-enablin
 The 104 web checks cover default-off app flags, explicit two-boolean saving, retained independent drafts/settings, availability messages, reload, movable optional entries, eight visible cards in four columns, failed-save retention and honest missing-app status. Earlier assertions expecting six stored IDs were adjusted to the intended eight-slot migration. Geometry checks cover all 40,320 eight-item orders × 16 visibility states × two layouts (1,290,240 configurations), plus legacy normalization assertions. Both signed builds passed.
 
 The synthetic browser verified enabled save/reload, an order change, eight preview cards and no horizontal body overflow at 320 px; desktop controls were reviewed. Twenty second-TV API/native assertions separately verified installed hash/version, retained settings and relative legacy order, local app discovery, atomic validation/authentication, enabling/placement, both app launches and Home return. Initial provider login/splash views were retained privately; later captures showed the actual provider start/catalogue pages. Playback, account setup and other devices remain outside this pass. Private provider screenshots, including any login codes, are never publication assets.
+
+## Shared primary-TV baseline (0.11.7)
+
+The 107-check web suite now explicitly distinguishes a retained legacy camera-first order from a fresh Ambilight-first baseline. It also verifies that resetting an appearance draft leaves a second location's media/integration/visibility choices intact. Native geometry checks pin the fresh default order, preserve legacy normalization and still cover all 1,290,240 order/visibility/layout combinations.
+
+Both signed builds passed. The primary QM163E / Android 8 TV passed sixteen installation/API/native assertions while updating from 0.11.2 to 0.11.7: hash/version, retained configuration and package set, unchanged pinned HTTPS identity, protected optional routes, exact web asset and standard visible Home. There were no provider or settings writes. Earlier suites and second-TV results retain their version-specific scope; 0.11.7 was not installed on the second TV.

@@ -2,13 +2,22 @@
 
 [Documentation](README.md) · [Testing](TESTING.md) · [Earlier evidence](VALIDATION-HISTORY.md)
 
-**November 14, 2026 · 0.11.6 · experimental beta.** Installed behavior, fixture checks and real provider acceptance are distinguished below.
+**November 14, 2026 · 0.11.7 · experimental beta.** Installed behavior, fixture checks and real provider acceptance are distinguished below.
 
-The [roadmap](ROADMAP.md) separately records proposed extensions. Version 0.11.6 is built and installed on the second TV. The source/documentation publication does not update either TV or extend the recorded device acceptance.
+The [roadmap](ROADMAP.md) separately records proposed extensions. Version 0.11.7 is built and installed on the primary TV; the second TV remains on its last verified 0.11.6. Both use the same source with independent device settings.
 
-## Continuing after the second-TV validation
+## 0.11.7 primary-TV baseline and optional location settings
 
-The [deployment snapshot](HARDWARE.md#deployment-snapshot-after-the-second-tv-work) records the final second-TV arrangement, settings and the different installed versions: first TV 0.11.2, second TV 0.11.6. Source and documentation were saved on GitHub in commit `cc37c11`; the subsequent documentation handoff adds no application change or device test. Neither TV was updated, contacted or reconfigured for that handoff. Recheck the actual target before continuing device work.
+- The primary TV is the reference for fresh-install presentation: Nordlicht, featured rows, Ambilight / cameras / Hue above Television / Devices / System, German and default clock/text fonts. Cameras/clock/date and Hue/UniFi default on; ARD/ZDF default off. No private names, addresses or provider credentials are built into those defaults. [Setup table](INSTALLATION.md#shared-project-baseline-and-per-tv-settings).
+- Native and web defaults/reset agree. An existing six/eight-item order remains authoritative; migration only adds missing reserved media positions. The second-TV arrangement is configured through Startseite visibility/integration/app switches and Design order, using the same app. A design reset never resets those feature choices.
+- Both public and retained-key builds/signature checks, 107 web checks and 1,290,240 layout configurations passed. New web regressions distinguish saved legacy order from fresh defaults and confirm independent optional settings survive an appearance reset. Earlier protocol/provider tests retain their documented scope.
+- Sixteen primary-TV checks passed after updating from 0.11.2 in place: installed hash, runtime 0.11.7/code 25, retained camera catalogue/default, names/model/display, appearance/order, interface/fonts/keys, Hue pairing/room, saver/activation/standby flag, default Home and package set. Pinned HTTPS served the exact settings asset, both new routes rejected unauthenticated access, the native Home contained the standard destinations without ARD/ZDF, and the dashboard was foreground.
+- Hue/UniFi remain enabled on the primary TV and media shortcuts off. No application-settings write, light command, HDMI action, provider pairing or app removal was performed for this update. Camera playback, new physical Ambilight commands and extended standby behavior were not retested. The second TV was not contacted or updated; its saved optional configuration remains its own.
+- This synchronizes the installed primary-TV version with the current project source; there is no automatic GitHub updater or cross-TV settings synchronization.
+
+## Earlier continuation after the second-TV validation
+
+The [deployment snapshot](HARDWARE.md#deployment-snapshot-after-the-second-tv-work) records the final second-TV arrangement and the latest separately verified installed versions. At that earlier handoff, these were first TV 0.11.2 and second TV 0.11.6; the primary TV has since been updated as described above. Source and documentation were saved on GitHub in commit `cc37c11`; the subsequent documentation handoff adds no application change or device test. Neither TV was updated, contacted or reconfigured for that handoff. Recheck the actual target before continuing device work.
 
 ## November 14 publication checks
 

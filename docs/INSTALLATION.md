@@ -12,7 +12,7 @@ python3 tests/check_palette.py
 python3 app/build.py
 ```
 
-`fetch_deps.py` downloads LibVLC 3.7.7 from Maven Central and verifies the pinned SHA256. The build packages `armeabi-v7a` and produces `dist/TV-Dashboard-0.11.6.apk`; generated dependencies and APKs are ignored by Git.
+`fetch_deps.py` downloads LibVLC 3.7.7 from Maven Central and verifies the pinned SHA256. The build packages `armeabi-v7a` and produces `dist/TV-Dashboard-0.11.7.apk`; generated dependencies and APKs are ignored by Git.
 
 ## Signing and retained data
 
@@ -30,7 +30,7 @@ Select the actual device explicitly, especially when an emulator is also running
 
 ```sh
 adb devices
-adb -s DEVICE install -r dist/TV-Dashboard-0.11.6.apk
+adb -s DEVICE install -r dist/TV-Dashboard-0.11.7.apk
 adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -58,6 +58,27 @@ adb -s DEVICE shell input keyevent KEYCODE_HOME
 ```
 
 Those identifiers and original state are specific to the tested TV; verify another TV independently. Home assignment passed seven technical checks, including a Home event from Android settings and the rendered dashboard, followed by the owner's physical-remote confirmation. Reboot/standby persistence and executing the recovery sequence remain separate checks.
+
+## Shared project baseline and per-TV settings
+
+All TVs use the same application source. Since 0.11.7 the reference setup is the primary TV's presentation, with other locations configured independently through local web settings. There is no separate second-TV build or automatic copying of its settings.
+
+| Setting | Fresh-install baseline | Web section for customization |
+| --- | --- | --- |
+| Theme / layout | Nordlicht / featured upper row | Design |
+| Visible destination order | Ambilight, Cameras, Hue, Television, Devices, System | Design → Design & Anordnung |
+| Camera, clock and date visibility | On | Startseite |
+| Hue / UniFi functionality | On; connections must be configured separately | Startseite → Funktionen an diesem TV |
+| ARD / ZDF app tiles | Off; two reserved positions follow System | Startseite → Mediathek-Schnellzugriffe |
+| Language / clock and text fonts | German / default system fonts | Design → Sprache & Schrift |
+
+For the second-TV arrangement, hide cameras, disable Hue/UniFi, enable the installed ARD/ZDF apps, then move those tiles after Ambilight in Design. Save each form. This yields Ambilight / ARD / ZDF above Television / Devices / System; names and theme remain your choice. No preset-selection button or automatic provider pairing is involved.
+
+An update retains existing per-TV settings, including old tile orders and a second TV's disabled integrations or enabled media tiles. Only missing preferences use the baseline. **Design → Reset** changes the appearance draft only; it does not reset integration flags, app visibility or provider connections. Existing camera-first orders are preserved until explicitly rearranged or reset and saved.
+
+For future project changes, use the primary-TV baseline as the reference and keep location-specific additions optional in web settings. Verify retained primary-TV configuration and the optional paths separately before describing a version as synchronized. A GitHub push alone is not an installed TV update.
+
+Personal camera URLs, SSIDs, bridge/controller addresses, application keys and display names are not part of the shared defaults. An enabled integration indicates dashboard availability, not a preconfigured or verified connection.
 
 ## Configure locally
 

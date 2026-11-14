@@ -6,7 +6,7 @@ Eine schlanke Startoberfläche für Philips Android TV: Kameras, Ambilight, Phil
 
 Als Android-App installieren und bei Bedarf als Home-Oberfläche zuordnen.
 
-**0.11.6 · experimentelle Beta.** Die Repository-Dokumentation ist auf Englisch; TV-Oberfläche und lokale Web-Einstellungen starten auf Deutsch und lassen sich gemeinsam auf Englisch umstellen. Am TV erscheinen kein Projektname und kein Logo. In Android heißt die App **TV-Dashboard**.
+**0.11.7 · experimentelle Beta.** Die Repository-Dokumentation ist auf Englisch; TV-Oberfläche und lokale Web-Einstellungen starten auf Deutsch und lassen sich gemeinsam auf Englisch umstellen. Am TV erscheinen kein Projektname und kein Logo. In Android heißt die App **TV-Dashboard**.
 
 ## So sieht es aus
 
@@ -81,6 +81,8 @@ Geprüfte Web-Vorschau mit Testdaten. Unter **Startseite** vorhandene Mediathek-
 
 Der Hue-Regler bündelt schnelle Eingaben und sendet für eine zusammengefasste Bedienung einen Schreibbefehl. Danach werden nicht mehr jedes Mal sämtliche Räume, Lampen und Szenen abgefragt. Angezeigt wird der bestätigte Zielwert; bei Fehlern bleibt die zuletzt bestätigte Ansicht erhalten und eine Meldung erscheint direkt auf der Seite.
 
+Die Darstellung des Heim-TVs ist der **gemeinsame Projektstandard**: Nordlicht, Ambilight zuerst, Kameras/Hue sichtbar und ARD/ZDF aus. Andere Standorte verwenden dieselbe App mit eigenen IP-Einstellungen. Updates behalten diese Auswahl bei. [Standard und Einrichtung wie am zweiten TV (Englisch)](docs/INSTALLATION.md#shared-project-baseline-and-per-tv-settings).
+
 ## Geprüfte Hardware
 
 | Ziel | Aussagekraft |
@@ -101,7 +103,7 @@ Voraussetzungen: Python 3, `curl`, JDK 21, Android-SDK-Plattform `android-34`, B
 python3 app/fetch_deps.py
 python3 tests/check_palette.py
 python3 app/build.py
-adb -s DEVICE install -r dist/TV-Dashboard-0.11.6.apk
+adb -s DEVICE install -r dist/TV-Dashboard-0.11.7.apk
 adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -122,6 +124,8 @@ adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 | **System → Bildschirmschoner** | Stil, Datum und dunkle Darstellung wählen oder die Vollbildvorschau öffnen. Die automatische Aktivierung bleibt eine TV-/Systemeinstellung. |
 
 ## Prüfstand und Grenzen
+
+Version 0.11.7 übernimmt die Darstellung des Heim-TVs als Projektstandard und behält standortspezifische Einstellungen. Beide Builds, 107 Web-Prüfungen, 1.290.240 Layoutkombinationen und 16 Prüfungen nach dem Update des Heim-TVs bestanden. Der zweite TV bleibt separat auf 0.11.6 geprüft.
 
 Version 0.11.6 ergänzt optionale ARD-/ZDF-Schnellzugriffe. Gespeicherte Sechser-Anordnungen behalten ihre relative Reihenfolge und bekommen zwei zusätzliche Positionen. Beide signierten Builds, 104 Web-Prüfungen und 1.290.240 Layoutkombinationen bestanden. Zwanzig API-/TV-Prüfungen bestätigten Erkennung, Speichern, sichtbare Kacheln, App-Aufruf, Home-Rückkehr und erhaltene Einstellungen. ARD zeigte zunächst seine Anmeldeseite und ZDF einen Ladebildschirm; anschließend waren beide normalen Mediathek-Startseiten sichtbar. Anmeldung und Wiedergabe sind separat zu prüfen.
 

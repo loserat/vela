@@ -21,12 +21,13 @@ public final class HomeLayoutChecks {
     public static void main(String[] args){
         List<String> defaults=Arrays.asList(HomeLayout.DEFAULT_ORDER);
         require(HomeLayout.validOrder(defaults),"Default order valid");
+        require(defaults.equals(Arrays.asList("ambilight","cameras","hue","tv","inputs","system","ard","zdf")),"Primary-TV standard with optional media positions");
         require(!HomeLayout.validOrder(Arrays.asList("cameras","cameras","hue","tv","inputs","system")),"Duplicate rejected");
         require(!HomeLayout.validOrder(Arrays.asList("unknown","ambilight","hue","tv","inputs","system")),"Unknown rejected");
         require(!HomeLayout.validOrder(defaults.subList(0,5)),"Missing destination rejected");
         List<HomeLayout.Slot> standard=HomeLayout.positions(defaults,true,"focus");require(standard.get(0).x==96&&standard.get(0).w==560&&standard.get(0).h==392&&standard.get(3).y==724&&standard.get(3).h==132,"Original layout preserved");
         List<HomeLayout.Slot> hidden=HomeLayout.positions(defaults,false,"focus");require(hidden.get(0).w==852&&hidden.get(2).id.equals("tv")&&hidden.get(2).h==132,"Hidden camera leaves two large and three small tiles");
-        List<String> moved=new ArrayList<>(defaults);Collections.swap(moved,0,5);require(HomeLayout.positions(moved,true,"focus").get(5).id.equals("cameras")&&HomeLayout.positions(moved,true,"focus").get(5).h==132,"Camera can move to small row");
+        List<String> moved=new ArrayList<>(defaults);Collections.swap(moved,moved.indexOf("cameras"),5);require(HomeLayout.positions(moved,true,"focus").get(5).id.equals("cameras")&&HomeLayout.positions(moved,true,"focus").get(5).h==132,"Camera can move to small row");
         boolean invalid=false;try{HomeLayout.positions(defaults,true,"unknown");}catch(IllegalArgumentException e){invalid=true;}require(invalid,"Unknown geometry rejected");
         List<String> legacy=new ArrayList<>(Arrays.asList(HomeLayout.LEGACY_ORDER));Collections.reverse(legacy);require(HomeLayout.validOrder(legacy)&&HomeLayout.normalizedOrder(legacy).subList(0,6).equals(legacy),"Legacy custom order is preserved before appending shortcuts");
         permutations(new ArrayList<>(defaults),0);require(configurations==1290240,"All eight-item permutations, visibility states and modes tested");

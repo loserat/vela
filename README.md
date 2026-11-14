@@ -6,7 +6,7 @@ A lightweight dashboard for Philips Android TV: cameras, Ambilight, Philips Hue,
 
 Install as an Android app and optionally assign it as Home.
 
-**0.11.6 · experimental beta.** Repository documentation is in English; the TV interface and local web settings default to German, with a shared English option. The TV interface has no project name or logo; Android lists the app as **TV-Dashboard**.
+**0.11.7 · experimental beta.** Repository documentation is in English; the TV interface and local web settings default to German, with a shared English option. The TV interface has no project name or logo; Android lists the app as **TV-Dashboard**.
 
 ## A look at the interface
 
@@ -81,6 +81,8 @@ Reviewed web preview with synthetic data. Enable installed media apps under **St
 
 The Hue brightness slider batches input and sends one write for a coalesced gesture. It does not fetch the full room/light/scene catalog after each adjustment. Its value represents the acknowledged target; connection errors retain the previous confirmed view and show an inline message.
 
+The primary-TV presentation is the **shared project baseline**: Nordlicht, Ambilight first, cameras/Hue enabled and ARD/ZDF off. Other locations use the same app with independent web settings. Updates retain their saved choices. [Defaults and second-TV setup](docs/INSTALLATION.md#shared-project-baseline-and-per-tv-settings).
+
 ## Tested hardware
 
 | Target | Verified scope |
@@ -101,7 +103,7 @@ Requirements: Python 3, `curl`, JDK 21, Android SDK platform `android-34`, Build
 python3 app/fetch_deps.py
 python3 tests/check_palette.py
 python3 app/build.py
-adb -s DEVICE install -r dist/TV-Dashboard-0.11.6.apk
+adb -s DEVICE install -r dist/TV-Dashboard-0.11.7.apk
 adb -s DEVICE shell am start -n de.leisetv/.MainActivity
 ```
 
@@ -123,6 +125,8 @@ Replace `DEVICE` with the explicitly selected authorized device. Preserve your s
 | **System → Bildschirmschoner** | Choose a style, date and dim level, or open the full-screen preview. Automatic activation remains a TV/system setting. |
 
 ## Validation and limits
+
+Version 0.11.7 aligns the shared baseline with the primary TV while retaining per-device settings. Both builds, 107 web checks, 1,290,240 layout configurations and sixteen primary-TV update/API/native checks passed. The second TV remains separately verified on 0.11.6.
 
 Version 0.11.6 adds opt-in ARD/ZDF app shortcuts and upgrades saved six-item orders by retaining their relative order and adding two reserved positions. Both signed builds, 104 web checks and 1,290,240 layout combinations passed. Twenty second-TV API/native assertions verified discovery, save validation, visible tiles, launching both installed apps, Home return and retained settings. ARD initially showed sign-in and ZDF a splash screen; both catalogue/start pages were subsequently observed. Account setup and playback are separate from shortcut launch validation.
 

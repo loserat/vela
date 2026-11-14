@@ -5,7 +5,8 @@ import java.util.*;
 /** Pure geometry for eight stored Home destinations, with deterministic D-pad neighbors. */
 final class HomeLayout {
     static final String[] LEGACY_ORDER={"cameras","ambilight","hue","tv","inputs","system"};
-    static final String[] DEFAULT_ORDER={"cameras","ambilight","hue","tv","inputs","system","ard","zdf"};
+    // Shared project baseline: the primary TV layout. Saved orders remain authoritative.
+    static final String[] DEFAULT_ORDER={"ambilight","cameras","hue","tv","inputs","system","ard","zdf"};
     static boolean validOrder(List<String> order){return (order.size()==DEFAULT_ORDER.length&&new HashSet<>(order).equals(new HashSet<>(Arrays.asList(DEFAULT_ORDER))))||(order.size()==LEGACY_ORDER.length&&new HashSet<>(order).equals(new HashSet<>(Arrays.asList(LEGACY_ORDER))));}
     static List<String> normalizedOrder(List<String> order){if(!validOrder(order))throw new IllegalArgumentException("Invalid Home order");List<String> result=new ArrayList<>(order);for(String id:DEFAULT_ORDER)if(!result.contains(id))result.add(id);return result;}
     static final class Slot {

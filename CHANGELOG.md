@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.11.7 — 2026-11-14
+
+- Made the primary-TV presentation the shared fresh-install baseline: Nordlicht, featured rows, Ambilight before cameras/Hue/Television/Devices/System, German and default system fonts. ARD/ZDF remain opt-in; Hue/UniFi remain independently configurable in the local web dashboard.
+- Updated native defaults, web appearance reset and the synthetic preview consistently. Retained saved six/eight-item orders, site-specific visibility, provider configuration and enabled media shortcuts; no second-location settings are copied to another TV.
+- Documented the reference defaults and explicit web steps for the second-TV arrangement. Added regressions for legacy-order retention, fresh defaults and appearance reset preserving optional features.
+- Passed both signed builds, 107 web checks, 1,290,240 geometry configurations and sixteen primary-TV installation/API/native checks. Updated the primary TV in place from 0.11.2 while retaining configuration and the HTTPS identity; the second TV remains on 0.11.6. No provider actions or app-setting writes were sent.
+
 ## Repository maintenance — 2026-11-14
 
 - Added a final two-TV deployment snapshot and continuation guidance: installed versions, final optional tiles/integrations, evidence boundaries and remaining checks. This documentation follow-up changes no app or device configuration.

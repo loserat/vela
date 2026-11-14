@@ -2,7 +2,7 @@
 
 [README](../README.md) · [Deutsche Projektbeschreibung](../README.de.md)
 
-First TV checked on November 13, 2026; a second TV was checked on November 14, 2026. These are live device observations, not a general compatibility certification.
+First TV checked on November 13 and updated/rechecked on November 14, 2026; a second TV was checked on November 14, 2026. These are live device observations, not a general compatibility certification.
 
 ## Deployment snapshot after the second-TV work
 
@@ -11,20 +11,28 @@ This summarizes the last verified installations; it is not a new live reading or
 | Area | First TV | Second TV |
 | --- | --- | --- |
 | Platform | QM163E, Android 8 / API 26 | TPM191E, Android 12 / API 31 |
-| Last verified installed dashboard | 0.11.2 / version code 20 | 0.11.6 / version code 24 |
-| Scope of the second-TV work | Not contacted or updated during the 0.11.3–0.11.6 work | Installed and checked in place with its retained signing identity |
+| Last verified installed dashboard | 0.11.7 / version code 25 | 0.11.6 / version code 24 |
+| Update scope | Unchanged during the second-TV work; subsequently updated from 0.11.2 to 0.11.7 as the primary reference | Installed and checked in place with its retained signing identity |
 | Home button | Earlier results retain their recorded scope | Physical remote confirmed; dashboard is Home, stock Google launcher disabled only for user 0 and retained for recovery |
 | Ambilight | Earlier fixed-color/device checks below | Manual colors and brightness technically checked and confirmed by the owner |
 | Optional integrations | Existing setup was not copied or changed | Hue and UniFi disabled; cameras remain hidden |
-| ARD / ZDF shortcuts | New opt-in tiles not installed or verified here | Both enabled; existing apps opened to catalogue/start pages |
+| ARD / ZDF shortcuts | Available as optional web settings; both off, no provider app launch tested | Both enabled; existing apps opened to catalogue/start pages |
 
 The second TV's last observed Home has **Ambilight, ARD Mediathek and ZDF Mediathek** in the upper row, with **Fernsehen, Geräte and System** below. Its theme, names, fonts and original relative tile order were retained. No additional media app was installed. No sign-in was completed or programme started by the agent.
 
 The work covered installation/debugging access, Android-12 HTTPS repair, owner-approved Home assignment, the manual Ambilight adapter, per-TV integration switches and Mediathek shortcuts. Detailed test results and limitations follow below and in [Current status](STATUS.md). Setup and the recorded Home recovery commands are in [Installation](INSTALLATION.md#home-assignment).
 
-The current repository is **0.11.6**. Publishing it does not update the first TV. Before a later update there, recheck the selected device, installed package/signature and retained configuration; then validate the updated features on that actual TV. Do not treat second-TV results as acceptance of the first TV's new version. Standby/reboot persistence, actual Mediathek playback and the other outstanding checks remain open.
+The current repository and primary TV are **0.11.7**. Its baseline appearance matches the primary TV; the second TV remains on its separately verified **0.11.6** with its own optional configuration. Publishing source alone does not update another TV. Recheck the selected target and its retained settings before further device work. Standby/reboot persistence, actual Mediathek playback and the other outstanding checks remain open.
 
 GitHub preserves the public source, guides, test helpers and reviewed synthetic images. Device settings, signing keys, provider credentials and raw evidence stay private; the repository is not a portable backup of either TV's app data.
+
+## Primary-TV update to the common baseline (0.11.7)
+
+The QM163E / Android 8 device was re-identified directly before updating its retained-key package from 0.11.2 to 0.11.7. Its actual Nordlicht/featured layout, Ambilight-first order, camera/clock/date visibility and German/default fonts were used as the non-private project presentation baseline. Existing camera/provider details and personal names remain local.
+
+All sixteen installation/API/native assertions passed: installed candidate hash/version code, retained camera metadata/default, display names/model, order/theme/layout, language/fonts/keys, Hue connection/room, saver/activation/standby flag, Home assignment and installed package set. The existing pinned HTTPS identity continued to work; the exact new web asset and protected optional-settings routes were checked. The native Home showed the six standard destinations and no media tile. Hue/UniFi were enabled and ARD/ZDF off.
+
+This verifies installation, retained setup and standard Home on this physical TV. It adds no new actual camera-playback, Hue light-command, Ambilight color, HDMI-routing or standby acceptance. There was no settings write or provider action in this pass. The second TV was not contacted or updated; no claim is made that 0.11.7 has been physically tested there.
 
 ## Second physical TV: partial Android 12 coverage
 

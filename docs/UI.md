@@ -6,7 +6,7 @@
 
 | Screen | Main actions |
 | --- | --- |
-| Home | Six reorderable destinations, with featured/compact or equal-size rows; custom Home title and compact network badge |
+| Home | Four to eight visible destinations, with featured/compact or equal-size rows; custom Home title and compact network badge |
 | Cameras | Six cards per page, previous/next page, setup and Back; up to 24 sources |
 | Ambilight | 16 colors, modes, power, light preview and fixed-color brightness |
 | Hue | One explicitly selected room, colors, power, brightness and available room scenes |
@@ -23,6 +23,8 @@
 ![Installed apps](images/apps.png)
 
 Native screenshots use the application in an isolated emulator with synthetic data; web screenshots use a separate local preview with synthetic data. The HDMI gallery uses instrumentation to render synthetic entries; its fake IDs cannot launch a real input. This is separate from actual Philips discovery and selection checks. The public gallery contains no camera video, access PIN, bridge key or personal address.
+
+The fresh 0.11.7 baseline follows the primary TV: Ambilight / Cameras / Hue above Television / Devices / System, Nordlicht and German/default fonts. ARD/ZDF tiles are opt-in, with independent Hue/UniFi switches. Existing saved orders and location choices remain unchanged on update. [Configure another location](INSTALLATION.md#shared-project-baseline-and-per-tv-settings).
 
 ## Navigation
 
